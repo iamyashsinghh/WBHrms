@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,92 +41,20 @@
         }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        Offer Letter from {{ $data['company_name'] }}
-    </div>
+    Dear <b>{{ $data->name }}</b><br/><br>
+    I am delighted to inform you that we would like to offer you the position of <b>({{ $data->employee_designation }})</b> at Wedding
+    Banquets . Your skills and qualifications impressed us, and we believe you will be a great addition to our team.<br/><br/>
+    Please confirm your acceptance of this offer by replying to this email. If you have any questions or need further
+    information, do not hesitate to reach out.<br/><br/>
+    We look forward to welcoming you to Wedding Banquets.<br/><br/><br/>
 
-    <div class="content">
-        <h1>Welcome {{ $data['candidate_name'] }}!</h1>
-        <p>We are delighted to offer you the position of <strong>{{ $data['position'] }}</strong> at <strong>{{ $data['company_name'] }}</strong>.</p>
-        <p>Below are the details of your offer:</p>
-
-        <ul>
-            <li>Start Date: {{ $data['start_date'] }}</li>
-            <li>Salary: {{ $data['salary'] }}</li>
-            <li>Location: {{ $data['location'] }}</li>
-        </ul>
-
-        <h2>Job Responsibilities</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris accumsan, purus non varius tincidunt, orci massa interdum metus, vitae ultrices lacus magna non eros.</p>
-
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-    </div>
-    <div class="content">
-        <h1>Welcome {{ $data['candidate_name'] }}!</h1>
-        <p>We are delighted to offer you the position of <strong>{{ $data['position'] }}</strong> at <strong>{{ $data['company_name'] }}</strong>.</p>
-        <p>Below are the details of your offer:</p>
-
-        <ul>
-            <li>Start Date: {{ $data['start_date'] }}</li>
-            <li>Salary: {{ $data['salary'] }}</li>
-            <li>Location: {{ $data['location'] }}</li>
-        </ul>
-
-        <h2>Job Responsibilities</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris accumsan, purus non varius tincidunt, orci massa interdum metus, vitae ultrices lacus magna non eros.</p>
-
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-        <h2>Additional Information</h2>
-        <p>Please sign and return this offer letter by {{ $data['acceptance_deadline'] }} to confirm your acceptance.</p>
-        <p>If you have any questions, feel free to contact us at {{ $data['contact_email'] }}.</p>
-    </div>
-    <div class="footer">
-        Best regards, <br>
-        {{ $data['company_name'] }} Team
-    </div>
+    Thanks & Regards<br/>
+    {{env('HR_NAME')}}<br/>
+    HR Executive<br/>
+    Wedding Banquets Pvt Ltd<br/>
+    <a href="https://weddingbanquets.in">weddingbanquets.in</a>
 </body>
+
 </html>

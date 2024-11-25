@@ -14,8 +14,27 @@ class SalaryController extends Controller
 {
     public function list()
     {
-        $page_heading = "Salary Types";
-        return view('admin.salary.type.list', compact('page_heading'));
+        $page_heading = "Salary Summary";
+
+        $emp_code = 'A-2021';
+        $salaryData = Salary::where('emp_code', $emp_code)
+        ->with('salaryType')
+        ->join('salary_types', 'salary.salary_type', '=', 'salary_types.id')
+        ->orderBy('salary_types.id', 'asc')
+        ->select('salary.*')
+        ->get();
+                $salarySummary = [];
+        foreach ($salaryData as $salary) {
+            $perMonth = $salary->salary;
+            $perAnnum = $salary->salary * 12;
+            $salarySummary[] = [
+                'name' => $salary->salaryType->name,
+                'category' => $salary->salaryType->category,
+                'per_month' => $perMonth,
+                'per_annum' => $perAnnum,
+            ];
+        }
+        return view('admin.salary.type.list', compact('page_heading', 'salarySummary'));
     }
 
     /**
@@ -26,16 +45,6 @@ class SalaryController extends Controller
         if ($request->ajax()) {
             $data = SalaryType::query();
             return DataTables::of($data)
-                ->addColumn('actions', function ($row) {
-                    return '
-                        <button class="btn btn-sm btn-primary" onclick="handleManageSalaryType(' . $row->id . ')">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="handleDeleteSalaryType(' . $row->id . ')">
-                            <i class="fa fa-trash"></i>
-                        </button>';
-                })
-                ->rawColumns(['actions', 'icon'])
                 ->make(true);
         }
     }
@@ -48,10 +57,10 @@ class SalaryController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'value' => 'required|numeric',
-            'icon' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
         ]);
 
-        $data = $request->only(['name', 'value', 'icon']);
+        $data = $request->only(['name', 'value', 'category']);
 
         if ($id) {
             $salaryType = SalaryType::findOrFail($id);
@@ -69,7 +78,9 @@ class SalaryController extends Controller
     public function destroy($id)
     {
         $salaryType = SalaryType::findOrFail($id);
+        Salary::where('salary_type', $salaryType->id)->delete();
         $salaryType->delete();
+
         return response()->json(['success' => 'Salary type deleted successfully.']);
     }
 
@@ -107,7 +118,7 @@ class SalaryController extends Controller
 
         $new_ctc = Salary::where('emp_code', $emp_code)->sum('salary');
 
-        if($ctc != 0 && $new_ctc > $ctc){
+        if ($ctc != 0 && $new_ctc > $ctc) {
             $increment = $new_ctc - $ctc;
             Log::info("$increment");
         }
@@ -117,5 +128,4 @@ class SalaryController extends Controller
             'message' => 'Salaries updated successfully.',
         ]);
     }
-
 }

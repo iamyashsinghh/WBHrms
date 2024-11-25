@@ -31,10 +31,172 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Value</th>
-                            <th>Icon</th>
+                            <th>Category</th>
                             <th class="text-center no-sort">Actions</th>
                         </tr>
                     </thead>
+                </table>
+            </div>
+        </div>
+    </section>
+    <style>
+        .custom-table {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-collapse: collapse;
+        }
+        .custom-table th, .custom-table td {
+            border: 1px solid #000;
+            padding: 8px;
+        }
+        .custom-table thead th {
+            background-color: #a50000;
+            color: #fff;
+        }
+        .custom-table tfoot th {
+            background-color: #a50000;
+            color: #fff;
+        }
+    </style>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="table-responsive">
+                <table id="salaryTypeTable" class="custom-table">
+                    <thead>
+                        <tr style="background-color: #a50000; color: #fff;">
+                            <th>Particulars</th>
+                            <th>Per Month</th>
+                            <th>Per Annum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalPerMonth = 0;
+                            $totalPerAnnum = 0;
+                        @endphp
+
+                        @foreach($salarySummary as $item)
+                            @if($item['per_month'] > 0)
+                                <tr>
+                                    <td>{{ $item['name'] }}</td>
+                                    <td>{{ number_format($item['per_month'], 2) }}</td>
+                                    <td>{{ number_format($item['per_annum'], 2) }}</td>
+                                </tr>
+                                @php
+                                    $totalPerMonth += $item['per_month'];
+                                    $totalPerAnnum += $item['per_annum'];
+                                @endphp
+                            @endif
+                        @endforeach
+
+                        <tr style="background-color: #a50000; color: #fff;">
+                            <th>TOTAL GROSS SALARY</th>
+                            <th>{{ number_format($totalPerMonth, 2) }}</th>
+                            <th>{{ number_format($totalPerAnnum, 2) }}</th>
+                        </tr>
+
+                        @php
+                            $epf = 0;
+                            $esic = 0;
+                            $professionalTax = 0;
+                        @endphp
+
+                        @if ($epf > 0)
+                            <tr>
+                                <td>EPF (12%)</td>
+                                <td>{{ number_format($epf, 2) }}</td>
+                                <td>{{ number_format($epf * 12, 2) }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>EPF (12%)</td>
+                                <td>NA</td>
+                                <td>NA</td>
+                            </tr>
+                        @endif
+
+                        @if ($esic > 0)
+                            <tr>
+                                <td>ESIC/Health Insurance (0.75%)</td>
+                                <td>{{ number_format($esic, 2) }}</td>
+                                <td>{{ number_format($esic * 12, 2) }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>ESIC/Health Insurance (0.75%)</td>
+                                <td>NA</td>
+                                <td>NA</td>
+                            </tr>
+                        @endif
+
+                        @if ($professionalTax > 0)
+                            <tr>
+                                <td>Professional Tax</td>
+                                <td>{{ number_format($professionalTax, 2) }}</td>
+                                <td>{{ number_format($professionalTax * 12, 2) }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>Professional Tax</td>
+                                <td>NA</td>
+                                <td>NA</td>
+                            </tr>
+                        @endif
+
+                        <!-- Net Salary -->
+                        <tr style="background-color: #a50000; color: #fff;">
+                            <th>NET SALARY (In Hand)</th>
+                            <th>{{ number_format($totalPerMonth - $epf - $esic - $professionalTax, 2) }}</th>
+                            <th>{{ number_format(($totalPerAnnum - $epf * 12 - $esic * 12 - $professionalTax * 12), 2) }}</th>
+                        </tr>
+
+                        <!-- Employer Contributions (Example) -->
+                        @php
+                            $employerPf = 0; // Fetch from backend if applicable
+                            $employerEsi = 0; // Fetch from backend if applicable
+                        @endphp
+
+                        @if ($employerPf > 0)
+                            <tr>
+                                <td>EMPLOYER PF CONTRIBUTION (13%)</td>
+                                <td>{{ number_format($employerPf, 2) }}</td>
+                                <td>{{ number_format($employerPf * 12, 2) }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>EMPLOYER PF CONTRIBUTION (13%)</td>
+                                <td>NA</td>
+                                <td>NA</td>
+                            </tr>
+                        @endif
+
+                        @if ($employerEsi > 0)
+                            <tr>
+                                <td>EMPLOYER ESI CONTRIBUTION (3.25%)</td>
+                                <td>{{ number_format($employerEsi, 2) }}</td>
+                                <td>{{ number_format($employerEsi * 12, 2) }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>EMPLOYER ESI CONTRIBUTION (3.25%)</td>
+                                <td>NA</td>
+                                <td>NA</td>
+                            </tr>
+                        @endif
+
+                        <tr>
+                            <td>OTHER BENEFITS</td>
+                            <td>NA</td>
+                            <td>NA</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color: #a50000; color: #fff;">
+                            <th>Total Fixed Cost to Company (CTC)</th>
+                            <th>{{ number_format($totalPerMonth, 2) }}</th>
+                            <th>{{ number_format($totalPerAnnum, 2) }}</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -60,9 +222,13 @@
                         <input type="number" id="value" name="value" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="icon" class="form-label">Icon (CSS Class)</label>
-                        <input type="text" id="icon" name="icon" class="form-control">
-                        <small class="text-muted">Enter a valid FontAwesome or other icon class (e.g., "fa fa-star").</small>
+                        <label for="category" class="form-label">Category</label>
+                        <select id="category" name="category" class="form-control" required>
+                            <option value="PARTICULARS">PARTICULARS</option>
+                            <option value="TOTAL GROSS SALARY">TOTAL GROSS SALARY</option>
+                            <option value="NET SALARY ( In Hand )">NET SALARY ( In Hand )</option>
+                            <option value="Total Fixed Cost to Company ( CTC)">Total Fixed Cost to Company ( CTC)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -110,24 +276,20 @@
                     { data: 'name', name: 'name' },
                     { data: 'value', name: 'value' },
                     {
-                        data: 'icon',
-                        name: 'icon',
-                        render: function(data) {
-                            return data ? `<i class="${data}"></i>` : '-';
-                        }
+                        data: 'category',
+                        name: 'category',
                     },
                     {
-                        data: 'id',
-                        name: 'actions',
+                        data: null,
                         orderable: false,
                         searchable: false,
                         className: 'text-center',
-                        render: function(data) {
+                        render: function(data, type, row) {
                             return `
-                                <button class="btn btn-sm btn-primary" onclick="handleManageSalaryType(${data})">
+                                <button class="btn btn-sm btn-primary" onclick="handleManageSalaryType('${row.id}', '${row.name}', '${row.value}', '${row.category}')">
                                     <i class="fa fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="handleDeleteSalaryType(${data})">
+                                <button class="btn btn-sm btn-danger" onclick="handleDeleteSalaryType('${row.id}')">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             `;
@@ -136,7 +298,7 @@
                 ]
             });
 
-            window.handleManageSalaryType = function(id) {
+            window.handleManageSalaryType = function(id, name, value, category) {
                 const modal = new bootstrap.Modal(document.getElementById('manageSalaryType'));
                 const form = $('#manageSalaryTypeForm');
                 const title = $('#form_title');
@@ -145,12 +307,10 @@
                     : "{{ route('admin.salary-type.manage_process') }}";
 
                 if (id) {
-                    $.get(`{{ url('admin/salary-type') }}/${id}`, function(data) {
-                        $('#name').val(data.name);
-                        $('#value').val(data.value);
-                        $('#icon').val(data.icon);
-                        title.text("Edit Salary Type");
-                    });
+                    $('#name').val(name);
+                    $('#value').val(value);
+                    $('#category').val(category);
+                    title.text("Edit Salary Type");
                 } else {
                     form.trigger('reset');
                     title.text("Add New Salary Type");

@@ -128,7 +128,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                           
+
                                         </div>
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@
                                             </div>
                                             <div class="mb-3 col-md-6">
                                                 <strong>Reporting Manager:</strong> <span
-                                                    class="text-muted">{{ $user->reporting_manager_name ?? 'N/A' }}</span>
+                                                    class="text-muted">{{ $user->get_reporting_manager->name ?? 'N/A' }}</span>
                                             </div>
                                         </div>
                                         <hr>

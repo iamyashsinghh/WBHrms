@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers;
 use App\Mail\OfferLetter;
+use App\Models\Employee;
+use App\Models\Salary;
 use App\Services\HrMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\ItMail;
@@ -16,18 +18,9 @@ Route::group(['middleware' => 'AuthCheck'], function () {
 });
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('mail', function(){
-    $data = [
-        'company_name' => 'wedding',
-        'location' => 'wedding',
-        'acceptance_deadline' => 'wedding',
-        'contact_email' => 'wedding',
-        'candidate_name' => 'John Doe',
-        'position' => 'Software Engineer',
-        'start_date' => '2024-12-01',
-        'salary' => '$70,000',
-    ];
-    HrMail::to('iamyashsinghh@gmail.com')->send(new OfferLetter($data));
+Route::get('mail/{emp_code?}/{type?}', function ($emp_code, $type) {
+    $emp = Employee::where('emp_code', $emp_code)->first();
+    HrMail::to($emp->email)->send(new OfferLetter($emp_code));
 });
 Route::get('mail_view', function () {
     $data = [
@@ -41,7 +34,23 @@ Route::get('mail_view', function () {
         'contact_email' => 'hr@weddinginc.com',
     ];
 
-    $pdf = PDF::loadView('mail.offerletterpdf', compact('data'))
+    $emp_code = 'A-2021';
+    $salaryData = Salary::where('emp_code', $emp_code)
+        ->with('salaryType')
+        ->get();
+    $salarySummary = [];
+    foreach ($salaryData as $salary) {
+        $perMonth = $salary->salary;
+        $perAnnum = $salary->salary * 12;
+        $salarySummary[] = [
+            'name' => $salary->salaryType->name,
+            'category' => $salary->salaryType->category,
+            'per_month' => $perMonth,
+            'per_annum' => $perAnnum,
+        ];
+    }
+
+    $pdf = PDF::loadView('mail.offerletterpdf', compact('data', 'salarySummary'))
         ->setPaper('a4', 'portrait');
 
     return $pdf->download('OfferLetter.pdf');
@@ -57,10 +66,22 @@ Route::get('mail_vie', function () {
         'acceptance_deadline' => '2024-12-15',
         'contact_email' => 'hr@weddinginc.com',
     ];
-
-
-
-    return view('mail.offerletterpdf', ['data' => $data]);
+    $emp_code = 'A-2021';
+    $salaryData = Salary::where('emp_code', $emp_code)
+        ->with('salaryType')
+        ->get();
+    $salarySummary = [];
+    foreach ($salaryData as $salary) {
+        $perMonth = $salary->salary;
+        $perAnnum = $salary->salary * 12;
+        $salarySummary[] = [
+            'name' => $salary->salaryType->name,
+            'category' => $salary->salaryType->category,
+            'per_month' => $perMonth,
+            'per_annum' => $perAnnum,
+        ];
+    }
+    return view('mail.offerletterpdf', compact('data', 'salarySummary'));
 });
 
 
@@ -142,6 +163,17 @@ Route::middleware('verify_token')->group(function () {
                 Route::post('upload_document', [Controllers\Admin\DocumentController::class, 'uploadDocument'])->name('upload');
             });
 
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Admin ENV CONTROLLER
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/env')->name('env.')->group(function () {
+                Route::get('/env-update', [Controllers\Admin\EnvController::class, 'index'])->name('index');
+                Route::post('/env-update', [Controllers\Admin\EnvController::class, 'update'])->name('update');                            });
         });
     });
 });

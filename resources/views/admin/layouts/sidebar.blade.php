@@ -49,6 +49,12 @@ $uri = end($uri_arr);
                         <p>Document Type</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{route('admin.env.index')}}" class="nav-link {{$uri == "dashboard" ? 'active' : ''}}">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>Hrms Settings</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

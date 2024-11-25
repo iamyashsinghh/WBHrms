@@ -10,7 +10,11 @@ class Employee extends Authenticatable
 {
     use SoftDeletes;
     protected $guarded = [];
+
     public function get_role() {
         return $this->hasOne(Role::class, 'id', 'role_id');
+    }
+    public function get_reporting_manager() {
+        return $this->hasOne(Employee::class, 'emp_code', 'reporting_manager');
     }
 }

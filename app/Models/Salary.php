@@ -10,4 +10,10 @@ class Salary extends Model
     use SoftDeletes;
     protected $table = 'salary';
     protected $guarded = [];
+
+    public function salaryType()
+    {
+        return $this->belongsTo(SalaryType::class, 'salary_type', 'id');
+    }
+
 }

@@ -79,6 +79,65 @@
         .page-break {
             page-break-after: always;
         }
+
+        .custom-table {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-collapse: collapse;
+        }
+
+        .custom-table th,
+        .custom-table td {
+            border: 2px solid #000;
+            padding: 8px;
+        }
+
+        .custom-table thead th {
+            background-color: #a50000;
+            color: #fff;
+        }
+
+        .custom-table tfoot th {
+            background-color: #a50000;
+            color: #fff;
+        }
+
+        .table-responsive-custom {
+            overflow-x: auto;
+        }
+
+        .signature-section {
+            width: 100%;
+            padding: 0 50px 0 50px;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .left-section {
+            float: left;
+            width: 45%;
+        }
+
+        .right-section {
+            float: right;
+            width: 35%;
+            text-align: left;
+        }
+
+        .stamp {
+            width: 130px;
+            height: auto;
+        }
+
+        .date-place {
+            margin-top: 20px;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
     </style>
 </head>
 
@@ -88,13 +147,14 @@
         <img src="https://wbcrm.in/offerletterheader.png" alt="Header Image" loading="eager">
     </div>
     <div class="footer">
+        {{-- <i style="font-size: 12px; text-align: center; margin: 0 0 0 30px">* This is Computer generated offer letter it may have some error's. If you have any issue feel free to contact HR</i> --}}
         <img src="https://wbcrm.in/offerletterfooter.png" alt="Footer Image" loading="eager">
     </div>
 
     <div class="content">
-        <h2>Name: <b>{{ $data['candidate_name'] }}</b></h2>
-        <h2>Position: <b>{{ $data['position'] }}</b></h2>
-        <h2>Date of Joining: <b>{{ $data['start_date'] }}</b></h2>
+        <h2>Name: <b>{{ $data->name }}</b></h2>
+        <h2>Position: <b>{{ $data->employee_designation }}</b></h2>
+        <h2>Date of Joining: <b>{{ $data->doj }}</b></h2>
 
         <h2 style="color:#891010; text-decoration: underline; font-family: auto; text-align: center; margin-top: 50px;">
             <b>EMPLOYMENT TERMS AND CONDITION</b>
@@ -257,10 +317,16 @@
     <div class="content2">
         <h3 style="margin-top: 25px">13. Good Attendance Policy</h3>
         <div style="margin-top: 20px;">
-            The company maintains normal working hours of 10:00am. to 6:30pm. The Hours may vary depending on the work
+            The company maintains normal working hours of
+            @if ($data->role_id == 5)
+                12:00 AM to 8:30 PM.
+            @else
+                10:00 PM to 6:30 AM.
+            @endif
+            The Hours may vary depending on the work
             location and job responsibilities. Managers will provide employees with their work schedule. If an employee
             has any
-            questions regarding his/her work schedule, then the employee should contact the CLH of the company directly.
+            questions regarding his/her work schedule, then the employee should contact the HR of the company directly.
             The
             company does not tolerate absenteeism without any substantial reason. Employees who will be late to or
             absent
@@ -280,7 +346,12 @@
             without management consent.
             <br />
             <br />
-            <b>B</b>. Official time for the office will be 10:00 AM to 6:30 PM. However , Grace period is of 15 mins
+            <b>B</b>. Official time for the office will be
+            @if ($data->role_id == 5)
+                12:00 AM to 8:30 PM.
+            @else
+                10:00 PM to 6:30 AM.
+            @endif However , Grace period is of 15 mins
             .You must
             reach the
             office by 10:15 AM Sharp. Lunch Time for the office will be of 30 minutes
@@ -474,9 +545,162 @@
             handbook under which they're made, in its entirety and agree to abide by them.
         </div>
     </div>
+
     <div class="page-break"></div>
     <div class="content2">
+        <h2 style="color:#891010; text-decoration: underline; font-family: auto; text-align: center;">
+            <b>ANNEXURE</b>
+        </h2>
+        <table id="salaryTypeTable" class="custom-table" style="font-size: 12px;">
+            <thead>
+                <tr style="background-color: #a50000; color: #fff;">
+                    <th>Particulars</th>
+                    <th>Per Month</th>
+                    <th>Per Annum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $totalPerMonth = 0;
+                    $totalPerAnnum = 0;
+                @endphp
 
+                @foreach ($salarySummary as $item)
+                    @if ($item['per_month'] > 0)
+                        <tr>
+                            <td>{{ $item['name'] }}</td>
+                            <td>{{ number_format($item['per_month'], 2) }}</td>
+                            <td>{{ number_format($item['per_annum'], 2) }}</td>
+                        </tr>
+                        @php
+                            $totalPerMonth += $item['per_month'];
+                            $totalPerAnnum += $item['per_annum'];
+                        @endphp
+                    @endif
+                @endforeach
+
+                <tr style="background-color: #a50000; color: #fff;">
+                    <th>TOTAL GROSS SALARY</th>
+                    <th>{{ number_format($totalPerMonth, 2) }}</th>
+                    <th>{{ number_format($totalPerAnnum, 2) }}</th>
+                </tr>
+
+                @php
+                    $epf = 0;
+                    $esic = 0;
+                    $professionalTax = 0;
+                @endphp
+
+                @if ($epf > 0)
+                    <tr>
+                        <td>EPF (12%)</td>
+                        <td>{{ number_format($epf, 2) }}</td>
+                        <td>{{ number_format($epf * 12, 2) }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>EPF (12%)</td>
+                        <td>NA</td>
+                        <td>NA</td>
+                    </tr>
+                @endif
+
+                @if ($esic > 0)
+                    <tr>
+                        <td>ESIC/Health Insurance (0.75%)</td>
+                        <td>{{ number_format($esic, 2) }}</td>
+                        <td>{{ number_format($esic * 12, 2) }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>ESIC/Health Insurance (0.75%)</td>
+                        <td>NA</td>
+                        <td>NA</td>
+                    </tr>
+                @endif
+
+                @if ($professionalTax > 0)
+                    <tr>
+                        <td>Professional Tax</td>
+                        <td>{{ number_format($professionalTax, 2) }}</td>
+                        <td>{{ number_format($professionalTax * 12, 2) }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>Professional Tax</td>
+                        <td>NA</td>
+                        <td>NA</td>
+                    </tr>
+                @endif
+
+                <!-- Net Salary -->
+                <tr style="background-color: #a50000; color: #fff;">
+                    <th>NET SALARY (In Hand)</th>
+                    <th>{{ number_format($totalPerMonth - $epf - $esic - $professionalTax, 2) }}</th>
+                    <th>{{ number_format($totalPerAnnum - $epf * 12 - $esic * 12 - $professionalTax * 12, 2) }}</th>
+                </tr>
+
+                <!-- Employer Contributions (Example) -->
+                @php
+                    $employerPf = 0; // Fetch from backend if applicable
+                    $employerEsi = 0; // Fetch from backend if applicable
+                @endphp
+
+                @if ($employerPf > 0)
+                    <tr>
+                        <td>EMPLOYER PF CONTRIBUTION (13%)</td>
+                        <td>{{ number_format($employerPf, 2) }}</td>
+                        <td>{{ number_format($employerPf * 12, 2) }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>EMPLOYER PF CONTRIBUTION (13%)</td>
+                        <td>NA</td>
+                        <td>NA</td>
+                    </tr>
+                @endif
+
+                @if ($employerEsi > 0)
+                    <tr>
+                        <td>EMPLOYER ESI CONTRIBUTION (3.25%)</td>
+                        <td>{{ number_format($employerEsi, 2) }}</td>
+                        <td>{{ number_format($employerEsi * 12, 2) }}</td>
+                    </tr>
+                @else
+                    <tr>
+                        <td>EMPLOYER ESI CONTRIBUTION (3.25%)</td>
+                        <td>NA</td>
+                        <td>NA</td>
+                    </tr>
+                @endif
+
+                <tr>
+                    <td>OTHER BENEFITS</td>
+                    <td>NA</td>
+                    <td>NA</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="background-color: #a50000; color: #fff;">
+                    <th>Total Fixed Cost to Company (CTC)</th>
+                    <th>{{ number_format($totalPerMonth, 2) }}</th>
+                    <th>{{ number_format($totalPerAnnum, 2) }}</th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="clearfix signature-section" style="margin-top: 20px">
+            <div class="left-section">
+                <img src="https://wbcrm.in/wb_stamp_signjhgvcxgfhtyjgnbvchfgn.png" alt="Stamp" class="stamp">
+                <div class="date-place">
+                    <p>Date: {{ now() }}</p>
+                    <p>Place: New Delhi</p>
+                </div>
+            </div>
+            <div class="right-section" style="margin-top: 100px">
+                <p>I Accept...</p>
+                <p>Signature of Employee</p>
+            </div>
+        </div>
     </div>
 </body>
 
