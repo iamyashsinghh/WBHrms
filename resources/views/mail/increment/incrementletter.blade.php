@@ -44,11 +44,11 @@
 
 <body>
     Dear <b>{{ $data->name }}</b><br/><br>
-    I am delighted to inform you that we would like to offer you the position of <b>({{ $data->employee_designation }})</b> at Wedding
-    Banquets . Your skills and qualifications impressed us, and we believe you will be a great addition to our team.<br/><br/>
-    Please confirm your acceptance of this offer by replying to this email. If you have any questions or need further
-    information, do not hesitate to reach out.<br/><br/>
-    We look forward to welcoming you to Wedding Banquets.<br/><br/><br/>
+    I hope this message finds you well. I am pleased to share your salary increment letter, which acknowledges your continued dedication and hard work. Please find the attached PDF containing the details of your salary adjustment.<br/><br/>
+
+If you have any questions or need further clarification, feel free to reach out.<br/><br/>
+
+Thank you for your contributions to our team.<br/><br/>
 
     Thanks & Regards<br/>
     {{env('HR_NAME')}}<br/>

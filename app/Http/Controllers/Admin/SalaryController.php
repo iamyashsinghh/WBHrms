@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\IncrementLetter;
+use App\Models\Employee;
 use App\Models\Salary;
 use App\Models\SalaryType;
+use App\Services\HrMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -120,7 +123,10 @@ class SalaryController extends Controller
 
         if ($ctc != 0 && $new_ctc > $ctc) {
             $increment = $new_ctc - $ctc;
-            Log::info("$increment");
+            $data = Employee::where('emp_code', $emp_code)->first();
+            $data->inc_amt = $increment;
+            $data->new_salary = $new_ctc;
+            HrMail::to($data->mail)->send(new IncrementLetter($data));
         }
 
         return response()->json([

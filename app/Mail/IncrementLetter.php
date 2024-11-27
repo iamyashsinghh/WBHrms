@@ -2,52 +2,44 @@
 
 namespace App\Mail;
 
+use App\Models\Employee;
+use App\Models\Salary;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Queue\SerializesModels;
 
 class IncrementLetter extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $data;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($data)
     {
-        //
+        $this->data = $data;
     }
 
     /**
-     * Get the message envelope.
+     * Build the message.
      */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Increment Letter',
-        );
-    }
+        $data = $this->data;
+        $pdf = PDF::loadView('mail.increment.incrementletterpdf', compact('data'))
+        ->setPaper('a4', 'portrait')
+        ->setOption('margin-top', '0mm')
+        ->setOption('margin-bottom', '0mm')
+        ->setOption('margin-left', '0mm')
+        ->setOption('margin-right', '0mm');
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'view.name',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
+        return $this->view('mail.increment.incrementletter', compact('data'))
+            ->attachData($pdf->output(), 'IncrementLetter.pdf', [
+                'mime' => 'application/pdf',
+            ]);
     }
 }

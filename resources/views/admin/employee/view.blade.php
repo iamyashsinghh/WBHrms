@@ -433,7 +433,7 @@
             function saveSalaries(salaryData) {
                 const saveUrl = `{{ route('admin.salary.save_all') }}`;
                 const csrfToken = `{{ csrf_token() }}`;
-
+                toastr.info('Updating started please wait for success.');
                 fetch(saveUrl, {
                         method: 'POST',
                         headers: {

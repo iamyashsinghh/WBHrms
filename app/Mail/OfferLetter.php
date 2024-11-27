@@ -50,17 +50,14 @@ class OfferLetter extends Mailable
             ];
         }
 
-        $pdf = PDF::loadView('mail.offerletterpdf', compact('data', 'salarySummary'))
+        $pdf = PDF::loadView('mail.offer.offerletterpdf', compact('data', 'salarySummary'))
         ->setPaper('a4', 'portrait')
         ->setOption('margin-top', '0mm')
         ->setOption('margin-bottom', '0mm')
         ->setOption('margin-left', '0mm')
         ->setOption('margin-right', '0mm');
-        if($pdf){
-            
-        }
 
-        return $this->view('mail.offerletter', compact('data', 'salarySummary'))
+        return $this->view('mail.offer.offerletter', compact('data', 'salarySummary'))
             ->attachData($pdf->output(), 'OfferLetter.pdf', [
                 'mime' => 'application/pdf',
             ]);
