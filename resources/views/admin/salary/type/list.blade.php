@@ -58,7 +58,7 @@
             color: #fff;
         }
     </style>
-    <section class="content">
+    <section class="mt-5 content">
         <div class="container-fluid">
             <div class="table-responsive">
                 <table id="salaryTypeTable" class="custom-table">
@@ -251,7 +251,7 @@
                     <button type="button" class="btn text-secondary" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this salary type?</p>
+                    <p>Are you sure you want to delete this salary type? <b>This will delete all the salary based on this</b></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

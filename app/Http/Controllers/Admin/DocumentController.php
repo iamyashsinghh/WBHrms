@@ -8,6 +8,7 @@ use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class DocumentController extends Controller
@@ -73,6 +74,17 @@ class DocumentController extends Controller
         return response()->json(['success' => 'Document type deleted successfully.']);
     }
 
+    /**
+     * Delete a document.
+     */
+    public function destroy_doc($id)
+    {
+        $document = Document::findOrFail($id);
+        $document->delete();
+        session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Document Deleted!']);
+        return redirect()->back()->with('success', 'Document Deleted successfully.');
+    }
+
 
     public function uploadDocument(Request $request)
     {
@@ -92,9 +104,16 @@ class DocumentController extends Controller
         if ($request->document_id) {
             $document = Document::find($request->document_id);
         } else {
-            $document = new Document();
-            $document->emp_code = $request->emp_code;
-            $document->doc_type = $request->doc_type;
+            $doc_name = DocumentType::where('id', $request->doc_type)->first();
+            if ($doc_name) {
+                $document = new Document();
+                $document->emp_code = $request->emp_code;
+                $document->doc_type = $request->doc_type;
+                $document->doc_name = $doc_name->name;
+            } else {
+                session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => 'Document Type Not Found!']);
+                return redirect()->back()->with('error', 'File upload failed.');
+            }
         }
 
         $file = $request->file('document');
@@ -102,16 +121,12 @@ class DocumentController extends Controller
         $fileName = time() . '_' . $file->getClientOriginalName();
 
         try {
-            if (!File::isDirectory(public_path($filePath))) {
-                File::makeDirectory(public_path($filePath), 0777, true, true);
-            }
-
-            $file->move(public_path($filePath), $fileName);
+            $path = Storage::disk('public')->putFileAs($filePath, $file, $fileName);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'File upload failed.');
         }
 
-        $document->path = $filePath . $fileName;
+        $document->path = 'storage/' . $filePath . $fileName;
         $document->save();
         session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Document Uploaded!']);
 

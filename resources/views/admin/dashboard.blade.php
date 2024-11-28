@@ -21,12 +21,12 @@
                         <div class="text-sm small-box text-light" style="background: var(--wb-renosand);">
                             <div class="inner">
                                 <h3>{{$total_users}}</h3>
-                                <p>Total Users</p>
+                                <p>Total Employee</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="{{ ('admin.vendor.list') }}" class="small-box-footer">More info <i
+                            <a href="{{ route('admin.employee.list') }}" class="small-box-footer">More info <i
                                     class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>

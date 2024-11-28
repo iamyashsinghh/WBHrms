@@ -1,15 +1,13 @@
 @php
-if(Auth::guard('admin')->check()){
-$auth_user = Auth::guard('admin')->user();
+if (Auth::guard('admin')->check()) {
+    $auth_user = Auth::guard('admin')->user();
 }
-
-$uri_arr = explode(".", Route::currentRouteName());
-$uri = end($uri_arr);
-
+$uri =  Route::currentRouteName();
 @endphp
+
 <aside class="main-sidebar sidebar-dark-danger" style="background: var(--wb-dark-red);">
-    <a href="{{route('admin.dashboard')}}" class="text-center brand-link">
-        <img src="{{asset('wb-logo2.webp')}}" alt="AdminLTE Logo" style="width: 80% !important;">
+    <a href="{{ route('admin.dashboard') }}" class="text-center brand-link">
+        <img src="{{ asset('wb-logo2.webp') }}" alt="AdminLTE Logo" style="width: 80% !important;">
     </a>
     <div class="sidebar">
         <div class="pb-3 mt-3 mb-3 user-panel d-flex align-items-center">
@@ -26,32 +24,32 @@ $uri = end($uri_arr);
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="{{route('admin.dashboard')}}" class="nav-link {{$uri == "dashboard" ? 'active' : ''}}">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ $uri == 'admin.dashboard' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-home"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('admin.employee.list')}}" class="nav-link {{$uri == "employee" ? 'active' : ''}}">
+                    <a href="{{ route('admin.employee.list') }}" class="nav-link {{ $uri == 'admin.employee.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Employee</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('admin.salary-type.list')}}" class="nav-link {{$uri == "dashboard" ? 'active' : ''}}">
-                        <i class="nav-icon fas fa-user"></i>
+                    <a href="{{ route('admin.salary-type.list') }}" class="nav-link {{ $uri == 'admin.salary-type.list' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-money-bill-alt"></i>
                         <p>Salary Type</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('admin.document-type.list')}}" class="nav-link {{$uri == "dashboard" ? 'active' : ''}}">
-                        <i class="nav-icon fas fa-user"></i>
+                    <a href="{{ route('admin.document-type.list') }}" class="nav-link {{ $uri == 'admin.document-type.list' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file"></i>
                         <p>Document Type</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{route('admin.env.index')}}" class="nav-link {{$uri == "dashboard" ? 'active' : ''}}">
-                        <i class="nav-icon fas fa-user"></i>
+                    <a href="{{ route('admin.env.index') }}" class="nav-link {{ $uri == 'admin.env.index' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cogs"></i>
                         <p>Hrms Settings</p>
                     </a>
                 </li>
@@ -62,8 +60,8 @@ $uri = end($uri_arr);
 
 <script>
     $('.nav-sidebar').tree();
-    function initialize_sidebar_collapse() {
 
+    function initialize_sidebar_collapse() {
         const sidebar_collapsible_elem = document.getElementById('sidebar_collapsible_elem');
         const localstorage_value = localStorage.getItem('sidebar_collapse');
         if (localstorage_value !== null) {

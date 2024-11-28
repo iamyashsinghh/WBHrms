@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Document;
 use App\Models\Employee;
 use App\Models\Salary;
 use Illuminate\Bus\Queueable;
@@ -9,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class OfferLetter extends Mailable
 {
@@ -56,6 +58,21 @@ class OfferLetter extends Mailable
         ->setOption('margin-bottom', '0mm')
         ->setOption('margin-left', '0mm')
         ->setOption('margin-right', '0mm');
+
+        $fileContent = $pdf->output();
+        $filePath = 'uploads/documents/' . $emp->emp_code . '/';
+        $fileName = time() . '_' . 'OfferLetter.pdf';
+        $fullPath = $filePath . $fileName;
+
+        Storage::disk('public')->put($fullPath, $fileContent);
+
+        $document = new Document();
+        $document->emp_code = $emp->emp_code;
+        $document->doc_type = null;
+        $document->doc_name = "OfferLetter";
+        $document->path = 'storage/' . $fullPath;
+        $document->save();
+
 
         return $this->view('mail.offer.offerletter', compact('data', 'salarySummary'))
             ->attachData($pdf->output(), 'OfferLetter.pdf', [

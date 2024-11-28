@@ -2,13 +2,12 @@
 
 namespace App\Mail;
 
-use App\Models\Employee;
-use App\Models\Salary;
+use App\Models\Document;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class IncrementLetter extends Mailable
 {
@@ -36,6 +35,20 @@ class IncrementLetter extends Mailable
         ->setOption('margin-bottom', '0mm')
         ->setOption('margin-left', '0mm')
         ->setOption('margin-right', '0mm');
+
+        $fileContent = $pdf->output();
+        $filePath = 'uploads/documents/' . $data->emp_code . '/';
+        $fileName = time() . '_' . 'incrementletter.pdf';
+        $fullPath = $filePath . $fileName;
+
+        Storage::disk('public')->put($fullPath, $fileContent);
+
+        $document = new Document();
+        $document->emp_code = $data->emp_code;
+        $document->doc_type = null;
+        $document->doc_name = "incrementletter";
+        $document->path = 'storage/' . $fullPath;
+        $document->save();
 
         return $this->view('mail.increment.incrementletter', compact('data'))
             ->attachData($pdf->output(), 'IncrementLetter.pdf', [

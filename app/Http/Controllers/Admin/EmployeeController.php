@@ -157,7 +157,8 @@ class EmployeeController extends Controller
         }
     }
 
-    public function view($emp_code){
+    public function view($emp_code)
+    {
         $user = Employee::where('emp_code', $emp_code)->first();
         if (!$user) {
             return abort(404);
@@ -165,8 +166,9 @@ class EmployeeController extends Controller
         $page_heading = "$user->name's Details";
         $doc_type = DocumentType::get();
         $salary_type = SalaryType::get();
+        $managers = Employee::select('emp_code', 'name')->get();
         $ctc = Salary::where('emp_code', $user->emp_code)->sum('salary');
         $total_ctc = $ctc*12;
-        return view('admin.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc'));
+        return view('admin.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc', 'managers'));
     }
 }

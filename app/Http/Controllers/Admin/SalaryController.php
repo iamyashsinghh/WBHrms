@@ -126,7 +126,7 @@ class SalaryController extends Controller
             $data = Employee::where('emp_code', $emp_code)->first();
             $data->inc_amt = $increment;
             $data->new_salary = $new_ctc;
-            HrMail::to($data->mail)->send(new IncrementLetter($data));
+            HrMail::to($data->email)->send(new IncrementLetter($data));
         }
 
         return response()->json([
