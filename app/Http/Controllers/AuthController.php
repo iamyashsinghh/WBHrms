@@ -222,7 +222,7 @@ class AuthController extends Controller
                 return redirect()->route('hr.dashboard');
             } else if ($user->role_id == 3) {
                 Auth::guard('backend')->login($user);
-                return redirect()->route('backend_team.dashboard');
+                return redirect()->route('backend.dashboard');
             } else if ($user->role_id == 6) {
                 Auth::guard('backgroud')->login($user);
                 return redirect()->route('backgroud.dashboard');

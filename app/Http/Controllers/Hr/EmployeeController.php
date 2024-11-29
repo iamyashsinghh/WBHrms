@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\hr;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentType;
@@ -17,8 +17,8 @@ class EmployeeController extends Controller
     public function list()
     {
         $page_heading = 'Employees';
-        $roles = Role::all();
-        return view('admin.employee.list', compact('page_heading', 'roles'));
+        $roles = Role::where('id', '!=' , 1)->get();
+        return view('hr.employee.list', compact('page_heading', 'roles'));
     }
 
     public function ajax_list(Request $request)
@@ -34,7 +34,7 @@ class EmployeeController extends Controller
             'employees.profile_img',
             'employees.employee_designation',
             'role.name as role_name',
-        )->leftJoin("roles as role", 'employees.role_id', '=', 'role.id');
+        )->leftJoin("roles as role", 'employees.role_id', '=', 'role.id')->where('employees.role_id', '!=', 1);
         if ($role_id) {
             $users->where('employees.role_id', $role_id);
         }
@@ -93,7 +93,7 @@ class EmployeeController extends Controller
         if (!$user) {
             return abort(404);
         }
-        return view('admin.employee.manage', compact('user', 'roles', 'page_heading', 'employees'));
+        return view('hr.employee.manage', compact('user', 'roles', 'page_heading', 'employees'));
     }
 
     public function manage_process(Request $request, $emp_code = 0)
@@ -147,14 +147,14 @@ class EmployeeController extends Controller
             $validatedData['emp_code'] = $prefix . $referenceNumber;
             $validatedData['can_add_device'] = 1;
             Employee::create($validatedData);
-            return redirect()->route('admin.employee.list')->with('success', 'Employee created successfully!');
+            return redirect()->route('hr.employee.list')->with('success', 'Employee created successfully!');
         } else {
             $employee = Employee::where('emp_code', $emp_code)->first();
             if (!$employee) {
                 return abort(404);
             }
             $employee->update($validatedData);
-            return redirect()->route('admin.employee.list')->with('success', 'Employee updated successfully!');
+            return redirect()->route('hr.employee.list')->with('success', 'Employee updated successfully!');
         }
     }
 
@@ -170,6 +170,6 @@ class EmployeeController extends Controller
         $managers = Employee::select('emp_code', 'name')->get();
         $ctc = Salary::where('emp_code', $user->emp_code)->sum('salary');
         $total_ctc = $ctc*12;
-        return view('admin.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc', 'managers'));
+        return view('hr.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc', 'managers'));
     }
 }

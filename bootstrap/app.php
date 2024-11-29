@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'CheckLoginTime' => \App\Http\Middleware\CheckLoginTime::class,
             'checkDevice' => \App\Http\Middleware\checkDevice::class,
             'admin' => \App\Http\Middleware\AdminAuth::class,
+            'hr' => \App\Http\Middleware\HrAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

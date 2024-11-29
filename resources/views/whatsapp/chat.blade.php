@@ -62,14 +62,16 @@
     }
 </style>
 @php
-$guards = ['admin', 'team', 'nonvenue', 'bdm' ];
 $userName = 'Ritu';
-    foreach ($guards as $guard) {
-    if (auth()->guard($guard)->check()) {
-        $userName = auth()->guard($guard)->user()->name;
-        break;
-    }
-}
+
+// $guards = ['admin', 'team', 'nonvenue', 'bdm' ];
+// $userName = 'Ritu';
+//     foreach ($guards as $guard) {
+//     if (auth()->guard($guard)->check()) {
+//         $userName = auth()->guard($guard)->user()->name;
+//         break;
+//     }
+// }
 @endphp
 <div class="modal fade" id="wa_msg" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg">

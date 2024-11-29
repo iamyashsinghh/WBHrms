@@ -22,68 +22,6 @@ Route::get('mail/{emp_code?}/{type?}', function ($emp_code, $type) {
     $emp = Employee::where('emp_code', $emp_code)->first();
     HrMail::to($emp->email)->send(new OfferLetter($emp_code));
 })->name('send.hr.mail');
-// Route::get('mail_view', function () {
-//     $data = [
-//         'candidate_name' => 'Yash Singh',
-//         'position' => 'Software Engineer',
-//         'company_name' => 'Wedding Inc.',
-//         'start_date' => '2024-12-01',
-//         'salary' => '$70,000',
-//         'location' => 'New York',
-//         'acceptance_deadline' => '2024-12-15',
-//         'contact_email' => 'hr@weddinginc.com',
-//     ];
-
-//     $emp_code = 'A-2021';
-//     $salaryData = Salary::where('emp_code', $emp_code)
-//         ->with('salaryType')
-//         ->get();
-//     $salarySummary = [];
-//     foreach ($salaryData as $salary) {
-//         $perMonth = $salary->salary;
-//         $perAnnum = $salary->salary * 12;
-//         $salarySummary[] = [
-//             'name' => $salary->salaryType->name,
-//             'category' => $salary->salaryType->category,
-//             'per_month' => $perMonth,
-//             'per_annum' => $perAnnum,
-//         ];
-//     }
-
-//     $pdf = PDF::loadView('mail.offerletterpdf', compact('data', 'salarySummary'))
-//         ->setPaper('a4', 'portrait');
-
-//     return $pdf->download('OfferLetter.pdf');
-// });
-// Route::get('mail_vie', function () {
-//     $data = [
-//         'candidate_name' => 'Yash Singh',
-//         'position' => 'Software Engineer',
-//         'company_name' => 'Wedding Inc.',
-//         'start_date' => '2024-12-01',
-//         'salary' => '$70,000',
-//         'location' => 'New York',
-//         'acceptance_deadline' => '2024-12-15',
-//         'contact_email' => 'hr@weddinginc.com',
-//     ];
-//     $emp_code = 'A-2021';
-//     $salaryData = Salary::where('emp_code', $emp_code)
-//         ->with('salaryType')
-//         ->get();
-//     $salarySummary = [];
-//     foreach ($salaryData as $salary) {
-//         $perMonth = $salary->salary;
-//         $perAnnum = $salary->salary * 12;
-//         $salarySummary[] = [
-//             'name' => $salary->salaryType->name,
-//             'category' => $salary->salaryType->category,
-//             'per_month' => $perMonth,
-//             'per_annum' => $perAnnum,
-//         ];
-//     }
-//     return view('mail.offerletterpdf', compact('data', 'salarySummary'));
-// });
-
 
 
 Route::middleware('verify_token')->group(function () {
@@ -171,6 +109,91 @@ Route::middleware('verify_token')->group(function () {
             Route::prefix('/env')->name('env.')->group(function () {
                 Route::get('/env-update', [Controllers\Admin\EnvController::class, 'index'])->name('index');
                 Route::post('/env-update', [Controllers\Admin\EnvController::class, 'update'])->name('update');
+            });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | For HR Routes
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('/hr')->middleware('hr')->name('hr.')->group(function () {
+            /*
+            |--------------------------------------------------------------------------
+            | HR Global Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::get('/dashboard', [Controllers\Hr\DashboardController::class, 'index'])->name('dashboard');
+            Route::get('update_profile_image', [Controllers\Hr\EmployeeController::class, 'update_profile_image'])->name('employee.update_profile_image');
+            Route::get('bypass_login/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'bypass_login'])->name('employee.bypass_login');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Employee Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/employee')->name('employee.')->group(function () {
+                Route::get('list', [Controllers\Hr\EmployeeController::class, 'list'])->name('list');
+                Route::get('ajax_list', [Controllers\Hr\EmployeeController::class, 'ajax_list'])->name('ajax_list');
+                Route::get('view/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'view'])->name('view');
+                Route::get('manage/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'manage'])->name('manage');
+                Route::post('manage_process/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'manage_process'])->name('manage_process');
+                Route::get('delete/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'delete'])->name('delete');
+
+                Route::post('updateEmploymentInfo', [Controllers\EmployeeDataController::class, 'updateEmploymentInfo'])->name('updateEmploymentInfo');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Salary Type Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/salary-type')->name('salary-type.')->group(function () {
+                Route::get('list', [Controllers\Hr\SalaryController::class, 'list'])->name('list');
+                Route::get('ajax_list', [Controllers\Hr\SalaryController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Hr\SalaryController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Hr\SalaryController::class, 'destroy'])->name('destroy');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Salary Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/salary')->name('salary.')->group(function () {
+                Route::post('save_all', [Controllers\Hr\SalaryController::class, 'saveSalary'])->name('save_all');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Document Type Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/document-type')->name('document-type.')->group(function () {
+                Route::get('list', [Controllers\Hr\DocumentController::class, 'list'])->name('list');
+                Route::get('ajax_list', [Controllers\Hr\DocumentController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Hr\DocumentController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Hr\DocumentController::class, 'destroy'])->name('destroy');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Document Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/document')->name('document.')->group(function () {
+                Route::post('delete_doc/{id?}', [Controllers\Hr\DocumentController::class, 'destroy_doc'])->name('destroy');
+                Route::post('upload_document', [Controllers\Hr\DocumentController::class, 'uploadDocument'])->name('upload');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr All Emp Attendance Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/attendance-all')->name('attendance.')->group(function () {
+                Route::get('/fetch-attendance', [Controllers\Hr\AttendanceController::class, 'fetchAttendance'])->name('fetch');
             });
         });
     });
