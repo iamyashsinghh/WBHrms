@@ -221,14 +221,14 @@ class AuthController extends Controller
                 Auth::guard('hr')->login($user);
                 return redirect()->route('hr.dashboard');
             } else if ($user->role_id == 3) {
-                Auth::guard('backend_team')->login($user);
+                Auth::guard('backend')->login($user);
                 return redirect()->route('backend_team.dashboard');
             } else if ($user->role_id == 6) {
-                Auth::guard('backgroud_team')->login($user);
-                return redirect()->route('backgroud_team.dashboard');
+                Auth::guard('backgroud')->login($user);
+                return redirect()->route('backgroud.dashboard');
             } else {
-                Auth::guard('feild_team')->login($user);
-                return redirect()->route('feild_team.dashboard');
+                Auth::guard('field')->login($user);
+                return redirect()->route('field.dashboard');
             }
     }
 
@@ -238,12 +238,12 @@ class AuthController extends Controller
             $guard_authenticated = Auth::guard('admin');
         } else if (Auth::guard('hr')->check()) {
             $guard_authenticated = Auth::guard('hr');
-        } else if (Auth::guard('backend_team')->check()) {
-            $guard_authenticated = Auth::guard('backend_team');
-        } else if (Auth::guard('backgroud_team')->check()) {
-            $guard_authenticated = Auth::guard('backgroud_team');
-        } else if(Auth::guard('feild_team')->check()) {
-            $guard_authenticated = Auth::guard('feild_team');
+        } else if (Auth::guard('backend')->check()) {
+            $guard_authenticated = Auth::guard('backend');
+        } else if (Auth::guard('backgroud')->check()) {
+            $guard_authenticated = Auth::guard('backgroud');
+        } else if(Auth::guard('field')->check()) {
+            $guard_authenticated = Auth::guard('field');
         }
 
         $user = $guard_authenticated->user();

@@ -20,12 +20,12 @@ class AuthCheck
             return redirect()->route('admin.dashboard');
         } else if (Auth::guard('hr')->check()) {
             return redirect()->route('hr.dashboard');
-        } else if (Auth::guard('backend_team')->check()) {
-            return redirect()->route('backend_team.dashboard');
-        } else if (Auth::guard('backgroud_team')->check()) {
-            return redirect()->route('backgroud_team.dashboard');
-        } else if (Auth::guard('feild_team')->check()) {
-            return redirect()->route('feild_team.dashboard');
+        } else if (Auth::guard('backend')->check()) {
+            return redirect()->route('backend.dashboard');
+        } else if (Auth::guard('backgroud')->check()) {
+            return redirect()->route('backgroud.dashboard');
+        } else if (Auth::guard('field')->check()) {
+            return redirect()->route('field.dashboard');
         }
         return $next($request);
     }

@@ -43,15 +43,15 @@ return [
             'driver' => 'session',
             'provider' => 'employees',
         ],
-        'backgroud_team' => [
+        'backgroud' => [
             'driver' => 'session',
             'provider' => 'employees',
         ],
-        'feild_team' => [
+        'field' => [
             'driver' => 'session',
             'provider' => 'employees',
         ],
-        'backend_team' => [
+        'backend' => [
             'driver' => 'session',
             'provider' => 'employees',
         ],

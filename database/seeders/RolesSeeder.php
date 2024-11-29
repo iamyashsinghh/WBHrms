@@ -27,19 +27,19 @@ class RolesSeeder extends Seeder
                 'is_all_time_login' => 0,
             ],
             [
-                'name' => 'backend_team',
+                'name' => 'backend',
                 'login_start_time' => '10:00:00',
                 'login_end_time' => '19:00:00',
                 'is_all_time_login' => 0,
             ],
             [
-                'name' => 'backgroud_team',
+                'name' => 'backgroud',
                 'login_start_time' => '10:00:00',
                 'login_end_time' => '19:00:00',
                 'is_all_time_login' => 0,
             ],
             [
-                'name' => 'feild_team',
+                'name' => 'field',
                 'login_start_time' => '10:00:00',
                 'login_end_time' => '19:00:00',
                 'is_all_time_login' => 0,

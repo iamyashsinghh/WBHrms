@@ -10,7 +10,7 @@
         <div class="container-fluid">
             <div class="mb-2 row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">ENV (Do Not Change Any Feilds)</h1>
+                    <h1 class="m-0">ENV (Do Not Change Any Fields)</h1>
                 </div>
             </div>
             {{-- <div class="my-4 button-group">
