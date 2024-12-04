@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'AuthCheck' => \App\Http\Middleware\AuthCheck::class,
             'verify_token' => \App\Http\Middleware\VerifyCsrfToken::class,
             'CheckLoginTime' => \App\Http\Middleware\CheckLoginTime::class,
-            'checkDevice' => \App\Http\Middleware\checkDevice::class,
+            'CheckDevice' => \App\Http\Middleware\CheckDevice::class,
             'admin' => \App\Http\Middleware\AdminAuth::class,
             'hr' => \App\Http\Middleware\HrAuth::class,
             'api.auth' => \App\Http\Middleware\ApiPasswordMiddleware::class,

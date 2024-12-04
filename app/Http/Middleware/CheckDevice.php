@@ -30,7 +30,7 @@ class CheckDevice
             }
         }
         if (!$user) {
-            return $next($request); 
+            return $next($request);
         }
         $device_id = Cookie::get("device_id_{$activeGuard}-{$user->phone}");
         $device = Device::where('device_id', $device_id)
