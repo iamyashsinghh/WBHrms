@@ -25,7 +25,7 @@ Route::get('mail/{emp_code?}/{type?}', function ($emp_code, $type) {
 
 
 Route::middleware('verify_token')->group(function () {
-    Route::middleware(['CheckLoginTime', 'checkDevice'])->group(function () {
+    Route::middleware(['CheckLoginTime', 'CheckDevice'])->group(function () {
         /*
         |--------------------------------------------------------------------------
         | For Admin Routes
