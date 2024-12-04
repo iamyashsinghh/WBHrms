@@ -7,6 +7,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        apiPrefix:'hrms',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -18,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'checkDevice' => \App\Http\Middleware\checkDevice::class,
             'admin' => \App\Http\Middleware\AdminAuth::class,
             'hr' => \App\Http\Middleware\HrAuth::class,
+            'api.auth' => \App\Http\Middleware\ApiPasswordMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
