@@ -20,4 +20,4 @@ Route::group(['middleware' => 'api.auth'], function () {
     });
 });
 // local testing
-Route::get('attendance/{month}/{year}', [Api\AttendanceController::class, 'fetchUserAttendance']);
+// Route::get('attendance/{month}/{year}', [Api\AttendanceController::class, 'fetchUserAttendance']);
