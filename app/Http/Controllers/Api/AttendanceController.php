@@ -18,13 +18,9 @@ class AttendanceController extends Controller
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
 
-        if ($user->emp_type === 'Fulltime') {
-            $startDate = Carbon::create($year, $month, 15)->subMonth();
-            $endDate = Carbon::create($year, $month, 14);
-        } else {
-            $startDate = Carbon::create($year, $month, 1);
-            $endDate = Carbon::create($year, $month)->endOfMonth();
-        }
+        
+        $startDate = Carbon::create($year, $month, 1);
+        $endDate = Carbon::create($year, $month)->endOfMonth();
 
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
