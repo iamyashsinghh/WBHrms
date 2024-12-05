@@ -16,8 +16,8 @@ class AdminAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('admin')->check()) { 
-            return redirect()->route('login');
+        if (!Auth::guard('admin')->check()) {
+            return redirect()->route('login'); 
         }
         return $next($request);
     }
