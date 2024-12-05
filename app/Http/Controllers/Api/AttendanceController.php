@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -14,10 +15,9 @@ class AttendanceController extends Controller
         $month = $request->input('month') ?? now()->month;
         $year = $request->input('year') ?? now()->year;
 
-        // Get the authenticated user
-        $user = $request->user();
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
 
-        // Determine start and end dates based on user type (Fulltime or others)
         if ($user->emp_type === 'Fulltime') {
             $startDate = Carbon::create($year, $month, 15)->subMonth();
             $endDate = Carbon::create($year, $month, 14);
@@ -26,7 +26,6 @@ class AttendanceController extends Controller
             $endDate = Carbon::create($year, $month)->endOfMonth();
         }
 
-        // Fetch attendance records for the user within the defined range
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get()
@@ -38,41 +37,52 @@ class AttendanceController extends Controller
         $halfDays = 0;
         $unmarkedDays = 0;
 
-        // Generate attendance details day by day
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $currentDate = $date->toDateString();
+            $dayOfMonth = (int) $date->format('d');
+            $dayOfWeek = $date->format('l');
             $attendance = $attendances->get($currentDate);
 
             if ($attendance) {
                 switch ($attendance->status) {
                     case 'present':
-                        $detailedAttendance[$currentDate] = [
+                        $detailedAttendance[] = [
+                            'date' => $dayOfMonth,
+                            'day' => $dayOfWeek,
                             'status' => 'P',
                             'working_hours' => $attendance->working_hours ?? '--',
                         ];
                         $presentDays++;
                         break;
                     case 'halfday':
-                        $detailedAttendance[$currentDate] = [
+                        $detailedAttendance[] = [
+                            'date' => $dayOfMonth,
+                            'day' => $dayOfWeek,
                             'status' => 'H',
                             'working_hours' => $attendance->working_hours ?? '--',
                         ];
                         $halfDays++;
                         break;
                     case 'weekend':
-                        $detailedAttendance[$currentDate] = [
+                        $detailedAttendance[] = [
+                            'date' => $dayOfMonth,
+                            'day' => $dayOfWeek,
                             'status' => 'WO',
                             'working_hours' => '--',
                         ];
                         break;
                     case 'holiday':
-                        $detailedAttendance[$currentDate] = [
+                        $detailedAttendance[] = [
+                            'date' => $dayOfMonth,
+                            'day' => $dayOfWeek,
                             'status' => 'HO',
                             'working_hours' => '--',
                         ];
                         break;
                     default:
-                        $detailedAttendance[$currentDate] = [
+                        $detailedAttendance[] = [
+                            'date' => $dayOfMonth,
+                            'day' => $dayOfWeek,
                             'status' => 'A',
                             'working_hours' => '--',
                         ];
@@ -80,13 +90,16 @@ class AttendanceController extends Controller
                         break;
                 }
             } else {
-                $detailedAttendance[$currentDate] = [
+                $detailedAttendance[] = [
+                    'date' => $dayOfMonth,
+                    'day' => $dayOfWeek,
                     'status' => '--',
                     'working_hours' => '--',
                 ];
                 $unmarkedDays++;
             }
         }
+
 
         $totalAttendance = $presentDays + ($halfDays * 0.5);
 
