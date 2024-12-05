@@ -17,7 +17,6 @@ class AttendanceController extends Controller
 
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
-
         
         $startDate = Carbon::create($year, $month, 1);
         $endDate = Carbon::create($year, $month)->endOfMonth();
