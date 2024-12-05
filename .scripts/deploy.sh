@@ -8,7 +8,7 @@ echo "New changes copied to server !"
 
 echo "Installing Dependencies..."
 
-composer8.2 install
+php8.2 /usr/bin/composer install
 
 echo "Some Artisan Commands..."
 
