@@ -16,4 +16,6 @@ php8.2 artisan migrate
 
 php8.2 artisan storage:link
 
+php8.2 artisan optimize:clear
+
 echo "Deployment Finished!"
