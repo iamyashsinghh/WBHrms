@@ -10,14 +10,12 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-    public function fetchUserAttendance(Request $request)
+    public function fetchUserAttendance(Request $request, $month, $year)
     {
-        $month = $request->input('month') ?? now()->month;
-        $year = $request->input('year') ?? now()->year;
-
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
-        
+        // $user = Employee::where('emp_code', 'A-2021')->first();
+
         $startDate = Carbon::create($year, $month, 1);
         $endDate = Carbon::create($year, $month)->endOfMonth();
 
@@ -32,9 +30,10 @@ class AttendanceController extends Controller
         $halfDays = 0;
         $unmarkedDays = 0;
 
-        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+        // Loop through each day in the current month correctly
+        for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
             $currentDate = $date->toDateString();
-            $dayOfMonth = (int) $date->format('d');
+            $dayOfMonth = $date->day;
             $dayOfWeek = $date->format('l');
             $attendance = $attendances->get($currentDate);
 
@@ -43,6 +42,7 @@ class AttendanceController extends Controller
                     case 'present':
                         $detailedAttendance[] = [
                             'date' => $dayOfMonth,
+                            'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'P',
                             'working_hours' => $attendance->working_hours ?? '--',
@@ -52,6 +52,7 @@ class AttendanceController extends Controller
                     case 'halfday':
                         $detailedAttendance[] = [
                             'date' => $dayOfMonth,
+                            'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'H',
                             'working_hours' => $attendance->working_hours ?? '--',
@@ -62,6 +63,7 @@ class AttendanceController extends Controller
                         $detailedAttendance[] = [
                             'date' => $dayOfMonth,
                             'day' => $dayOfWeek,
+                            'fdate' => $currentDate,
                             'status' => 'WO',
                             'working_hours' => '--',
                         ];
@@ -70,6 +72,7 @@ class AttendanceController extends Controller
                         $detailedAttendance[] = [
                             'date' => $dayOfMonth,
                             'day' => $dayOfWeek,
+                            'fdate' => $currentDate,
                             'status' => 'HO',
                             'working_hours' => '--',
                         ];
@@ -77,6 +80,7 @@ class AttendanceController extends Controller
                     default:
                         $detailedAttendance[] = [
                             'date' => $dayOfMonth,
+                            'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'A',
                             'working_hours' => '--',
@@ -87,6 +91,7 @@ class AttendanceController extends Controller
             } else {
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
+                    'fdate' => $currentDate,
                     'day' => $dayOfWeek,
                     'status' => '--',
                     'working_hours' => '--',
@@ -94,7 +99,6 @@ class AttendanceController extends Controller
                 $unmarkedDays++;
             }
         }
-
 
         $totalAttendance = $presentDays + ($halfDays * 0.5);
 
