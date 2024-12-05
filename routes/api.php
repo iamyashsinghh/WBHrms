@@ -16,6 +16,6 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::get('getuser', function(Request $request){
             return $request->user();
         });
-        Route::get('attendance/{month}/{year}', [Api\AttendanceController::class, 'fetchAttendance']);
+        Route::get('attendance/{month}/{year}', [Api\AttendanceController::class, 'fetchUserAttendance']);
     });
 });
