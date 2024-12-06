@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -117,6 +118,7 @@ class AttendanceController extends Controller
 
     public function mark_attendance(Request $request)
     {
+        Log::info($request);
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
         $today = Carbon::now()->toDateString();
