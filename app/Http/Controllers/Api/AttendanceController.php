@@ -12,79 +12,81 @@ use Illuminate\Support\Facades\Log;
 class AttendanceController extends Controller
 {
     public function fetchUserAttendance(Request $request, $month, $year)
-{
-    $u = $request->user();
-    $user = Employee::where('emp_code', $u->emp_code)->first();
+    {
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
 
-    $startDate = Carbon::create($year, $month, 1);
-    $endDate = Carbon::create($year, $month)->endOfMonth();
+        $startDate = Carbon::create($year, $month, 1);
+        $endDate = Carbon::create($year, $month)->endOfMonth();
 
-    $attendances = Attendance::where('emp_code', $user->emp_code)
-        ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
-        ->get()
-        ->keyBy('date');
+        $attendances = Attendance::where('emp_code', $user->emp_code)
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->keyBy('date');
 
-    $detailedAttendance = [];
-    $presentDays = 0;
-    $absentDays = 0;
-    $halfDays = 0;
-    $unmarkedDays = 0;
+        $detailedAttendance = [];
+        $presentDays = 0;
+        $absentDays = 0;
+        $halfDays = 0;
+        $unmarkedDays = 0;
 
-    for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
-        $currentDate = $date->toDateString();
-        $dayOfMonth = $date->day;
-        $dayOfWeek = $date->format('l');
-        $attendance = $attendances->get($currentDate);
+        for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
+            $currentDate = $date->toDateString();
+            $dayOfMonth = $date->day;
+            $dayOfWeek = $date->format('l');
+            $attendance = $attendances->get($currentDate);
 
-        if ($attendance) {
-            switch ($attendance->status) {
-                case 'present':
-                    $presentDays++;
-                    break;
-                case 'halfday':
-                    $halfDays++;
-                    break;
-                case 'absent':
-                    $absentDays++;
-                    break;
+            if ($attendance) {
+                switch ($attendance->status) {
+                    case 'present':
+                        $presentDays++;
+                        break;
+                    case 'halfday':
+                        $halfDays++;
+                        break;
+                    case 'absent':
+                        $absentDays++;
+                        break;
+                }
+                $detailedAttendance[] = [
+                    'date' => $dayOfMonth,
+                    'fdate' => $currentDate,
+                    'day' => $dayOfWeek,
+                    'status' => $attendance->status,
+                    'punch_in_time' => $attendance->punch_in_time,
+                    'punch_out_time' => $attendance->punch_out_time,
+                    'working_hours' => $attendance->working_hours ?? '--',
+                ];
+            } else {
+                $detailedAttendance[] = [
+                    'date' => $dayOfMonth,
+                    'fdate' => $currentDate,
+                    'day' => $dayOfWeek,
+                    'status' => 'unmarked',
+                    'punch_in_time' => null,
+                    'punch_out_time' => null,
+                    'working_hours' => '--',
+                ];
+                $unmarkedDays++;
             }
-            $detailedAttendance[] = [
-                'date' => $dayOfMonth,
-                'fdate' => $currentDate,
-                'day' => $dayOfWeek,
-                'status' => $attendance->status,
-                'punch_in_time' => $attendance->punch_in_time,
-                'punch_out_time' => $attendance->punch_out_time,
-                'working_hours' => $attendance->working_hours ?? '--',
-            ];
-        } else {
-            $detailedAttendance[] = [
-                'date' => $dayOfMonth,
-                'fdate' => $currentDate,
-                'day' => $dayOfWeek,
-                'status' => 'unmarked',
-                'punch_in_time' => null,
-                'punch_out_time' => null,
-                'working_hours' => '--',
-            ];
-            $unmarkedDays++;
         }
+
+        $totalAttendance = $presentDays + ($halfDays * 0.5);
+        $todaysAttendance = Attendance::where('emp_code', $user->emp_code)->where('date', Carbon::now()->toDateString())->first();
+
+        return response()->json([
+            'user' => $user,
+            'present_days' => $presentDays,
+            'absent_days' => $absentDays,
+            'half_days' => $halfDays,
+            'unmarked_days' => $unmarkedDays,
+            'total_attendance' => $totalAttendance,
+            'detailed_attendance' => $detailedAttendance,
+            'month' => $month,
+            'year' => $year,
+            'today' => $todaysAttendance,
+        ]);
     }
-
-    $totalAttendance = $presentDays + ($halfDays * 0.5);
-
-    return response()->json([
-        'user' => $user,
-        'present_days' => $presentDays,
-        'absent_days' => $absentDays,
-        'half_days' => $halfDays,
-        'unmarked_days' => $unmarkedDays,
-        'total_attendance' => $totalAttendance,
-        'detailed_attendance' => $detailedAttendance,
-        'month' => $month,
-        'year' => $year,
-    ]);
-}
 
 
     public function mark_attendance(Request $request)
