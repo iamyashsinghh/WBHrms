@@ -46,6 +46,8 @@ class AttendanceController extends Controller
                             'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'P',
+                            'punch_in_time' => $attendance->punch_in_time,
+                            'punch_out_time' => $attendance->punch_out_time,
                             'working_hours' => $attendance->working_hours ?? '--',
                         ];
                         $presentDays++;
@@ -56,6 +58,8 @@ class AttendanceController extends Controller
                             'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'H',
+                            'punch_in_time' => $attendance->punch_in_time,
+                            'punch_out_time' => $attendance->punch_out_time,
                             'working_hours' => $attendance->working_hours ?? '--',
                         ];
                         $halfDays++;
@@ -66,6 +70,8 @@ class AttendanceController extends Controller
                             'day' => $dayOfWeek,
                             'fdate' => $currentDate,
                             'status' => 'WO',
+                            'punch_in_time' => $attendance->punch_in_time,
+                            'punch_out_time' => $attendance->punch_out_time,
                             'working_hours' => '--',
                         ];
                         break;
@@ -75,6 +81,8 @@ class AttendanceController extends Controller
                             'day' => $dayOfWeek,
                             'fdate' => $currentDate,
                             'status' => 'HO',
+                            'punch_in_time' => $attendance->punch_in_time,
+                            'punch_out_time' => $attendance->punch_out_time,
                             'working_hours' => '--',
                         ];
                         break;
@@ -84,6 +92,8 @@ class AttendanceController extends Controller
                             'fdate' => $currentDate,
                             'day' => $dayOfWeek,
                             'status' => 'A',
+                            'punch_in_time' => $attendance->punch_in_time,
+                            'punch_out_time' => $attendance->punch_out_time,
                             'working_hours' => '--',
                         ];
                         $absentDays++;
@@ -95,6 +105,8 @@ class AttendanceController extends Controller
                     'fdate' => $currentDate,
                     'day' => $dayOfWeek,
                     'status' => '--',
+                    'punch_in_time' => $attendance->punch_in_time,
+                    'punch_out_time' => $attendance->punch_out_time,
                     'working_hours' => '--',
                 ];
                 $unmarkedDays++;
