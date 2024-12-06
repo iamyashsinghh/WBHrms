@@ -17,8 +17,8 @@ return new class extends Migration
             $table->dateTime('punch_in_time')->nullable();
             $table->dateTime('punch_out_time')->nullable();
             $table->date('date');
-            $table->string('location')->nullable();
             $table->string('status')->nullable()->default(null);
+            $table->string('desc')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
