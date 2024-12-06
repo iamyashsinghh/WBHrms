@@ -146,9 +146,9 @@ class AttendanceController extends Controller
             $attendance->punch_in_coordinates = $request->input('coordinates');
             $attendance->status = 'present';
 
-            if ($request->hasFile('punch_in_img')) {
-                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $request->file('punch_in_img')->getClientOriginalExtension();
-                $imagePath = $request->file('punch_in_img')->storeAs(
+            if ($request->hasFile('image')) {
+                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $request->file('image')->getClientOriginalExtension();
+                $imagePath = $request->file('image')->storeAs(
                     "attendance_images/{$user->emp_code}",
                     $fileName,
                     'public'
@@ -171,9 +171,9 @@ class AttendanceController extends Controller
             $attendance->punch_out_address = $request->input('address');
             $attendance->punch_out_coordinates = $request->input('coordinates');
 
-            if ($request->hasFile('punch_out_img')) {
-                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $request->file('punch_out_img')->getClientOriginalExtension();
-                $imagePath = $request->file('punch_out_img')->storeAs(
+            if ($request->hasFile('image')) {
+                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $request->file('image')->getClientOriginalExtension();
+                $imagePath = $request->file('image')->storeAs(
                     "attendance_images/{$user->emp_code}",
                     $fileName,
                     'public'
