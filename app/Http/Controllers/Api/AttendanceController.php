@@ -114,4 +114,75 @@ class AttendanceController extends Controller
             'year' => $year,
         ]);
     }
+
+    public function mark_attendance(Request $request)
+    {
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
+        $today = Carbon::now()->toDateString();
+        $attendance = Attendance::where('emp_code', $user->emp_code)
+            ->where('date', $today)
+            ->first();
+
+        $type = $request->input('type');
+        $timestamp = $request->input('timestamp');
+        $date = Carbon::parse($timestamp)->toDateString();
+        $time = Carbon::parse($timestamp)->format('H:i:s');
+
+        if ($type == 'Punch In') {
+            if ($attendance && $attendance->punch_in_time) {
+                return response()->json(['message' => 'Already punched in for today'], 400);
+            }
+
+            if (!$attendance) {
+                $attendance = new Attendance();
+                $attendance->emp_code = $user->emp_code;
+                $attendance->date = $today;
+            }
+            $attendance->punch_in_time = $time;
+            $attendance->punch_in_address = $request->input('address');
+            $attendance->punch_in_coordinates = $request->input('coordinates');
+            $attendance->status = 'present';
+
+            if ($request->hasFile('punch_in_img')) {
+                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $request->file('punch_in_img')->getClientOriginalExtension();
+                $imagePath = $request->file('punch_in_img')->storeAs(
+                    "attendance_images/{$user->emp_code}",
+                    $fileName,
+                    'public'
+                );
+                $attendance->punch_in_image = $imagePath;
+            }
+            $attendance->save();
+
+            return response()->json(['message' => 'Punch In successful']);
+        }
+
+        if ($type == 'Punch Out') {
+            if ($attendance && $attendance->punch_out_time) {
+                return response()->json(['message' => 'Already punched out for today'], 400);
+            }
+            if (!$attendance) {
+                return response()->json(['message' => 'No Punch In record found for today'], 400);
+            }
+            $attendance->punch_out_time = $time;
+            $attendance->punch_out_address = $request->input('address');
+            $attendance->punch_out_coordinates = $request->input('coordinates');
+
+            if ($request->hasFile('punch_out_img')) {
+                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $request->file('punch_out_img')->getClientOriginalExtension();
+                $imagePath = $request->file('punch_out_img')->storeAs(
+                    "attendance_images/{$user->emp_code}",
+                    $fileName,
+                    'public'
+                );
+                $attendance->punch_out_image = $imagePath;
+            }
+            $attendance->save();
+
+            return response()->json(['message' => 'Punch Out successful']);
+        }
+
+        return response()->json(['message' => 'Invalid punch type'], 400);
+    }
 }
