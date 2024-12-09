@@ -119,10 +119,6 @@ class AttendanceController extends Controller
             $attendance->punch_in_coordinates = $request->input('coordinates');
             $attendance->status = 'present';
 
-            Log::error('File: ' . $request->hasFile('image'));
-            Log::error('File: ' . $request->hasfile('image'));
-
-
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 Log::error('File upload error: ' . $file);
@@ -131,15 +127,13 @@ class AttendanceController extends Controller
 
                     return response()->json(['message' => $file->getErrorMessage()], 400);
                 }
-
-                // If the file is valid, proceed with storing it
                 $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $file->getClientOriginalExtension();
                 $imagePath = $file->storeAs(
                     "attendance_images/{$user->emp_code}",
                     $fileName,
                     'public'
                 );
-                $attendance->punch_in_image = $imagePath;
+                $attendance->punch_in_img = $imagePath;
             }
 
             $attendance->save();
@@ -159,13 +153,20 @@ class AttendanceController extends Controller
             $attendance->punch_out_coordinates = $request->input('coordinates');
 
             if ($request->hasFile('image')) {
-                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $request->file('image')->getClientOriginalExtension();
-                $imagePath = $request->file('image')->storeAs(
+                $file = $request->file('image');
+                Log::error('File upload error: ' . $file);
+                if (!$file->isValid()) {
+                    Log::error('File upload error: ' . $file->getErrorMessage());
+
+                    return response()->json(['message' => $file->getErrorMessage()], 400);
+                }
+                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $file->getClientOriginalExtension();
+                $imagePath = $file->storeAs(
                     "attendance_images/{$user->emp_code}",
                     $fileName,
                     'public'
                 );
-                $attendance->punch_out_image = $imagePath;
+                $attendance->punch_out_img = $imagePath;
             }
             $attendance->save();
 
