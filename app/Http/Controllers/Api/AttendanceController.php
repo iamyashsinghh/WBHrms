@@ -179,8 +179,8 @@ class AttendanceController extends Controller
 
     public function fetchDayAttendanceLog(Request $request, $day)
     {
-        $u = $request->user();
-        $user = Employee::where('emp_code', $u->emp_code)->first();
+        // $u = $request->user();
+        // $user = Employee::where('emp_code', $u->emp_code)->first();
         $user = Employee::where('emp_code', 'A-2021')->first();
 
        return $date = Carbon::parse($day);
