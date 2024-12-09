@@ -176,24 +176,29 @@ class AttendanceController extends Controller
         return response()->json(['message' => 'Invalid punch type'], 400);
     }
 
+
     public function fetchDayAttendanceLog(Request $request, $day)
     {
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
+        $user = Employee::where('emp_code', 'A-2021')->first();
 
         $date = Carbon::parse($day);
 
-        $attendance = Attendance::where('emp_code', $user->emp_code)
+         $attendance = Attendance::where('emp_code', $user->emp_code)
             ->where('date', $date)
             ->first();
 
+        $log = [];
+
         if (!$attendance) {
             return response()->json([
-                'message' => 'No attendance record found for this day'
-            ], 404);
+                'date' => $date->toDateString(),
+                'dayOfWeek' => $date->format('l'),
+                'status' => 'unmarked',
+                'log' => [],
+            ]);
         }
-
-        $log = [];
 
         if ($attendance->punch_in_time) {
             $log[] = [

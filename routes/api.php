@@ -18,6 +18,10 @@ Route::group(['middleware' => 'api.auth'], function () {
         });
         Route::get('attendance/{month}/{year}', [Api\AttendanceController::class, 'fetchUserAttendance']);
         Route::post('attendance/mark', [Api\AttendanceController::class, 'mark_attendance']);
-        Route::get('/attendance/log/{day}', [Api\AttendanceController::class, 'fetchDayAttendanceLog']);
+        Route::get('/get-attendance/{day?}', [Api\AttendanceController::class, 'fetchDayAttendanceLog']);
     });
+});
+
+Route::get('yash', function(){
+    return 'hello';
 });
