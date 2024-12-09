@@ -119,15 +119,16 @@ class AttendanceController extends Controller
             $attendance->punch_in_coordinates = $request->input('coordinates');
             $attendance->status = 'present';
 
+            Log::error('File: ' . $request->hasFile('image'));
+            Log::error('File: ' . $request->hasfile('image'));
+
+
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-
-                // Check if the file is valid
+                Log::error('File upload error: ' . $file);
                 if (!$file->isValid()) {
-                    // Log the error message
                     Log::error('File upload error: ' . $file->getErrorMessage());
 
-                    // Optionally return a response to the client
                     return response()->json(['message' => $file->getErrorMessage()], 400);
                 }
 
