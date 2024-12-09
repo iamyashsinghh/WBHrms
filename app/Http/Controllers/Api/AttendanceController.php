@@ -49,7 +49,7 @@ class AttendanceController extends Controller
                         break;
                 }
                 $detailedAttendance[] = [
-                    'date' => $dayOfMonth,
+                    'id' => $attendance->id,
                     'fdate' => $currentDate,
                     'day' => $dayOfWeek,
                     'status' => $attendance->status,
@@ -59,6 +59,7 @@ class AttendanceController extends Controller
                 ];
             } else {
                 $detailedAttendance[] = [
+                    'id' => $attendance->id,
                     'date' => $dayOfMonth,
                     'fdate' => $currentDate,
                     'day' => $dayOfWeek,
