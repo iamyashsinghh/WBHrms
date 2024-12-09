@@ -225,8 +225,8 @@ class AttendanceController extends Controller
         }
 
         return response()->json([
-            'date' => $date,
-            'dayOfWeek' => Carbon::parse($date)->format('l'),
+            'date' => $date->toDateString(),
+            'dayOfWeek' => Carbon::parse($date->toDateString())->format('l'),
             'log' => $log,
         ]);
     }
