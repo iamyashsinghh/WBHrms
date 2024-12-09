@@ -49,7 +49,8 @@ class AttendanceController extends Controller
                         break;
                 }
                 $detailedAttendance[] = [
-                    'fdate' => $currentDate,
+                    'date' => $dayOfMonth,
+                    'todaydate' => $currentDate,
                     'day' => $dayOfWeek,
                     'status' => $attendance->status,
                     'punch_in_time' => $attendance->punch_in_time,
@@ -59,7 +60,7 @@ class AttendanceController extends Controller
             } else {
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
-                    'fdate' => $currentDate,
+                    'todaydate' => $currentDate,
                     'day' => $dayOfWeek,
                     'status' => 'unmarked',
                     'punch_in_time' => null,
