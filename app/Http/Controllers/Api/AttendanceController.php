@@ -181,7 +181,7 @@ class AttendanceController extends Controller
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
 
-        $date = Carbon::parse($day)->toDateString();
+        $date = Carbon::parse($day);
 
         $attendance = Attendance::where('emp_code', $user->emp_code)
             ->where('date', $date)
