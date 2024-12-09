@@ -120,14 +120,27 @@ class AttendanceController extends Controller
             $attendance->status = 'present';
 
             if ($request->hasFile('image')) {
-                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $request->file('image')->getClientOriginalExtension();
-                $imagePath = $request->file('image')->storeAs(
+                $file = $request->file('image');
+
+                // Check if the file is valid
+                if (!$file->isValid()) {
+                    // Log the error message
+                    Log::error('File upload error: ' . $file->getErrorMessage());
+
+                    // Optionally return a response to the client
+                    return response()->json(['message' => $file->getErrorMessage()], 400);
+                }
+
+                // If the file is valid, proceed with storing it
+                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $file->getClientOriginalExtension();
+                $imagePath = $file->storeAs(
                     "attendance_images/{$user->emp_code}",
                     $fileName,
                     'public'
                 );
                 $attendance->punch_in_image = $imagePath;
             }
+
             $attendance->save();
 
             return response()->json(['message' => 'Punch In successful']);
