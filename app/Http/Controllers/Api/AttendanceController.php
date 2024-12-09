@@ -168,6 +168,21 @@ class AttendanceController extends Controller
                 );
                 $attendance->punch_out_img = $imagePath;
             }
+            // Calculate working hours
+            // Combine the attendance date and the punch times to form datetime strings
+            $punchInDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_in_time);
+            $punchOutDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_out_time);
+
+            // Calculate difference in seconds
+            $diffInSeconds = $punchInDateTime->diffInSeconds($punchOutDateTime);
+
+            // Convert seconds to H:i:s format
+            $hours = floor($diffInSeconds / 3600);
+            $minutes = floor(($diffInSeconds % 3600) / 60);
+            $seconds = $diffInSeconds % 60;
+            $workingHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+            $attendance->working_hours = $workingHours;
             $attendance->save();
 
             return response()->json(['message' => 'Punch Out successful']);
@@ -179,13 +194,12 @@ class AttendanceController extends Controller
 
     public function fetchDayAttendanceLog(Request $request, $day)
     {
-        // $u = $request->user();
-        // $user = Employee::where('emp_code', $u->emp_code)->first();
-        $user = Employee::where('emp_code', 'A-2021')->first();
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
 
         $date = Carbon::parse($day);
 
-         $attendance = Attendance::where('emp_code', $user->emp_code)
+        $attendance = Attendance::where('emp_code', $user->emp_code)
             ->where('date', $date)
             ->first();
 
