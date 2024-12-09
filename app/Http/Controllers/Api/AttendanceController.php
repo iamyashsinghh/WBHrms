@@ -175,4 +175,54 @@ class AttendanceController extends Controller
 
         return response()->json(['message' => 'Invalid punch type'], 400);
     }
+
+    public function fetchDayAttendanceLog(Request $request, $day)
+    {
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
+
+        $date = Carbon::parse($day)->toDateString();
+
+        $attendance = Attendance::where('emp_code', $user->emp_code)
+            ->where('date', $date)
+            ->first();
+
+        if (!$attendance) {
+            return response()->json([
+                'message' => 'No attendance record found for this day'
+            ], 404);
+        }
+
+        $log = [];
+
+        if ($attendance->punch_in_time) {
+            $log[] = [
+                'action' => 'Punched In',
+                'time' => $attendance->punch_in_time,
+                'address' => $attendance->punch_in_address,
+                'coordinates' => $attendance->punch_in_coordinates,
+                'image' => $attendance->punch_in_img
+                    ? asset('storage/' . $attendance->punch_in_img)
+                    : null,
+            ];
+        }
+
+        if ($attendance->punch_out_time) {
+            $log[] = [
+                'action' => 'Punched Out',
+                'time' => $attendance->punch_out_time,
+                'address' => $attendance->punch_out_address,
+                'coordinates' => $attendance->punch_out_coordinates,
+                'image' => $attendance->punch_out_img
+                    ? asset('storage/' . $attendance->punch_out_img)
+                    : null,
+            ];
+        }
+
+        return response()->json([
+            'date' => $date,
+            'dayOfWeek' => Carbon::parse($date)->format('l'),
+            'log' => $log,
+        ]);
+    }
 }
