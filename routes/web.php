@@ -59,6 +59,20 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | Admin Roles Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/role')->name('role.')->group(function () {
+                Route::get('/roles', [Controllers\Admin\RoleController::class, 'list'])->name('list');
+                Route::post('/roles/update-punch-time', [Controllers\Admin\RoleController::class, 'updatePunchTime'])->name('updatePunchTime');
+                Route::post('/roles/update-login-time', [Controllers\Admin\RoleController::class, 'updateLoginTime'])->name('updateLoginTime');
+                Route::post('/roles/update-grace-time', [Controllers\Admin\RoleController::class, 'updateGraceTime'])->name('updateGraceTime');
+                Route::post('/roles/update-lating-time', [Controllers\Admin\RoleController::class, 'updateLatingTime'])->name('updateLatingTime');
+                Route::get('/roles/update-is-all-time-login/{role_id?}/{value?}', [Controllers\Admin\RoleController::class, 'updateIsAllTimeLogin'])->name('update.isAllTimeLogin');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
             | Admin Salary Type Routes
             |--------------------------------------------------------------------------
             */
