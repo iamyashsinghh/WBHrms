@@ -97,12 +97,18 @@ class AttendanceController extends Controller
         $role = Role::find($employee->role_id);
         $today = Carbon::now()->toDateString();
         $attendance = Attendance::where('emp_code', $employee->emp_code)
-            ->where('date', $today)
-            ->first();
+                                ->where('date', $today)
+                                ->first();
         $type = $request->input('type');
         $timestamp = $request->input('timestamp');
-        $date = Carbon::parse($timestamp)->toDateString();
-        $time = Carbon::parse($timestamp)->format('H:i:s');
+
+        try {
+            $date = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->toDateString();
+            $time = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->format('H:i:s');
+        } catch (\Exception $e) {
+            Log::error("Timestamp parsing error: " . $e->getMessage());
+            return response()->json(['message' => 'Invalid timestamp format'], 400);
+        }
 
         if ($type === 'Punch In') {
             if ($attendance && $attendance->punch_in_time) {
