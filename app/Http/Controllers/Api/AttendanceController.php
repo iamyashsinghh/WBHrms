@@ -130,7 +130,7 @@ class AttendanceController extends Controller
                 } else {
                     if ($user->latings_left > 0) {
                         if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($role->grace_time + $role->lating_time))) {
-                            $user->latings_left--;
+                            $user->decrement('latings_left');
                             $attendance->status = 'present';
                             $user->save();
                         } else {
