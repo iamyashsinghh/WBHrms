@@ -129,7 +129,7 @@ class AttendanceController extends Controller
                     if ($user->latings_left > 0) {
                         if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($role->grace_time + $role->lating_time))) {
                             $user->latings_left--;
-                            $attendance->status = 'present';
+                            $user->decrement('latings_left');
                             $user->save();
                         } else {
                             $attendance->status = 'halfday';
@@ -141,7 +141,7 @@ class AttendanceController extends Controller
             } else {
                 $attendance->status = 'present';
             }
-            
+
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 Log::error('File upload error: ' . $file);
