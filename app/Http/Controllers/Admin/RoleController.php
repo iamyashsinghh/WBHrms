@@ -21,7 +21,6 @@ class RoleController extends Controller
 
         if ($request->type == 'punchin') {
             $users = Employee::where('role_id', $role->id)
-            ->whereRaw("DATE_FORMAT(puch_in_time, '%H:%i') = DATE_FORMAT(?, '%H:%i')", [$role->puch_in_time])
             ->get();
             $role->puch_in_time = $request->value;
             foreach ($users as $user){
@@ -30,7 +29,6 @@ class RoleController extends Controller
             }
         } else if ($request->type == 'punchout') {
             $users = Employee::where('role_id', $role->id)
-            ->whereRaw("DATE_FORMAT(puch_out_time, '%H:%i') = DATE_FORMAT(?, '%H:%i')", [$role->puch_out_time])
             ->get();
             $role->puch_out_time = $request->value;
             foreach ($users as $user){
