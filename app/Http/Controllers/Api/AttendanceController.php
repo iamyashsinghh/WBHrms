@@ -161,7 +161,7 @@ class AttendanceController extends Controller
             if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
                 $attendance->status = 'present';
                 Log::info('Punched in on time');
-            } else {
+            } else { 
                 // Calculate grace end time
                 $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
                 Log::info('Grace end time:', ['graceEnd' => $graceEnd],['role->grace_time' => $role->grace_time]);
