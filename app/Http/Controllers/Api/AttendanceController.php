@@ -154,8 +154,9 @@ class AttendanceController extends Controller
 
         // Grace period and lating handling
         try {
-            $scheduledPunchIn = Carbon::createFromFormat('H:i', $user->punch_in_time);
-            $actualPunchIn = Carbon::createFromFormat('H:i', $time);
+            $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->punch_in_time);
+            $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
+
             Log::info('Parsed punch-in times', ['scheduled' => $scheduledPunchIn, 'actual' => $actualPunchIn]);
 
             if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
