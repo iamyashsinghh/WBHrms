@@ -151,7 +151,8 @@ class AttendanceController extends Controller
         $attendance->punch_in_address = $request->input('address');
         $attendance->punch_in_coordinates = $request->input('coordinates');
         Log::info('Punch In details set');
-
+ Log::info( $user->punch_in_time);
+ Log::info( $time);
         // Grace period and lating handling
             $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->punch_in_time);
             $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
