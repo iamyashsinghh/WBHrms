@@ -161,10 +161,10 @@ class AttendanceController extends Controller
             if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
                 $attendance->status = 'present';
                 Log::info('Punched in on time');
-            } else { 
+            } else {
                 // Calculate grace end time
                 $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
-                Log::info('Grace end time:', ['graceEnd' => $graceEnd],['role->grace_time' => $role->grace_time]);
+                Log::info('Grace end time:', ['graceEnd' => $graceEnd, 'role->grace_time' => $role->grace_time]);
 
                 if ($actualPunchIn->lessThanOrEqualTo($graceEnd)) {
                     $attendance->status = 'present';
@@ -172,7 +172,7 @@ class AttendanceController extends Controller
                 } else {
                     // Calculate lating end time
                     $latingEnd = $graceEnd->copy()->addMinutes($role->lating_time);
-                    Log::info('Lating end time:', ['latingEnd' => $latingEnd],['role->lating_time' => $role->lating_time]);
+                    Log::info('Lating end time:', ['latingEnd' => $latingEnd, 'role->lating_time' => $role->lating_time]);
 
                     if ($actualPunchIn->lessThanOrEqualTo($latingEnd)) {
                         if ($user->latings_left > 0) {
