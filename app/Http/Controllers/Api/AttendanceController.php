@@ -89,12 +89,12 @@ class AttendanceController extends Controller
         ]);
     }
 
-
     public function mark_attendance(Request $request)
     {
         Log::info($request);
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
+        $role = Role::find($user->role_id);
         $today = Carbon::now()->toDateString();
         $attendance = Attendance::where('emp_code', $user->emp_code)
             ->where('date', $today)
@@ -115,10 +115,37 @@ class AttendanceController extends Controller
                 $attendance->emp_code = $user->emp_code;
                 $attendance->date = $today;
             }
+
             $attendance->punch_in_time = $time;
             $attendance->punch_in_address = $request->input('address');
             $attendance->punch_in_coordinates = $request->input('coordinates');
-            $attendance->status = 'present';
+
+            // Handling grace period and lating
+            $scheduledPunchIn = Carbon::createFromFormat('H:i', $user->punch_in_time);
+            $actualPunchIn = Carbon::createFromFormat('H:i', $time);
+
+            if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
+                $attendance->status = 'present';
+            } else {
+                $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
+
+                if ($actualPunchIn->lessThanOrEqualTo($graceEnd)) {
+                    $attendance->status = 'present';
+                } else {
+                    if ($user->latings_left > 0) {
+                        $latingEnd = $graceEnd->copy()->addMinutes($role->lating_time);
+
+                        if ($actualPunchIn->lessThanOrEqualTo($latingEnd)) {
+                            $user->decrement('latings_left');
+                            $attendance->status = 'present';
+                        } else {
+                            $attendance->status = 'halfday';
+                        }
+                    } else {
+                        $attendance->status = 'halfday';
+                    }
+                }
+            }
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -133,10 +160,11 @@ class AttendanceController extends Controller
                 );
                 $attendance->punch_in_img = $imagePath;
             }
+
             $attendance->save();
             return response()->json(['message' => 'Punch In successful']);
         }
-        
+
         if ($type == 'Punch Out') {
             if ($attendance && $attendance->punch_out_time) {
                 return response()->json(['message' => 'Already punched out for today'], 400);
@@ -144,16 +172,14 @@ class AttendanceController extends Controller
             if (!$attendance) {
                 return response()->json(['message' => 'No Punch In record found for today'], 400);
             }
+
             $attendance->punch_out_time = $time;
             $attendance->punch_out_address = $request->input('address');
             $attendance->punch_out_coordinates = $request->input('coordinates');
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                Log::error('File upload error: ' . $file);
                 if (!$file->isValid()) {
-                    Log::error('File upload error: ' . $file->getErrorMessage());
-
                     return response()->json(['message' => $file->getErrorMessage()], 400);
                 }
                 $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $file->getClientOriginalExtension();
@@ -164,15 +190,13 @@ class AttendanceController extends Controller
                 );
                 $attendance->punch_out_img = $imagePath;
             }
+
             // Calculate working hours
-            // Combine the attendance date and the punch times to form datetime strings
             $punchInDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_in_time);
             $punchOutDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_out_time);
 
-            // Calculate difference in seconds
             $diffInSeconds = $punchInDateTime->diffInSeconds($punchOutDateTime);
 
-            // Convert seconds to H:i:s format
             $hours = floor($diffInSeconds / 3600);
             $minutes = floor(($diffInSeconds % 3600) / 60);
             $seconds = $diffInSeconds % 60;
