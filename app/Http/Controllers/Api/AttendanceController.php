@@ -91,124 +91,137 @@ class AttendanceController extends Controller
 
 
     public function mark_attendance(Request $request)
-    {
-        Log::info($request);
-        $u = $request->user();
-        $user = Employee::where('emp_code', $u->emp_code)->first();
-        $role = Role::where('id', $user->role_id)->first();
-        $today = Carbon::now()->toDateString();
-        $attendance = Attendance::where('emp_code', $user->emp_code)
-            ->where('date', $today)
-            ->first();
-        $type = $request->input('type');
-        $timestamp = $request->input('timestamp');
-        $date = Carbon::parse($timestamp)->toDateString();
-        $time = Carbon::parse($timestamp)->format('H:i:s');
+{
+    Log::info($request);
+    $u = $request->user();
+    $user = Employee::where('emp_code', $u->emp_code)->first();
+    $role = Role::where('id', $user->role_id)->first();
 
-        if ($type == 'Punch In') {
-            if ($attendance && $attendance->punch_in_time) {
-                return response()->json(['message' => 'Already punched in for today'], 400);
-            }
+    // Convert grace_time and lating_time (HH:MM:SS) to integer minutes
+    $graceTimeInMinutes = Carbon::parse($role->grace_time)->diffInMinutes(Carbon::today());
+    $latingTimeInMinutes = Carbon::parse($role->lating_time)->diffInMinutes(Carbon::today());
 
-            if (!$attendance) {
-                $attendance = new Attendance();
-                $attendance->emp_code = $user->emp_code;
-                $attendance->date = $today;
-            }
-            $attendance->punch_in_time = $time;
-            $attendance->punch_in_address = $request->input('address');
-            $attendance->punch_in_coordinates = $request->input('coordinates');
+    $today = Carbon::now()->toDateString();
+    $attendance = Attendance::where('emp_code', $user->emp_code)
+        ->where('date', $today)
+        ->first();
 
-            $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->puch_in_time);
-            $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
+    $type = $request->input('type');
+    $timestamp = $request->input('timestamp');
+    $date = Carbon::parse($timestamp)->toDateString();
+    $time = Carbon::parse($timestamp)->format('H:i:s');
 
-            if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
-                if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($role->grace_time))) {
+    if ($type == 'Punch In') {
+        if ($attendance && $attendance->punch_in_time) {
+            return response()->json(['message' => 'Already punched in for today'], 400);
+        }
+
+        if (!$attendance) {
+            $attendance = new Attendance();
+            $attendance->emp_code = $user->emp_code;
+            $attendance->date = $today;
+        }
+
+        $attendance->punch_in_time = $time;
+        $attendance->punch_in_address = $request->input('address');
+        $attendance->punch_in_coordinates = $request->input('coordinates');
+
+        $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->puch_in_time);
+        $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
+
+        // Determine attendance status based on timing
+        if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
+            // On-time or early
+            if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($graceTimeInMinutes))) {
+                $attendance->status = 'present';
+            } else {
+                // Late but within potential lateness window
+                if ($user->latings_left > 0 && $actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($graceTimeInMinutes + $latingTimeInMinutes))) {
+                    $user->decrement('latings_left');
                     $attendance->status = 'present';
                 } else {
-                    if ($user->latings_left > 0) {
-                        if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($role->grace_time + $role->lating_time))) {
-                            $user->latings_left--;
-                            $user->decrement('latings_left');
-                            $user->save();
-                        } else {
-                            $attendance->status = 'halfday';
-                        }
-                    } else {
-                        $attendance->status = 'halfday';
-                    }
+                    $attendance->status = 'halfday';
                 }
-            } else {
+            }
+        } else {
+            // Actual punch-in is after scheduled time
+            if ($user->latings_left > 0 && $actualPunchIn->lessThanOrEqualTo($scheduledPunchIn->copy()->addMinutes($graceTimeInMinutes + $latingTimeInMinutes))) {
+                $user->decrement('latings_left');
                 $attendance->status = 'present';
+            } else {
+                $attendance->status = 'halfday';
             }
-
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                Log::error('File upload error: ' . $file);
-                if (!$file->isValid()) {
-                    Log::error('File upload error: ' . $file->getErrorMessage());
-
-                    return response()->json(['message' => $file->getErrorMessage()], 400);
-                }
-                $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $file->getClientOriginalExtension();
-                $imagePath = $file->storeAs(
-                    "attendance_images/{$user->emp_code}",
-                    $fileName,
-                    'public'
-                );
-                $attendance->punch_in_img = $imagePath;
-            }
-
-            $attendance->save();
-
-            return response()->json(['message' => 'Punch In successful']);
         }
 
-        if ($type == 'Punch Out') {
-            if ($attendance && $attendance->punch_out_time) {
-                return response()->json(['message' => 'Already punched out for today'], 400);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            Log::error('File upload info: ' . $file);
+
+            if (!$file->isValid()) {
+                Log::error('File upload error: ' . $file->getErrorMessage());
+                return response()->json(['message' => $file->getErrorMessage()], 400);
             }
-            if (!$attendance) {
-                return response()->json(['message' => 'No Punch In record found for today'], 400);
-            }
-            $attendance->punch_out_time = $time;
-            $attendance->punch_out_address = $request->input('address');
-            $attendance->punch_out_coordinates = $request->input('coordinates');
 
-            if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                Log::error('File upload error: ' . $file);
-                if (!$file->isValid()) {
-                    Log::error('File upload error: ' . $file->getErrorMessage());
-
-                    return response()->json(['message' => $file->getErrorMessage()], 400);
-                }
-                $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $file->getClientOriginalExtension();
-                $imagePath = $file->storeAs(
-                    "attendance_images/{$user->emp_code}",
-                    $fileName,
-                    'public'
-                );
-                $attendance->punch_out_img = $imagePath;
-            }
-            $punchInDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_in_time);
-            $punchOutDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_out_time);
-
-            $diffInSeconds = $punchInDateTime->diffInSeconds($punchOutDateTime);
-
-            $hours = floor($diffInSeconds / 3600);
-            $minutes = floor(($diffInSeconds % 3600) / 60);
-            $seconds = $diffInSeconds % 60;
-            $workingHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-
-            $attendance->working_hours = $workingHours;
-            $attendance->save();
-
-            return response()->json(['message' => 'Punch Out successful']);
+            $fileName = "{$user->emp_code}_{$date}_punch_in_{$time}." . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs(
+                "attendance_images/{$user->emp_code}",
+                $fileName,
+                'public'
+            );
+            $attendance->punch_in_img = $imagePath;
         }
 
-        return response()->json(['message' => 'Invalid punch type'], 400);
+        $attendance->save();
+        return response()->json(['message' => 'Punch In successful']);
     }
+
+    if ($type == 'Punch Out') {
+        if ($attendance && $attendance->punch_out_time) {
+            return response()->json(['message' => 'Already punched out for today'], 400);
+        }
+        if (!$attendance) {
+            return response()->json(['message' => 'No Punch In record found for today'], 400);
+        }
+
+        $attendance->punch_out_time = $time;
+        $attendance->punch_out_address = $request->input('address');
+        $attendance->punch_out_coordinates = $request->input('coordinates');
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            Log::error('File upload info: ' . $file);
+            if (!$file->isValid()) {
+                Log::error('File upload error: ' . $file->getErrorMessage());
+                return response()->json(['message' => $file->getErrorMessage()], 400);
+            }
+
+            $fileName = "{$user->emp_code}_{$date}_punch_out_{$time}." . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs(
+                "attendance_images/{$user->emp_code}",
+                $fileName,
+                'public'
+            );
+            $attendance->punch_out_img = $imagePath;
+        }
+
+        $punchInDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_in_time);
+        $punchOutDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->date . ' ' . $attendance->punch_out_time);
+
+        $diffInSeconds = $punchInDateTime->diffInSeconds($punchOutDateTime);
+        $hours = floor($diffInSeconds / 3600);
+        $minutes = floor(($diffInSeconds % 3600) / 60);
+        $seconds = $diffInSeconds % 60;
+        $workingHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+        $attendance->working_hours = $workingHours;
+        $attendance->save();
+
+        return response()->json(['message' => 'Punch Out successful']);
+    }
+
+    return response()->json(['message' => 'Invalid punch type'], 400);
+}
+
 
 
     public function fetchDayAttendanceLog(Request $request, $day)
