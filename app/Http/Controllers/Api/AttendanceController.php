@@ -157,11 +157,12 @@ class AttendanceController extends Controller
 
             Log::info('Parsed punch-in times', ['scheduled' => $scheduledPunchIn, 'actual' => $actualPunchIn]);
 
-            $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
-            Log::info('Grace end time:', ['graceEnd' => $graceEnd, 'role->grace_time' => $role->grace_time]);
-
-            $latingEnd = $graceEnd->copy()->addMinutes($role->lating_time);
-            Log::info('Lating end time:', ['latingEnd' => $latingEnd, 'role->lating_time' => $role->lating_time]);
+            $graceTime = Carbon::parse($role->grace_time)->minute;
+            $latingTime = Carbon::parse($role->lating_time)->minute;
+            $graceEnd = $scheduledPunchIn->copy()->addMinutes($graceTime);
+            Log::info('Grace end time:', ['graceEnd' => $graceEnd->format('H:i:s'), 'role->grace_time' => $role->grace_time]);
+            $latingEnd = $graceEnd->copy()->addMinutes($latingTime);
+            Log::info('Lating end time:', ['latingEnd' => $latingEnd->format('H:i:s'), 'role->lating_time' => $role->lating_time]);
 
             if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
                 $attendance->status = 'present';
