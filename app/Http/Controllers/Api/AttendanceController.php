@@ -151,45 +151,37 @@ class AttendanceController extends Controller
             $attendance->punch_in_address = $request->input('address');
             $attendance->punch_in_coordinates = $request->input('coordinates');
             Log::info('Punch In details set');
-            Log::info($user->punch_in_time);
-            Log::info($time);
+
             $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->punch_in_time);
             $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
 
             Log::info('Parsed punch-in times', ['scheduled' => $scheduledPunchIn, 'actual' => $actualPunchIn]);
 
+            $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
+            Log::info('Grace end time:', ['graceEnd' => $graceEnd, 'role->grace_time' => $role->grace_time]);
+
+            $latingEnd = $graceEnd->copy()->addMinutes($role->lating_time);
+            Log::info('Lating end time:', ['latingEnd' => $latingEnd, 'role->lating_time' => $role->lating_time]);
+
             if ($actualPunchIn->lessThanOrEqualTo($scheduledPunchIn)) {
                 $attendance->status = 'present';
                 Log::info('Punched in on time');
-            } else {
-                // Calculate grace end time
-                $graceEnd = $scheduledPunchIn->copy()->addMinutes($role->grace_time);
-                Log::info('Grace end time:', ['graceEnd' => $graceEnd, 'role->grace_time' => $role->grace_time]);
-
-                if ($actualPunchIn->lessThanOrEqualTo($graceEnd)) {
+            } elseif ($actualPunchIn->lessThanOrEqualTo($graceEnd)) {
+                $attendance->status = 'present';
+                Log::info('Punched in within grace period');
+            } elseif ($actualPunchIn->lessThanOrEqualTo($latingEnd)) {
+                if ($user->latings_left > 0) {
+                    $user->decrement('latings_left');
                     $attendance->status = 'present';
-                    Log::info('Punched in within grace period');
+                    Log::info('Late but within allowed lating period. Remaining latings:', ['latings_left' => $user->latings_left]);
                 } else {
-                    // Calculate lating end time
-                    $latingEnd = $graceEnd->copy()->addMinutes($role->lating_time);
-                    Log::info('Lating end time:', ['latingEnd' => $latingEnd, 'role->lating_time' => $role->lating_time]);
-
-                    if ($actualPunchIn->lessThanOrEqualTo($latingEnd)) {
-                        if ($user->latings_left > 0) {
-                            $user->decrement('latings_left');
-                            $attendance->status = 'present';
-                            Log::info('Late but within allowed lating period. Remaining latings:', ['latings_left' => $user->latings_left]);
-                        } else {
-                            $attendance->status = 'halfday';
-                            Log::warning('No latings left, marked as halfday');
-                        }
-                    } else {
-                        $attendance->status = 'halfday';
-                        Log::warning('Exceeded lating period, marked as halfday');
-                    }
+                    $attendance->status = 'halfday';
+                    Log::warning('No latings left, marked as halfday');
                 }
+            } else {
+                $attendance->status = 'halfday';
+                Log::warning('Exceeded lating period, marked as halfday');
             }
-
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
