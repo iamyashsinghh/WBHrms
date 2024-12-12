@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->time('puch_in_time')->default('10:00')->nullable();
-            $table->time('puch_out_time')->default('18:30')->nullable();
+            $table->time('punch_in_time')->default('10:00')->nullable();
+            $table->time('punch_out_time')->default('18:30')->nullable();
         });
     }
 

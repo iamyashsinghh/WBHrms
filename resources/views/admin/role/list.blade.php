@@ -43,11 +43,11 @@
                             <td class="text-bold">{{ $role->name }}</td>
                             <td>
                                 <input type="time" class="form-control puch-time" data-role-id="{{ $role->id }}"
-                                    data-type="punchin" value="{{ $role->puch_in_time }}">
+                                    data-type="punchin" value="{{ $role->punch_in_time }}">
                             </td>
                             <td>
                                 <input type="time" class="form-control puch-time" data-role-id="{{ $role->id }}"
-                                    data-type="punchout" value="{{ $role->puch_out_time }}">
+                                    data-type="punchout" value="{{ $role->punch_out_time }}">
                             </td>
                             <td>
                                 <input type="time" class="form-control grace_time" data-role-id="{{ $role->id }}"

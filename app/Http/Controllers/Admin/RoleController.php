@@ -22,17 +22,17 @@ class RoleController extends Controller
         if ($request->type == 'punchin') {
             $users = Employee::where('role_id', $role->id)
             ->get();
-            $role->puch_in_time = $request->value;
+            $role->punch_in_time = $request->value;
             foreach ($users as $user){
-                $user->puch_in_time = $request->value;
+                $user->punch_in_time = $request->value;
                 $user->save();
             }
         } else if ($request->type == 'punchout') {
             $users = Employee::where('role_id', $role->id)
             ->get();
-            $role->puch_out_time = $request->value;
+            $role->punch_out_time = $request->value;
             foreach ($users as $user){
-                $user->puch_out_time = $request->value;
+                $user->punch_out_time = $request->value;
                 $user->save();
             }
         }
