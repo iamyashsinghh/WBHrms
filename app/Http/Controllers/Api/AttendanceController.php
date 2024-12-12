@@ -153,7 +153,6 @@ class AttendanceController extends Controller
         Log::info('Punch In details set');
 
         // Grace period and lating handling
-        try {
             $scheduledPunchIn = Carbon::createFromFormat('H:i:s', $user->punch_in_time);
             $actualPunchIn = Carbon::createFromFormat('H:i:s', $time);
 
@@ -186,10 +185,7 @@ class AttendanceController extends Controller
                     }
                 }
             }
-        } catch (\Exception $e) {
-            Log::error('Error in punch-in timing calculations:', ['message' => $e->getMessage()]);
-            return response()->json(['message' => 'Error in timing calculations'], 500);
-        }
+
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
