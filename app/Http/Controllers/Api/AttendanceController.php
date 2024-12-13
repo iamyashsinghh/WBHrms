@@ -205,8 +205,6 @@ class AttendanceController extends Controller
         return response()->json(['message' => 'Invalid punch type'], 400);
     }
 
-
-
     public function fetchDayAttendanceLog(Request $request, $day)
     {
         $u = $request->user();

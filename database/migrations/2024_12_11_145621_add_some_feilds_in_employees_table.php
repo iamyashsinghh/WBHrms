@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('employees', function (Blueprint $table) {
-            $table->tinyInteger('latings_left');
+            $table->tinyInteger('latings_left')->default(0);
         });
     }
 

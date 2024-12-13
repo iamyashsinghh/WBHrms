@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('punch_coordinates', function (Blueprint $table) {
-            $table->string('place_name')->comment('for role id 2 3 4 it is default office and home');
+            $table->string('place_name')->comment('for role id 2 3 4 it is default office and home')->nullable();
         });
     }
 

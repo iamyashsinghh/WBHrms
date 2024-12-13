@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('emp_code');
             $table->string('type')->comment('sl, hd, cl, pl, wo');
             $table->date('start')->comment('this can be used for single day and also the string days fot the pl');
-            $table->date('end');
-            $table->string('emp_desc');
-            $table->string('hr_desc');
-            $table->tinyInteger('is_approved')->comment('0=>waiting, 1=>approved, 2=>reject');
-            $table->timestamp('approved_or_rejected_at');
+            $table->date('end')->nullable();
+            $table->string('emp_desc')->nullable();
+            $table->string('hr_desc')->nullable();
+            $table->tinyInteger('is_approved')->comment('0=>waiting, 1=>approved, 2=>reject')->default(0);
+            $table->timestamp('approved_or_rejected_at')->nullable();
             $table->timestamps();
         });
     }
