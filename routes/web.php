@@ -117,6 +117,17 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | Admin Document Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/approval')->name('approval.')->group(function () {
+                Route::get('list/{dashboard_filters?}', [Controllers\Admin\ApprovalController::class, 'index'])->name('list');
+                Route::get('approval/ajax_list', [Controllers\Admin\ApprovalController::class, 'ajax_list'])->name('ajax_list');
+                Route::get('approval/update/{id?}/{status?}', [Controllers\Admin\ApprovalController::class, 'update_status'])->name('update_status');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
             | Admin ENV CONTROLLER
             |--------------------------------------------------------------------------
             */

@@ -36,6 +36,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.approval.list') }}" class="nav-link {{ $uri == 'admin.approval.list' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>Leave Manegment</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.role.list') }}" class="nav-link {{ $uri == 'admin.role.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user"></i>
                         <p>Roles</p>
