@@ -32,15 +32,22 @@ class ApprovalController extends Controller
         $approaval->type = $request->input('type');
         $approaval->start = $request->input('start');
 
-        if ($request->input('type') == 'sl') {
+        if ($request->input('type') == 'sl' || $request->input('type') == 'hd') {
             $time = $request->input('time');
             $emp_desc = "I will leave at $time";
             $emp_desc .= "\n" . $request->input('emp_desc');
             $approaval->emp_desc = $emp_desc;
+        }elseif($request->input('type') == 'pl'){
+            $approaval->end = $request->input('end');
+            $emp_desc = $request->input('emp_desc');
+            $emp_desc .= "\n  Frome" . $request->input('start') .' to '.  $request->input('end');
+            $approaval->emp_desc = $emp_desc;
+        }else{
+            $approaval->emp_desc = $request->input('emp_desc');
         }
 
         if($approaval->save()){
-            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Waiting For Approval.'], 200);
+            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Please wait For Approval.'], 200);
         }else{
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
         }
