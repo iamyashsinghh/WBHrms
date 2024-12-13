@@ -107,6 +107,7 @@ class AttendanceController extends Controller
 
         $type = $request->input('type');
         $timestamp = $request->input('timestamp');
+        Log::info($timestamp);
         try {
             $date = Carbon::parse($timestamp)->toDateString();
             $time = Carbon::parse($timestamp)->format('H:i:s');
