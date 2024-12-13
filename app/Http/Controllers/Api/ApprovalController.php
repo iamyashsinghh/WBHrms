@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Approval;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +26,22 @@ class ApprovalController extends Controller
         if ($validate->fails()) {
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'All feilds are required.'], 400);
         }
-        
 
+        $approaval = new Approval();
+        $approaval->emp_code = $user->emp_code;
+        $approaval->type = $request->input('type');
+        $approaval->start = $request->input('start');
+
+        if ($request->input('type') == 'sl') {
+            $time = $request->input('time');
+            $emp_desc = "I will leave at $time";
+            $emp_desc .= "\n" . $request->input('emp_desc');
+        }
+
+        if($approaval->save()){
+            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Waiting For Approval.'], 400);
+        }else{
+            return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
+        }
     }
 }

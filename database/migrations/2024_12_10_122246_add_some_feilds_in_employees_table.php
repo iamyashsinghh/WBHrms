@@ -15,8 +15,8 @@ return new class extends Migration
             $table->time('punch_in_time')->default('10:00')->nullable();
             $table->time('punch_out_time')->default('18:30')->nullable();
             $table->string('punch_coordinates')->nullable();
-            $table->string('cl_left')->default(20)->nullable();
-            $table->string('cl_used')->default(0)->nullable();
+            $table->string('cl_left')->default(12)->nullable();
+            $table->string('pl_left')->default(10)->nullable();
         });
     }
 
