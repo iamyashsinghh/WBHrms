@@ -39,7 +39,7 @@ class ApprovalController extends Controller
         }
 
         if($approaval->save()){
-            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Waiting For Approval.'], 400);
+            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Waiting For Approval.'], 200);
         }else{
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
         }
