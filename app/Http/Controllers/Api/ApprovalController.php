@@ -36,6 +36,7 @@ class ApprovalController extends Controller
             $time = $request->input('time');
             $emp_desc = "I will leave at $time";
             $emp_desc .= "\n" . $request->input('emp_desc');
+            $approaval->emp_desc = $emp_desc;
         }
 
         if($approaval->save()){
