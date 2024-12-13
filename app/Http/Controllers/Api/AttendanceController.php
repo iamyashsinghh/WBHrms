@@ -107,10 +107,9 @@ class AttendanceController extends Controller
 
         $type = $request->input('type');
         $timestamp = $request->input('timestamp');
-        Log::info($timestamp);
         try {
-            $date = Carbon::parse($timestamp)->toDateString();
-            $time = Carbon::parse($timestamp)->format('H:i:s');
+            $date = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->toDateString();
+            $time = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->format('H:i:s');
         } catch (\Exception $e) {
             return response()->json(['message' => 'Invalid timestamp format'], 400);
         }
