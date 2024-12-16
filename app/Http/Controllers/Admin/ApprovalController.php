@@ -54,6 +54,7 @@ class ApprovalController extends Controller
                     $dateStr = $date->format('Y-m-d');
                     $attendance = Attendance::firstOrNew(['date' => $dateStr, 'emp_code' => $approval->emp_code]);
                     $attendance->status = 'pl';
+                    $user->pl_left--;
                     $attendance->save();
                 }
             }elseif($approval->type == 'wo'){
@@ -83,9 +84,11 @@ class ApprovalController extends Controller
                         break;
                     case 'cl':
                         $attendance->status = 'cl';
+                        $user->cl_left--;
                         break;
                 }
                 $attendance->save();
+                $user->save();
             }
 
             session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Approved."]);
