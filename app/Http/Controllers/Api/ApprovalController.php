@@ -141,4 +141,38 @@ class ApprovalController extends Controller
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
         }
     }
+
+    public function getApprovals(Request $request)
+    {
+        $u = $request->user();
+        $user = Employee::where('emp_code', $u->emp_code)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $query = Approval::where('emp_code', $user->emp_code);
+
+        if ($request->has('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+            $query->whereBetween('start', [$startDate, $endDate]);
+        }
+
+        if ($request->has('search')) {
+            $query->where('emp_desc', 'like', '%' . $request->input('search') . '%');
+        }
+
+        // Paginate results
+        $approvals = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $approvals
+        ], 200);
+    }
 }

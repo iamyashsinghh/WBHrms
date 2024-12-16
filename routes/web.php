@@ -117,7 +117,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Admin Document Routes
+            | Admin Approval Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/approval')->name('approval.')->group(function () {

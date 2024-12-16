@@ -31,6 +31,7 @@ Route::group(['middleware' => 'api.auth'], function () {
         // leave route
         Route::post('/new-approval', [Api\ApprovalController::class, 'newApproval']);
         Route::get('attendance-for-cl/{month}/{year}', [Api\ApprovalController::class, 'clApprovalDates']);
+        Route::get('get-approvals', [Api\ApprovalController::class, 'getApprovals']);
     });
 });
 
