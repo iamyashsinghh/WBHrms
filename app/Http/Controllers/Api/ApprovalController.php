@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class ApprovalController extends Controller
 {
 
-    public function clApprovalDates(Request $request,  $month, $year){
+    public function clApprovalDates(Request $request,  $month, $year)
+    {
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
 
@@ -31,16 +32,12 @@ class ApprovalController extends Controller
             ->keyBy('date');
 
         $detailedAttendance = [];
-$total_cl_used = 0;
         for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
             $currentDate = $date->toDateString();
             $dayOfMonth = $date->day;
             $dayOfWeek = $date->format('l');
             $attendance = $attendances->get($currentDate);
             if ($attendance) {
-                if($attendance->status == 'cl'){
-                    $total_cl_used++;
-                }
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
                     'todaydate' => $currentDate,
@@ -71,11 +68,11 @@ $total_cl_used = 0;
             'month' => $month,
             'year' => $year,
             'today' => $todaysAttendance,
-            'total_cl_used' => $total_cl_used,
         ]);
     }
 
-    public function newApproval(Request $request){
+    public function newApproval(Request $request)
+    {
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
         if (!$user) {
@@ -102,18 +99,18 @@ $total_cl_used = 0;
             $emp_desc = "I will leave at $time";
             $emp_desc .= "\n" . $request->input('emp_desc');
             $approaval->emp_desc = $emp_desc;
-        }elseif($request->input('type') == 'pl'){
+        } elseif ($request->input('type') == 'pl') {
             $approaval->end = $request->input('end');
             $emp_desc = $request->input('emp_desc');
-            $emp_desc .= "\n  From " . $request->input('start') .' to '.  $request->input('end');
+            $emp_desc .= "\n  From " . $request->input('start') . ' to ' .  $request->input('end');
             $approaval->emp_desc = $emp_desc;
-        }else{
+        } else {
             $approaval->emp_desc = $request->input('emp_desc');
         }
 
-        if($approaval->save()){
+        if ($approaval->save()) {
             return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Please wait For Approval.'], 200);
-        }else{
+        } else {
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
         }
     }
