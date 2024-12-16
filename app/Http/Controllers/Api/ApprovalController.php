@@ -37,10 +37,10 @@ $total_cl_used = 0;
             $dayOfMonth = $date->day;
             $dayOfWeek = $date->format('l');
             $attendance = $attendances->get($currentDate);
-            if($attendance->status == 'cl'){
-                $total_cl_used++;
-            }
             if ($attendance) {
+                if($attendance->status == 'cl'){
+                    $total_cl_used++;
+                }
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
                     'todaydate' => $currentDate,
