@@ -142,7 +142,7 @@
                 }
             ],
             order: [
-                [0, 'asc']
+                [0, 'desc']
             ],
             responsive: true,
             autoWidth: false,
