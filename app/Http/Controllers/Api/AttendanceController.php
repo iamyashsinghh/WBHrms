@@ -169,6 +169,7 @@ class AttendanceController extends Controller
             if (!$attendance) {
                 return response()->json(['message' => 'No Punch In record found for today'], 400);
             }
+
             $attendance->punch_out_time = $time;
             $attendance->punch_out_address = $request->input('address');
             $attendance->punch_out_coordinates = $request->input('coordinates');
@@ -196,6 +197,15 @@ class AttendanceController extends Controller
                 $seconds = $diffInSeconds % 60;
                 $workingHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
                 $attendance->working_hours = $workingHours;
+
+                $scheduledPunchOut = Carbon::createFromFormat('H:i:s', $user->punch_out_time);
+                $diffFromScheduledPunchOut = $punchOutDateTime->diffInSeconds($scheduledPunchOut, false);
+                $totalExpectedSeconds = $scheduledPunchOut->diffInSeconds($punchInDateTime);
+
+                if ($diffInSeconds < $totalExpectedSeconds && $attendance->status === 'present') {
+                    $attendance->status = 'halfday';
+                }
+
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Error in working hours calculation'], 500);
             }

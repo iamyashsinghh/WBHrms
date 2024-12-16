@@ -17,10 +17,14 @@ class ApprovalController extends Controller
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
 
-        $startDate = Carbon::create($year, $month, 1);
-        $startDate = Carbon::create($year, $month, 15)->subMonth();
-        $endDate = Carbon::create($year, $month)->endOfMonth();
-
+        if ($user->emp_type === 'Fulltime') {
+            $startDate = Carbon::create($year, $month, 15)->subMonth();
+            $endDate = Carbon::create($year, $month)->endOfMonth();
+        } else {
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = Carbon::create($year, $month)->endOfMonth();
+        }
+        
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get()
