@@ -24,19 +24,22 @@ class ApprovalController extends Controller
             $startDate = Carbon::create($year, $month, 1);
             $endDate = Carbon::create($year, $month)->endOfMonth();
         }
-        
+
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get()
             ->keyBy('date');
 
         $detailedAttendance = [];
-
+$total_cl_used = 0;
         for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
             $currentDate = $date->toDateString();
             $dayOfMonth = $date->day;
             $dayOfWeek = $date->format('l');
             $attendance = $attendances->get($currentDate);
+            if($attendance->status == 'cl'){
+                $total_cl_used++;
+            }
             if ($attendance) {
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
@@ -68,6 +71,7 @@ class ApprovalController extends Controller
             'month' => $month,
             'year' => $year,
             'today' => $todaysAttendance,
+            'total_cl_used' => $total_cl_used,
         ]);
     }
 
