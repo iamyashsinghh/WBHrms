@@ -142,6 +142,8 @@ class ApprovalController extends Controller
         }
     }
 
+
+
     public function getApprovals(Request $request)
     {
         $u = $request->user();
@@ -151,24 +153,10 @@ class ApprovalController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $query = Approval::where('emp_code', $user->emp_code);
+        $limit = $request->input('limit', 10);
+        $offset = $request->input('offset', 0);
 
-        if ($request->has('type')) {
-            $query->where('type', $request->input('type'));
-        }
-
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
-            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-            $query->whereBetween('start', [$startDate, $endDate]);
-        }
-
-        if ($request->has('search')) {
-            $query->where('emp_desc', 'like', '%' . $request->input('search') . '%');
-        }
-
-        // Paginate results
-        $approvals = $query->orderBy('created_at', 'desc')->paginate(10);
+        $approvals = Approval::where('emp_code', $user->emp_code)->skip($offset)->take($limit)->get();
 
         return response()->json([
             'success' => true,
