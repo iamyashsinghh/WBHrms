@@ -104,17 +104,31 @@ class ApprovalController extends Controller
             $emp_desc .= "\n  From " . $request->input('start') . ' to ' .  $request->input('end');
             $approaval->emp_desc = $emp_desc;
         } elseif ($request->input('type') == 'cl') {
-            if($user->emp_type == 'Fulltime'){
+            $startInput = $request->input('start');
+
+            if ($user->emp_type == 'Fulltime') {
                 $startDate = Carbon::create(now()->year, now()->month, 15)->subMonth();
                 $endDate = Carbon::create(now()->year, now()->month, 14);
-            }else{
+            } else {
                 $startDate = Carbon::create(now()->year, now()->month, 1);
-                $endDate = Carbon::create(now()->year, now()->month,)->endOfMonth();
+                $endDate = Carbon::create(now()->year, now()->month)->endOfMonth();
+            }
+            if ($startInput && Carbon::parse($startInput)->gt($endDate)) {
+                if ($user->emp_type == 'Fulltime') {
+                    $startDate = Carbon::create(now()->year, now()->month, 15); // Start of the next month's cycle
+                    $endDate = Carbon::create(now()->year, now()->month + 1, 14); // End of the next month's cycle
+                } else {
+                    $startDate = Carbon::create(now()->year, now()->month + 1, 1); // Start of the next month
+                    $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth(); // End of the next month
+                }
             }
             $attendance_count = Attendance::where('status', 'cl')->whereBetween('date', [$startDate, $endDate])->count();
-            if($attendance_count > 0){
-                $emp_desc = "Alredy $attendance_count cl is marked between $startDate, $endDate \n";
+            if ($attendance_count > 0) {
+                $emp_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
+            } else {
+                $emp_desc = "";
             }
+
             $emp_desc .= $request->input('emp_desc');
             $approaval->emp_desc = $emp_desc;
         } else {
