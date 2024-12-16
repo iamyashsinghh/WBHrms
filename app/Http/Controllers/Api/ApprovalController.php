@@ -104,17 +104,16 @@ class ApprovalController extends Controller
             $emp_desc .= "\n  From " . $request->input('start') . ' to ' .  $request->input('end');
             $approaval->emp_desc = $emp_desc;
         } elseif ($request->input('type') == 'cl') {
-            $startDate = Carbon::create(now()->year, now()->month, 15)->subMonth();
-            $endDate = Carbon::create(now()->year, now()->month, 14);
+            if($user->emp_type == 'Fulltime'){
+                $startDate = Carbon::create(now()->year, now()->month, 15)->subMonth();
+                $endDate = Carbon::create(now()->year, now()->month, 14);
+            }else{
+                $startDate = Carbon::create(now()->year, now()->month, 1);
+                $endDate = Carbon::create(now()->year, now()->month,)->endOfMonth();
+            }
             $attendance_count = Attendance::where('status', 'cl')->whereBetween('date', [$startDate, $endDate])->count();
             if($attendance_count > 0){
-                $ordinal_suffix = match ($attendance_count++) {
-                    1 => "1st time",
-                    2 => "2nd time",
-                    3 => "3rd time",
-                    default => "{$attendance_count}th time",
-                };
-                $emp_desc = "\n This is the " . $ordinal_suffix . " time from $startDate to $endDate." ;
+                $emp_desc = "Alredy $attendance_count cl is marked between $startDate, $endDate \n";
             }
             $emp_desc .= $request->input('emp_desc');
             $approaval->emp_desc = $emp_desc;
