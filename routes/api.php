@@ -32,6 +32,10 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::post('/new-approval', [Api\ApprovalController::class, 'newApproval']);
         Route::get('attendance-for-cl/{month}/{year}', [Api\ApprovalController::class, 'clApprovalDates']);
         Route::get('get-approvals', [Api\ApprovalController::class, 'getApprovals']);
+
+
+        //documents route
+        Route::get('get-docs', [Api\DocumentController::class, 'getDocs']);
     });
 });
 

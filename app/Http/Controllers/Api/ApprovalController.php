@@ -142,8 +142,6 @@ class ApprovalController extends Controller
         }
     }
 
-
-
     public function getApprovals(Request $request)
     {
         $u = $request->user();
