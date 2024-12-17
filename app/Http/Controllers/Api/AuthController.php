@@ -42,7 +42,7 @@ class AuthController extends Controller
         }
 
         $login_info = LoginInfo::where(['user_id' => $user->id])->first();
-        $can_user_login = 1; 
+        $can_user_login = 1;
         try {
             $verification_code = rand(111111, 999999);
             if (env('APP_ENV') == 'development') {

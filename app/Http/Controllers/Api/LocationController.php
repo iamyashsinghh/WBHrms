@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Models\StoreLocation;
-
+use Illuminate\Support\Facades\Log;
 class LocationController extends Controller
 {
     public function store_location(Request $request)
     {
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
+        Log::info('store_location');
 
         if (!$user) {
             return response()->json(['error' => 'Employee not found'], 404);
