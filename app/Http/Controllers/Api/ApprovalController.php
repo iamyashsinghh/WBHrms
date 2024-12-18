@@ -95,14 +95,12 @@ class ApprovalController extends Controller
 
         if ($request->input('type') == 'sl' || $request->input('type') == 'hd') {
             $time = $request->input('time');
-            $emp_desc = "I will leave at $time";
-            $emp_desc .= "\n" . $request->input('emp_desc');
-            $approaval->emp_desc = $emp_desc;
+            $hr_desc = "Leave at $time";
+            $approaval->hr_desc = $hr_desc;
         } elseif ($request->input('type') == 'pl') {
             $approaval->end = $request->input('end');
-            $emp_desc = $request->input('emp_desc');
-            $emp_desc .= "\n  From " . $request->input('start') . ' to ' .  $request->input('end');
-            $approaval->emp_desc = $emp_desc;
+            $hr_desc = "From " . $request->input('start') . ' to ' .  $request->input('end');
+            $approaval->hr_desc = $hr_desc;
         } elseif ($request->input('type') == 'cl') {
             $startInput = $request->input('start');
 
@@ -122,18 +120,16 @@ class ApprovalController extends Controller
                     $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth(); // End of the next month
                 }
             }
-            $attendance_count = Attendance::where('status', 'cl')->whereBetween('date', [$startDate, $endDate])->count();
+            $attendance_count = Attendance::where('status', 'cl')->where('emp_code', $user->emp_code)->whereBetween('date', [$startDate, $endDate])->count();
             if ($attendance_count > 0) {
-                $emp_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
+                $hr_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
             } else {
-                $emp_desc = "";
+                $hr_desc = "";
             }
-
-            $emp_desc .= $request->input('emp_desc');
-            $approaval->emp_desc = $emp_desc;
-        } else {
-            $approaval->emp_desc = $request->input('emp_desc');
+            $approaval->hr_desc = $hr_desc;
         }
+
+        $approaval->emp_desc = $request->input('emp_desc');
 
         if ($approaval->save()) {
             return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Please wait For Approval.'], 200);
