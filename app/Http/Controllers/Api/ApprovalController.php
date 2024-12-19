@@ -125,7 +125,6 @@ class ApprovalController extends Controller
                 $hr_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
                 return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
             }
-            $approaval->hr_desc = $hr_desc;
         }
 
         $approaval->emp_desc = $request->input('emp_desc');
