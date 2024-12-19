@@ -57,7 +57,8 @@ class ApprovalController extends Controller
                     $user->pl_left--;
                     $attendance->save();
                 }
-            }elseif($approval->type == 'wo'){
+            }
+            if($approval->type == 'wo'){
                 $start = new DateTime($approval->start);
                 $end = ($approval->end) ? new DateTime($approval->end) : $start;
 
@@ -73,7 +74,8 @@ class ApprovalController extends Controller
                     $attendance->status = 'wo';
                     $attendance->save();
                 }
-            }else{
+            }
+            if($approval->type == 'sl' || $approval->type == 'hd' || $approval->type == 'cl'){
                 $attendance = Attendance::firstOrNew(['date' => $approval->start, 'emp_code' => $approval->emp_code]);
                 switch ($approval->type) {
                     case 'sl':
