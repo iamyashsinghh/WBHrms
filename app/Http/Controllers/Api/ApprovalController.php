@@ -123,8 +123,7 @@ class ApprovalController extends Controller
             $attendance_count = Attendance::where('status', 'cl')->where('emp_code', $user->emp_code)->whereBetween('date', [$startDate, $endDate])->count();
             if ($attendance_count > 0) {
                 $hr_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
-            } else {
-                $hr_desc = "";
+                return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
             }
             $approaval->hr_desc = $hr_desc;
         }
