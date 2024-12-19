@@ -135,6 +135,7 @@ class ApprovalController extends Controller
 
             $startDate = Carbon::parse($startInput);
             $endDate = Carbon::parse($endInput);
+            $approaval->hr_desc = "Weakoff upto $endInput";
 
             if ($user->emp_type == 'Fulltime') {
                 $cycleStart = Carbon::create(now()->year, now()->month, 15)->subMonth();
@@ -144,7 +145,6 @@ class ApprovalController extends Controller
                 $cycleEnd = Carbon::create(now()->year, now()->month)->endOfMonth();
             }
 
-            // Adjust for weak off date beyond the current cycle
             if ($startDate->gt($cycleEnd)) {
                 if ($user->emp_type == 'Fulltime') {
                     $cycleStart = Carbon::create(now()->year, now()->month, 15);
