@@ -113,11 +113,11 @@ class ApprovalController extends Controller
             }
             if ($startInput && Carbon::parse($startInput)->gt($endDate)) {
                 if ($user->emp_type == 'Fulltime') {
-                    $startDate = Carbon::create(now()->year, now()->month, 15); // Start of the next month's cycle
-                    $endDate = Carbon::create(now()->year, now()->month + 1, 14); // End of the next month's cycle
+                    $startDate = Carbon::create(now()->year, now()->month, 15);
+                    $endDate = Carbon::create(now()->year, now()->month + 1, 14);
                 } else {
-                    $startDate = Carbon::create(now()->year, now()->month + 1, 1); // Start of the next month
-                    $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth(); // End of the next month
+                    $startDate = Carbon::create(now()->year, now()->month + 1, 1);
+                    $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth();
                 }
             }
             $attendance_count = Attendance::where('status', 'cl')->where('emp_code', $user->emp_code)->whereBetween('date', [$startDate, $endDate])->count();

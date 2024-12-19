@@ -8,7 +8,6 @@ use App\Models\Employee;
 use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
