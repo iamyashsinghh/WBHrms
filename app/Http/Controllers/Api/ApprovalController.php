@@ -125,6 +125,30 @@ class ApprovalController extends Controller
                 $hr_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
                 return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
             }
+        }elseif ($request->input('type') == 'wo') {
+            $startInput = $request->input('start');
+
+            if ($user->emp_type == 'Fulltime') {
+                $startDate = Carbon::create(now()->year, now()->month, 15)->subMonth();
+                $endDate = Carbon::create(now()->year, now()->month, 14);
+            } else {
+                $startDate = Carbon::create(now()->year, now()->month, 1);
+                $endDate = Carbon::create(now()->year, now()->month)->endOfMonth();
+            }
+            if ($startInput && Carbon::parse($startInput)->gt($endDate)) {
+                if ($user->emp_type == 'Fulltime') {
+                    $startDate = Carbon::create(now()->year, now()->month, 15);
+                    $endDate = Carbon::create(now()->year, now()->month + 1, 14);
+                } else {
+                    $startDate = Carbon::create(now()->year, now()->month + 1, 1);
+                    $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth();
+                }
+            }
+            $attendance_count = Attendance::where('status', 'wo')->where('emp_code', $user->emp_code)->whereBetween('date', [$startDate, $endDate])->count();
+            if ($attendance_count >= 4) {
+                $hr_desc = "Already $attendance_count WO is marked between $startDate and $endDate.\n";
+                return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
+            }
         }
 
         $approaval->emp_desc = $request->input('emp_desc');
