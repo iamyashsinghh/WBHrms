@@ -127,28 +127,55 @@ class ApprovalController extends Controller
             }
         }elseif ($request->input('type') == 'wo') {
             $startInput = $request->input('start');
+            $endInput = $request->input('end');
+
+            if (!$startInput || !$endInput) {
+                return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Start and end dates are required.'], 400);
+            }
+
+            $startDate = Carbon::parse($startInput);
+            $endDate = Carbon::parse($endInput);
 
             if ($user->emp_type == 'Fulltime') {
-                $startDate = Carbon::create(now()->year, now()->month, 15)->subMonth();
-                $endDate = Carbon::create(now()->year, now()->month, 14);
+                $cycleStart = Carbon::create(now()->year, now()->month, 15)->subMonth();
+                $cycleEnd = Carbon::create(now()->year, now()->month, 14);
             } else {
-                $startDate = Carbon::create(now()->year, now()->month, 1);
-                $endDate = Carbon::create(now()->year, now()->month)->endOfMonth();
+                $cycleStart = Carbon::create(now()->year, now()->month, 1);
+                $cycleEnd = Carbon::create(now()->year, now()->month)->endOfMonth();
             }
-            if ($startInput && Carbon::parse($startInput)->gt($endDate)) {
+
+            // Adjust for weak off date beyond the current cycle
+            if ($startDate->gt($cycleEnd)) {
                 if ($user->emp_type == 'Fulltime') {
-                    $startDate = Carbon::create(now()->year, now()->month, 15);
-                    $endDate = Carbon::create(now()->year, now()->month + 1, 14);
+                    $cycleStart = Carbon::create(now()->year, now()->month, 15);
+                    $cycleEnd = Carbon::create(now()->year, now()->month + 1, 14);
                 } else {
-                    $startDate = Carbon::create(now()->year, now()->month + 1, 1);
-                    $endDate = Carbon::create(now()->year, now()->month + 1)->endOfMonth();
+                    $cycleStart = Carbon::create(now()->year, now()->month + 1, 1);
+                    $cycleEnd = Carbon::create(now()->year, now()->month + 1)->endOfMonth();
                 }
             }
-            $attendance_count = Attendance::where('status', 'wo')->where('emp_code', $user->emp_code)->whereBetween('date', [$startDate, $endDate])->count();
-            if ($attendance_count >= 4) {
-                $hr_desc = "Already $attendance_count WO is marked between $startDate and $endDate.\n";
-                return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
+            $attendance_count = Attendance::where('status', 'wo')
+                ->where('emp_code', $user->emp_code)
+                ->whereBetween('date', [$cycleStart, $cycleEnd])
+                ->count();
+
+            $requestedDays = $startDate->diffInDays($endDate) + 1;
+
+            if ($attendance_count + $requestedDays > 4) {
+                $allowedDays = 4 - $attendance_count;
+                $hr_desc = "You have already marked $attendance_count weak off(s) between $cycleStart and $cycleEnd. Only $allowedDays day(s) remaining for this cycle.";
+                return response()->json(['success' => false, 'alert_type' => 'error', 'message' => $hr_desc], 200);
             }
+
+            Attendance::create([
+                'emp_code' => $user->emp_code,
+                'status' => 'wo',
+                'date' => $startDate,
+                'end_date' => $endDate,
+            ]);
+
+            $hr_desc = "Weak off marked successfully from $startDate to $endDate.";
+            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => $hr_desc], 200);
         }
 
         $approaval->emp_desc = $request->input('emp_desc');
