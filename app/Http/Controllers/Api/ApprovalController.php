@@ -125,9 +125,9 @@ class ApprovalController extends Controller
                 $hr_desc = "Already $attendance_count CL is marked between $startDate and $endDate.\n";
                 return response()->json(['success' => false, 'alert_type' => 'success', 'message' => $hr_desc], 200);
             }
-        }elseif ($request->input('type') == 'wo') {
+        }else if ($request->input('type') == 'wo') {
             $startInput = $request->input('start');
-            $endInput = $request->input('end');
+            $endInput = $request->input('end') ?? $startInput;
 
             if (!$startInput || !$endInput) {
                 return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Start and end dates are required.'], 400);
