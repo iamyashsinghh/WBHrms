@@ -135,7 +135,7 @@ class ApprovalController extends Controller
 
             $startDate = Carbon::parse($startInput);
             $endDate = Carbon::parse($endInput);
-            $approaval->hr_desc = "Weakoff upto $endInput";
+            $approaval->hr_desc = "Weakoff end date $endInput";
 
             if ($user->emp_type == 'Fulltime') {
                 $cycleStart = Carbon::create(now()->year, now()->month, 15)->subMonth();
@@ -166,13 +166,7 @@ class ApprovalController extends Controller
                 $hr_desc = "You have already marked $attendance_count weak off(s) between $cycleStart and $cycleEnd. Only $allowedDays day(s) remaining for this cycle.";
                 return response()->json(['success' => false, 'alert_type' => 'error', 'message' => $hr_desc], 200);
             }
-
-            Attendance::create([
-                'emp_code' => $user->emp_code,
-                'status' => 'wo',
-                'date' => $startDate,
-                'end_date' => $endDate,
-            ]);
+            $approaval->end = $endInput;
 
             $hr_desc = "Weak off marked successfully from $startDate to $endDate.";
             return response()->json(['success' => true, 'alert_type' => 'success', 'message' => $hr_desc], 200);
