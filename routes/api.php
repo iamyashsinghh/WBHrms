@@ -35,6 +35,7 @@ Route::group(['middleware' => 'api.auth'], function () {
 
         //documents route
         Route::get('get-docs', [Api\DocumentController::class, 'getDocs']);
+        Route::get('create-doc', [Api\DocumentController::class, 'createDocs']);
 
         //salary routes
         Route::get('get-salary-preview/{month?}/{year?}', [Api\SalaryPreviewController::class, 'get_salary']);
