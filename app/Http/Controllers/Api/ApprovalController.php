@@ -167,11 +167,7 @@ class ApprovalController extends Controller
                 return response()->json(['success' => false, 'alert_type' => 'error', 'message' => $hr_desc], 200);
             }
             $approaval->end = $endInput;
-
-            $hr_desc = "Weak off marked successfully from $startDate to $endDate.";
-            return response()->json(['success' => true, 'alert_type' => 'success', 'message' => $hr_desc], 200);
         }
-
         $approaval->emp_desc = $request->input('emp_desc');
 
         if ($approaval->save()) {
