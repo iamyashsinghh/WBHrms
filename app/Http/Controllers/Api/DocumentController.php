@@ -23,7 +23,6 @@ class DocumentController extends Controller
     public function createDocs(Request $request)
     {
         $u = $request->user();
-
         $request->validate([
             'doc_name' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf,jpeg,jpg,png|max:15360',
