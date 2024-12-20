@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
@@ -28,6 +29,7 @@ class DocumentController extends Controller
             'file' => 'required|file|mimes:pdf,jpeg,jpg,png|max:15360',
         ]);
 
+        Log::info($request);
         $file = $request->file('file');
         $filePath = 'uploads/documents/' . $u->emp_code . '/';
         $fileName = time() . '_' . $file->getClientOriginalName();
