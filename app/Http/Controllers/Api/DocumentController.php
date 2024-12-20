@@ -23,12 +23,13 @@ class DocumentController extends Controller
     public function createDocs(Request $request)
     {
         $u = $request->user();
+        Log::info($request);
+
         $request->validate([
             'doc_name' => 'required|string|max:255',
             'file' => 'required|file|mimes:pdf,jpeg,jpg,png|max:15360',
         ]);
 
-        Log::info($request);
         $file = $request->file('file');
         $filePath = 'uploads/documents/' . $u->emp_code . '/';
         $fileName = time() . '_' . $file->getClientOriginalName();
