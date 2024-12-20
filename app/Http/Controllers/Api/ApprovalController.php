@@ -186,7 +186,7 @@ class ApprovalController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $limit = $request->input('limit', 10);
+        $limit = $request->input('limit', 5);
         $offset = $request->input('offset', 0);
 
         $approvals = Approval::where('emp_code', $user->emp_code)->orderBy('created_at', 'desc')->skip($offset)->take($limit)->get();
