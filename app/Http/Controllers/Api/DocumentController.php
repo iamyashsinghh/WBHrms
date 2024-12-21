@@ -23,6 +23,7 @@ class DocumentController extends Controller
     public function createDocs(Request $request)
     {
         $u = $request->user();
+        
         Log::info($request);
 
         $request->validate([
