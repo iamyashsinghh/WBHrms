@@ -25,8 +25,6 @@ class SalaryPreviewController extends Controller
             $endDate = Carbon::create($salyear, $salmonth)->endOfMonth();
         }
 
-        $numberOfDays = $startDate->diffInDays($endDate);
-
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get();
