@@ -54,8 +54,8 @@ class SalaryPreviewController extends Controller
 
         $shortleave = Attendance::where('emp_code', $user->emp_code)->where('status', 'shortleave')
         ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
-        
-        $unmarked = $numberOfDays - $attendances;
+
+        $unmarked = $numberOfDays - $attendances->count();
         return response()->json([
             'attendances' => $attendances,
             'absent' => $absent,
