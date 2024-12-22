@@ -25,10 +25,6 @@ class AttendanceController extends Controller
             ->keyBy('date');
 
         $detailedAttendance = [];
-        $presentDays = 0;
-        $absentDays = 0;
-        $halfDays = 0;
-        $unmarkedDays = 0;
 
         for ($date = $startDate->copy(); $date->lessThanOrEqualTo($endDate); $date->addDay()) {
             $currentDate = $date->toDateString();
@@ -37,17 +33,6 @@ class AttendanceController extends Controller
             $attendance = $attendances->get($currentDate);
 
             if ($attendance) {
-                switch ($attendance->status) {
-                    case 'present':
-                        $presentDays++;
-                        break;
-                    case 'halfday':
-                        $halfDays++;
-                        break;
-                    case 'absent':
-                        $absentDays++;
-                        break;
-                }
                 $detailedAttendance[] = [
                     'date' => $dayOfMonth,
                     'todaydate' => $currentDate,
@@ -67,24 +52,26 @@ class AttendanceController extends Controller
                     'punch_out_time' => null,
                     'working_hours' => '--',
                 ];
-                $unmarkedDays++;
             }
         }
 
-        $totalAttendance = $presentDays + ($halfDays * 0.5);
         $todaysAttendance = Attendance::where('emp_code', $user->emp_code)->where('date', Carbon::now()->toDateString())->first();
+        $present = Attendance::where('emp_code', $user->emp_code)->where('status', 'present')
+        ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
+
+        $absent = Attendance::where('emp_code', $user->emp_code)->where('status', 'absent')
+        ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
+        $halfday = Attendance::where('emp_code', $user->emp_code)->where('status', 'halfday')
+        ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
+
 
         return response()->json([
-            'user' => $user,
-            'present_days' => $presentDays,
-            'absent_days' => $absentDays,
-            'half_days' => $halfDays,
-            'unmarked_days' => $unmarkedDays,
-            'total_attendance' => $totalAttendance,
             'detailed_attendance' => $detailedAttendance,
-            'month' => $month,
-            'year' => $year,
             'today' => $todaysAttendance,
+            'user' => $user,
+            'present' => $present,
+            'absent' => $absent,
+            'halfday' => $halfday,
         ]);
     }
 
@@ -198,13 +185,26 @@ class AttendanceController extends Controller
                 $attendance->working_hours = $workingHours;
 
                 $scheduledPunchOut = Carbon::createFromFormat('H:i:s', $user->punch_out_time);
-                $diffFromScheduledPunchOut = $punchOutDateTime->diffInSeconds($scheduledPunchOut, false);
                 $totalExpectedSeconds = $scheduledPunchOut->diffInSeconds($punchInDateTime);
 
                 if ($diffInSeconds < $totalExpectedSeconds && $attendance->status === 'present') {
                     $attendance->status = 'halfday';
                 }
 
+                if($user->type == 'Fulltime'){
+                    $now = Carbon::now();
+                    $customDate = Carbon::create($now->year, $now->month, 14);
+                    if ($attendance->date === $customDate) {
+                        $user->latings_left = 3;
+                        $user->save();
+                    }
+                }else{
+                    $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+                    if ($attendance->date === $endOfMonth) {
+                        $user->latings_left = 3;
+                        $user->save();
+                    }
+                }
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Error in working hours calculation'], 500);
             }
