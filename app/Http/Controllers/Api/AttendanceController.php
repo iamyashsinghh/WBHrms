@@ -183,14 +183,11 @@ class AttendanceController extends Controller
                 $seconds = $diffInSeconds % 60;
                 $workingHours = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
                 $attendance->working_hours = $workingHours;
-
                 $scheduledPunchOut = Carbon::createFromFormat('H:i:s', $user->punch_out_time);
                 $totalExpectedSeconds = $scheduledPunchOut->diffInSeconds($punchInDateTime);
-
                 if ($diffInSeconds < $totalExpectedSeconds && $attendance->status === 'present') {
                     $attendance->status = 'halfday';
                 }
-
                 if($user->type == 'Fulltime'){
                     $now = Carbon::now();
                     $customDate = Carbon::create($now->year, $now->month, 14);
@@ -204,6 +201,18 @@ class AttendanceController extends Controller
                         $user->latings_left = 3;
                         $user->save();
                     }
+                }
+                $now = Carbon::now();
+                $customAccountsClosingYear = Carbon::create($now->year, 3, 31);
+                if ($attendance->date === $customAccountsClosingYear) {
+                    $user->cl_left = 12;
+                    $customAccountsStartingYear = Carbon::create($now->year, 4, 1);
+                    $totalPl = Attendance::where('emp_code', $user->emp_code)->where('status', 'pl')
+                    ->whereBetween('date', [$customAccountsStartingYear->toDateString(), $customAccountsClosingYear->toDateString()])->count();
+                    if($totalPl >= 10){
+                        $user->pl_left = $totalPl/2 + 10;
+                    }
+                    $user->save();
                 }
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Error in working hours calculation'], 500);
