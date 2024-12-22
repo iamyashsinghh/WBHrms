@@ -107,6 +107,18 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | Admin Notification Type Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/notification')->name('notification.')->group(function () {
+                Route::get('list', [Controllers\Admin\NotificationController::class, 'list'])->name('list');
+                Route::get('ajax_list', [Controllers\Admin\NotificationController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Admin\NotificationController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Admin\NotificationController::class, 'destroy'])->name('destroy');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
             | Admin Document Routes
             |--------------------------------------------------------------------------
             */
