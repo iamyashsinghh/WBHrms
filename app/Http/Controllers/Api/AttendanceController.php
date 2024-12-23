@@ -87,23 +87,6 @@ class AttendanceController extends Controller
         if (!$role) {
             return response()->json(['message' => 'Role not found'], 404);
         }
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-
-            // Check if the file is valid
-            if (!$file->isValid()) {
-                return response()->json(['message' => 'Invalid file: ' . $file->getErrorMessage()], 400);
-            }
-
-            // Log file details for debugging
-            Log::info('Uploaded Image Details', [
-                'Original Name' => $file->getClientOriginalName(),
-                'Size (bytes)' => $file->getSize(),
-                'Extension' => $file->getClientOriginalExtension(),
-                'Mime Type' => $file->getMimeType(),
-                'Path' => $file->getRealPath(),
-            ]);
-        }
         $today = Carbon::now()->toDateString();
         $attendance = Attendance::where('emp_code', $user->emp_code)
             ->where('date', $today)
@@ -114,11 +97,10 @@ class AttendanceController extends Controller
         try {
             $date = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->toDateString();
             $time = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->format('H:i:s');
-            Log::info('Parsed timestamp', ['date' => $date, 'time' => $time]);
         } catch (\Exception $e) {
-            Log::info('unparseed Parsed timestamp');
-            return response()->json(['message' => 'Invalid timestamp format'], 400);
-
+            $currentDateTime = Carbon::now();
+            $date = $currentDateTime->toDateString();
+            $time = $currentDateTime->format('H:i:s');
         }
         if ($type == 'Punch In') {
             if ($attendance && $attendance->punch_in_time) {
