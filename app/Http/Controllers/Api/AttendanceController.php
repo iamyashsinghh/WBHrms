@@ -116,7 +116,9 @@ class AttendanceController extends Controller
             $time = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->format('H:i:s');
             Log::info('Parsed timestamp', ['date' => $date, 'time' => $time]);
         } catch (\Exception $e) {
+            Log::info('unparseed Parsed timestamp');
             return response()->json(['message' => 'Invalid timestamp format'], 400);
+
         }
         if ($type == 'Punch In') {
             if ($attendance && $attendance->punch_in_time) {
