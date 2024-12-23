@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -85,6 +86,23 @@ class AttendanceController extends Controller
         $role = Role::find($user->role_id);
         if (!$role) {
             return response()->json(['message' => 'Role not found'], 404);
+        }
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Check if the file is valid
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Invalid file: ' . $file->getErrorMessage()], 400);
+            }
+
+            // Log file details for debugging
+            Log::info('Uploaded Image Details', [
+                'Original Name' => $file->getClientOriginalName(),
+                'Size (bytes)' => $file->getSize(),
+                'Extension' => $file->getClientOriginalExtension(),
+                'Mime Type' => $file->getMimeType(),
+                'Path' => $file->getRealPath(),
+            ]);
         }
         $today = Carbon::now()->toDateString();
         $attendance = Attendance::where('emp_code', $user->emp_code)
