@@ -7,10 +7,13 @@ use App\Models\Notification;
 
 class NotificationController extends Controller
 {
-    public function index(){
-        $notifcation = Notification::all();
+    public function index()
+    {
+        // Fetch all notifications, ordered by creation date (latest first)
+        $notifications = Notification::orderBy('created_at', 'desc')->get();
+
         return response()->json([
-            'notifcation' => $notifcation
+            'notifications' => $notifications, // Fixed key name for consistency
         ]);
     }
 }
