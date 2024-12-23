@@ -93,7 +93,6 @@ class AttendanceController extends Controller
             ->first();
 
         $type = $request->input('type');
-        $timestamp = $request->input('timestamp');
         $currentDateTime = Carbon::now();
         $date = $currentDateTime->toDateString();
         $time = $currentDateTime->format('H:i:s');
