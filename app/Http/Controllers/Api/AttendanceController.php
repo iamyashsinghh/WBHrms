@@ -94,14 +94,9 @@ class AttendanceController extends Controller
 
         $type = $request->input('type');
         $timestamp = $request->input('timestamp');
-        try {
-            $date = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->toDateString();
-            $time = Carbon::createFromFormat('d/m/Y, h:i:s a', $timestamp)->format('H:i:s');
-        } catch (\Exception $e) {
-            $currentDateTime = Carbon::now();
-            $date = $currentDateTime->toDateString();
-            $time = $currentDateTime->format('H:i:s');
-        }
+        $currentDateTime = Carbon::now();
+        $date = $currentDateTime->toDateString();
+        $time = $currentDateTime->format('H:i:s');
         if ($type == 'Punch In') {
             if ($attendance && $attendance->punch_in_time) {
                 return response()->json(['message' => 'Already punched in for today'], 400);
