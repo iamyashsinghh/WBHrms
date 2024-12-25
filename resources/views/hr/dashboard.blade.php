@@ -123,7 +123,8 @@
                     <div class="mb-2 form-group">
                         <select name="month" id="month" class="form-control">
                             @foreach(range(1, 12) as $m)
-                            <option value="{{ $m }}" {{ $month==$m ? 'selected' : '' }}>{{\Carbon\Carbon::createFromDate(null, $m)->format('F') }}</option>
+                            <option value="{{ $m }}" {{ $month==$m ? 'selected' : '' }}>
+                                {{\Carbon\Carbon::createFromDate(null, $m)->format('F') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -159,12 +160,14 @@
 </div>
 
 <!-- Edit Attendance Modal -->
-<div class="modal fade" id="editAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="editAttendanceModalLabel" aria-hidden="true">
+<div class="modal fade" id="editAttendanceModal" tabindex="-1" role="dialog" aria-labelledby="editAttendanceModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editAttendanceModalLabel">Edit Attendance</h5>
-                <button type="button"  class="btn text-secondary" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                <button type="button" class="btn text-secondary" data-bs-dismiss="modal" aria-label="Close"><i
+                        class="fa fa-times"></i></button>
                 </button>
             </div>
             <div class="modal-body">
@@ -204,17 +207,20 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    aria-label="Close">Close</button>
                 <button type="button" id="save-attendance" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
 </div>
+
 @endsection
 @section('footer-script')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
-   $(document).ready(function () {
+
+    $(document).ready(function () {
     $('#filter-button').click(function () {
         const month = $('#month').val();
         const year = $('#year').val();
@@ -377,7 +383,7 @@
             toastr.error('An error occurred. Please try again.');
         }
     });
-});
+   });
 
 
     $('#punch-in-time, #punch-out-time').change(function () {
@@ -400,7 +406,7 @@
     }
 
     fetchAttendance($('#month').val(), $('#year').val());
-});
+    });
 
 </script>
 @endsection

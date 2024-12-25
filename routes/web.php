@@ -140,6 +140,17 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | Hr All Emp Attendance Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('attendance-all')->name('attendance.')->group(function () {
+                Route::get('fetch-attendance', [Controllers\Admin\AttendanceController::class, 'fetchAttendance'])->name('fetch');
+                Route::get('get/{emp_code?}/{date?}', [Controllers\Admin\AttendanceController::class, 'get_attendance'])->name('get');
+                Route::post('store/{emp_code?}/{date?}', [Controllers\Admin\AttendanceController::class, 'store_attendance'])->name('store');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
             | Admin ENV CONTROLLER
             |--------------------------------------------------------------------------
             */

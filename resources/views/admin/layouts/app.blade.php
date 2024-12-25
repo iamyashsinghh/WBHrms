@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{asset('css/common.css')}}">
     <script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
     <title>@yield('title') | {{env('APP_NAME')}}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('header-css')
     @yield('header-script')
 </head>
