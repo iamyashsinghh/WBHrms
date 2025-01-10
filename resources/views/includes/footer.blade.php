@@ -3,41 +3,45 @@
     All rights reserved.
 </footer>
 <script>
-function handle_view_image(image_url, image_change_request_url = null) {
+function handleViewImage(image_url, image_change_request_url = null) {
     const existingModal = document.getElementById('viewImageModal');
     if (existingModal) {
         existingModal.remove();
     }
     const defaultImageUrl = "{{ asset('images/default-user.png') }}";
-    if(!image_url) {
+    if (!image_url) {
         image_url = defaultImageUrl;
     }
     const div = document.createElement('div');
     div.classList = "modal fade";
     div.id = "viewImageModal";
     div.setAttribute("tabindex", "-1");
+    div.setAttribute("aria-labelledby", "viewImageModalLabel");
+    div.setAttribute("aria-hidden", "true");
+
     const modal_elem = `
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Image</h4>
-                    <button type="button" class="btn text-secondary" onclick="handle_remove_modal('viewImageModal')" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="text-center modal-body">
                     <img src="${image_url}" class="rounded img-fluid" style="min-width: 20rem; height: 20rem;" />
                 </div>
-                <div class="modal-footer justify-content-between align-items-end">
+                <div class="modal-footer justify-content-between">
                     <form action="${image_change_request_url}" method="post" class="w-50" enctype="multipart/form-data">
+                        @csrf
                         <div class="form-group">
-                            <label>Update Image?</label>
+                            <label for="customFile">Update Image?</label>
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input" id="customFile" name="profile_image" required>
                                 <label class="custom-file-label" for="customFile">Choose file</label>
                             </div>
                         </div>
-                        <button type="submit" class="m-1 btn btn-sm text-light" style="background-color: var(--wb-dark-red);">Submit</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                     </form>
-                    <button type="button" class="btn btn-sm btn-secondary" onclick="handle_remove_modal('viewImageModal')" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -46,13 +50,14 @@ function handle_view_image(image_url, image_change_request_url = null) {
     document.body.appendChild(div);
     const modal = new bootstrap.Modal(div);
     modal.show();
-    const fileInput = document.querySelector('#customFile');
-    const label = document.querySelector('label[for="customFile"]');
-    fileInput.addEventListener('change', function(event) {
+
+    const fileInput = div.querySelector('#customFile');
+    const label = div.querySelector('label[for="customFile"]');
+    fileInput.addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
             label.textContent = file.name;
-            const img = document.querySelector('.modal-body img');
+            const img = div.querySelector('.modal-body img');
             img.src = URL.createObjectURL(file);
         }
     });

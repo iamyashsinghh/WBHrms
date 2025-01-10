@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeDataController extends Controller
 {
@@ -61,4 +64,55 @@ class EmployeeDataController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to update employment information.', 'error' => $e->getMessage()], 500);
         }
     }
+
+public function update_profile_image(Request $request, $emp_code) {
+    // Validate the input file
+    $validate = Validator::make($request->all(), [
+        'profile_image' => 'required|mimes:jpg,jpeg,png,webp,gif|max:1024',
+    ]);
+
+    if ($validate->fails()) {
+        session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => $validate->errors()->first()]);
+        return redirect()->back();
+    }
+
+    // Find the employee
+    $user = Employee::where('emp_code', $emp_code)->first();
+    if (!$user) {
+        abort(404, 'Employee not found.');
+    }
+
+    // Check and process the uploaded file
+    if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+        $file = $request->file('profile_image');
+        $extension = $file->getClientOriginalExtension();
+
+        $sub_str = substr($user->name, 0, 5);
+        $file_name = strtolower(str_replace(' ', '_', $sub_str)) . "_profile_" . date('dmyHis') . "." . $extension;
+        $path = "usersProfileImages/$file_name";
+
+        try {
+            $stored = Storage::disk('public')->putFileAs('usersProfileImages', $file, $file_name);
+            Log::info($stored);
+            if ($stored) {
+                $profile_image_url = asset("storage/usersProfileImages/$file_name");
+
+                $user->profile_img = $profile_image_url;
+                $user->save();
+
+                session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Image updated successfully.']);
+            } else {
+                session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => 'Failed to store the image.']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error saving profile image: ' . $e->getMessage());
+            session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => 'An error occurred while saving the image.']);
+        }
+    } else {
+        session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => 'Invalid or no image file uploaded.']);
+    }
+
+    return redirect()->back();
+}
+
 }

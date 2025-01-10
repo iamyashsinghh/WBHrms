@@ -3,13 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers;
-use App\Http\Controllers\Controller;
 use App\Mail\OfferLetter;
 use App\Models\Employee;
-use App\Models\Salary;
 use App\Services\HrMail;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Services\ItMail;
 
 Route::group(['middleware' => 'AuthCheck'], function () {
     Route::get('/', [AuthController::class, 'login'])->name('login');
@@ -24,6 +20,7 @@ Route::get('mail/{emp_code?}/{type?}', function ($emp_code, $type) {
     HrMail::to($emp->email)->send(new OfferLetter($emp_code));
 })->name('send.hr.mail');
 
+Route::post('/employee/update-profile-image/{emp_code?}', [Controllers\EmployeeDataController::class, 'update_profile_image'])->name('updateProfileImage');
 
 Route::middleware('verify_token')->group(function () {
     Route::middleware(['CheckLoginTime', 'CheckDevice'])->group(function () {
@@ -39,7 +36,6 @@ Route::middleware('verify_token')->group(function () {
             |--------------------------------------------------------------------------
             */
             Route::get('/dashboard', [Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-            Route::get('update_profile_image', [Controllers\Admin\EmployeeController::class, 'update_profile_image'])->name('employee.update_profile_image');
             Route::get('bypass_login/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'bypass_login'])->name('employee.bypass_login');
 
             /*

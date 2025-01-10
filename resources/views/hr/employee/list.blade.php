@@ -66,8 +66,8 @@
                         visible: false,
                     },
                     {
-                        data: 'profile_image',
-                        name: 'profile_image',
+                        data: 'profile_img',
+                        name: 'profile_img',
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {

@@ -4,7 +4,6 @@ if (Auth::guard('hr')->check()) {
 }
 $uri =  Route::currentRouteName();
 @endphp
-
 <aside class="main-sidebar sidebar-dark-danger" style="background: var(--wb-dark-red);">
     <a href="{{ route('hr.dashboard') }}" class="text-center brand-link">
         <img src="{{ asset('wb-logo2.webp') }}" alt="AdminLTE Logo" style="width: 80% !important;">
@@ -12,8 +11,13 @@ $uri =  Route::currentRouteName();
     <div class="sidebar">
         <div class="pb-3 mt-3 mb-3 user-panel d-flex align-items-center">
             <div class="image">
-                <a href="javascript:void(0);" onclick="handle_view_image('{{$auth_user->profile_image}}', '{{'hr.team.updateProfileImage', $auth_user->id}}')">
-                    <img src="{{$auth_user->profile_image}}" onerror="this.src = null; this.src='{{asset('/images/default-user.png')}}'" class="img-circle elevation-2" alt="User Image" style="width: 43px; height: 43px;">
+                <a href="javascript:void(0);" onclick="handleViewImage('{{ $auth_user->profile_img }}', '{{route('updateProfileImage')}}/{{ $auth_user->emp_code }}')">
+                    <img
+                        src="{{ $auth_user->profile_img ?? asset('/images/default-user.png') }}"
+                        onerror="this.onerror=null; this.src='{{ asset('/images/default-user.png') }}';"
+                        class="img-circle elevation-2"
+                        alt="User Image"
+                        style="width: 43px; height: 43px;">
                 </a>
             </div>
             <div class="py-0 text-center info">

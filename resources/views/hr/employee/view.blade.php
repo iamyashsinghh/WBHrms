@@ -57,7 +57,7 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-5 col-sm-12">
                             <div class="text-center profile-section">
-                                <img src="{{ $user->profile_picture_url ?? asset('images/default-user.png') }}"
+                                <img src="{{ $user->profile_img ?? asset('images/default-user.png') }}"
                                     class="mb-3 border img-fluid rounded-circle border-secondary" alt="Profile Picture"
                                     style="width: 150px; height: 150px;">
                                 <h4 class="mt-2">{{ $user->name }}</h4>
