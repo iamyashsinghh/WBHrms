@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\hr;
+namespace App\Http\Controllers\Hr;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentType;

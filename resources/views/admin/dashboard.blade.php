@@ -168,6 +168,26 @@
                 <div class="mx-2 mb-2 d-flex justify-content-end">
                     <button id="toggle-all" class="btn btn-primary" style="background-color: #891010; border: none;">Open All</button>
                 </div>
+                <div class="dropdown">
+                    <button
+                        class="btn btn-primary dropdown-toggle"
+                        type="button"
+                        id="downloadAttendanceDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        style="background-color: #891010; border: none;"
+                    >
+                        Download Attendance Sheet
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="downloadAttendanceDropdown">
+                        <li>
+                            <a class="dropdown-item download-format" href="#" data-format="excel">Download as Excel</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item download-format" href="#" data-format="pdf">Download as PDF</a>
+                        </li>
+                    </ul>
+                </div>
                 <form action="javascript:void(0);" id="filter-form" class="form-inline">
                     <div class="mb-2 form-group">
                         <select name="month" id="month" class="form-control">
@@ -403,6 +423,25 @@ new Chart("preDayAttendance", {
                             </tr>
                             <tr class="accordion-content" id="details-${employee.id}">
                                 <td colspan="9">
+                                            <div class="mb-2 d-flex">
+            <button
+                class="btn btn-primary btn-sm download-attendance"
+                data-employee-id="${employee.id}"
+                data-employee-name="${employee.name}"
+                data-format="pdf"
+                style="background-color: #891010; border: none;">
+                Download PDF
+            </button>
+            <button
+                class="mx-2 btn btn-primary btn-sm download-attendance"
+                data-employee-id="${employee.id}"
+                data-employee-name="${employee.name}"
+                data-format="excel"
+                style="background-color: #891010; border: none;">
+                Download Excel
+            </button>
+        </div>
+
                                     <table class="attendance-table">
                                         <thead>
                                             <tr class="table-dark">
@@ -559,6 +598,102 @@ new Chart("preDayAttendance", {
 
         fetchAttendance($('#month').val(), $('#year').val());
         });
+
+        $(document).on('click', '.download-attendance', function () {
+    const employeeId = $(this).data('employee-id');
+    const employeeName = $(this).data('employee-name');
+    const format = $(this).data('format');
+
+    // Get selected month and year from dropdowns
+    const month = $('#month').val();
+    const year = $('#year').val();
+
+    // Show loading spinner
+    const button = $(this);
+    button.html('<i class="fas fa-spinner fa-spin"></i> Downloading...');
+    button.prop('disabled', true);
+
+    // AJAX request
+    $.ajax({
+        url: `{{ route('admin.attendance.download') }}`,
+        type: 'POST',
+        data: {
+            employee_id: employeeId,
+            format: format,
+            month: month,
+            year: year,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function (response) {
+            // Correct file extension
+            const fileExtension = format === 'excel' ? 'xlsx' : format;
+
+            // Create a temporary link to download the file
+            const link = document.createElement('a');
+            link.href = response.file_url;
+            link.download = `${employeeName}-attendance.${fileExtension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            button.html(`Download ${format.toUpperCase()}`);
+            button.prop('disabled', false);
+        },
+        error: function () {
+            alert('Error generating file. Please try again.');
+            button.html(`Download ${format.toUpperCase()}`);
+            button.prop('disabled', false);
+        }
+    });
+});
+$(document).on('click', '.download-format', function (e) {
+    e.preventDefault();
+
+    const format = $(this).data('format');
+    const month = $('#month').val();
+    const year = $('#year').val();
+
+    if (!month || !year) {
+        alert('Please select both month and year.');
+        return;
+    }
+
+    // Show loading spinner on the dropdown button
+    const button = $('#downloadAttendanceDropdown');
+    button.html('<i class="fas fa-spinner fa-spin"></i> Generating...');
+    button.prop('disabled', true);
+
+    // Send AJAX request to generate the file
+    $.ajax({
+        url: '{{ route("admin.attendance.generate") }}', // Replace with your route
+        type: 'POST',
+        data: {
+            month: month,
+            year: year,
+            format: format,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function (response) {
+            // Reset button text
+            button.html('Download Attendance Sheet');
+            button.prop('disabled', false);
+
+            // Create a temporary link to download the file
+            const link = document.createElement('a');
+            link.href = response.file_url;
+            link.download = `attendance-sheet.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+        error: function () {
+            alert('Failed to generate the attendance sheet. Please try again.');
+            button.html('Download Attendance Sheet');
+            button.prop('disabled', false);
+        }
+    });
+});
+
 
 </script>
 @endsection

@@ -7,6 +7,10 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
@@ -108,7 +112,7 @@ class AttendanceController extends Controller
                     $unmarkedDays++;
                 }
             }
-            $totalAttendance = 30 - $halfDays/2 - $absentDays - $unmarkedDays;
+            $totalAttendance = 30 - $halfDays / 2 - $absentDays - $unmarkedDays;
             $attendanceData[] = [
                 'employee' => $employee,
                 'present_days' => $presentDays,
@@ -203,4 +207,216 @@ class AttendanceController extends Controller
             ]);
         }
     }
+
+
+    public function downloadAttendance(Request $request)
+    {
+        $employeeId = $request->input('employee_id');
+        $format = $request->input('format');
+        $month = $request->input('month');
+        $year = $request->input('year');
+
+        $employee = Employee::find($employeeId);
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+
+        // Validate month and year
+        if (!$month || !$year) {
+            return response()->json(['error' => 'Invalid month or year'], 400);
+        }
+
+        // Fetch attendance data
+        $startDate = Carbon::create($year, $month, 15)->subMonth();
+        $endDate = Carbon::create($year, $month, 14);
+
+        $attendances = Attendance::where('emp_code', $employee->emp_code)
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->keyBy('date');
+
+        $detailedAttendance = [];
+        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+            $currentDate = $date->toDateString();
+            $attendance = $attendances->get($currentDate);
+            $detailedAttendance[$currentDate] = [
+                'status' => $attendance->status ?? '--',
+                'working_hours' => $attendance->working_hours ?? '--',
+                'punch_in_time' => isset($attendance->punch_in_time) ? Carbon::parse($attendance->punch_in_time)->format('h:i a') : '--',
+                'punch_out_time' => isset($attendance->punch_out_time) ? Carbon::parse($attendance->punch_out_time)->format('h:i a') : '--',
+            ];
+        }
+
+        if ($format === 'pdf') {
+            $pdf = Pdf::loadView('admin.pdf.attendance', compact('employee', 'detailedAttendance'));
+            $filePath = storage_path("app/public/attendance-{$employeeId}.pdf");
+            $pdf->save($filePath);
+        } elseif ($format === 'excel') {
+            try {
+                // Generate Excel
+                $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // Set headers
+                $sheet->setCellValue('A1', 'Date');
+                $sheet->setCellValue('B1', 'Status');
+                $sheet->setCellValue('C1', 'Working Hours');
+                $sheet->setCellValue('D1', 'Punch In Time');
+                $sheet->setCellValue('E1', 'Punch Out Time');
+
+                // Populate data
+                $row = 2;
+                foreach ($detailedAttendance as $date => $details) {
+                    $sheet->setCellValue("A{$row}", $date);
+                    $sheet->setCellValue("B{$row}", ucfirst($details['status']));
+                    $sheet->setCellValue("C{$row}", $details['working_hours']);
+                    $sheet->setCellValue("D{$row}", $details['punch_in_time']);
+                    $sheet->setCellValue("E{$row}", $details['punch_out_time']);
+                    $row++;
+                }
+
+                $filePath = storage_path("app/public/attendance-{$employeeId}.xlsx");
+                $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                $writer->save($filePath);
+
+                if (!file_exists($filePath)) {
+                    throw new \Exception('File not saved.');
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Failed to generate Excel file: ' . $e->getMessage()], 500);
+            }
+        }
+
+        $fileUrl = asset("storage/" . basename($filePath));
+
+        return response()->json(['file_url' => $fileUrl]);
+    }
+
+    public function generateAttendanceSheet(Request $request)
+    {
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $format = $request->input('format');
+
+        $employees = Employee::all();
+        $attendanceData = [];
+        $startDate = Carbon::create($year, $month, 15)->subMonth();
+        $endDate = Carbon::create($year, $month, 14);
+
+        foreach ($employees as $employee) {
+            $attendances = Attendance::where('emp_code', $employee->emp_code)
+                ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+                ->get()
+                ->keyBy('date');
+
+            $detailedAttendance = [];
+            for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+                $currentDate = $date->toDateString();
+                $attendance = $attendances->get($currentDate);
+
+                $detailedAttendance[$currentDate] = [
+                    'status' => $attendance->status ?? '--',
+                ];
+            }
+
+            $attendanceData[] = [
+                'employee_name' => $employee->name,
+                'designation' => $employee->designation,
+                'attendance' => $detailedAttendance,
+            ];
+        }
+
+        // Generate the file
+        if ($format === 'excel') {
+            return $this->generateExcel($attendanceData, $month, $year);
+        } elseif ($format === 'pdf') {
+            return $this->generatePDF($attendanceData, $month, $year);
+        } else {
+            return response()->json(['error' => 'Invalid format'], 400);
+        }
+    }
+
+    private function generateExcel($attendanceData, $month, $year)
+{
+    try {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header Row
+        $sheet->setCellValue('A1', 'Employee Name');
+        $sheet->setCellValue('B1', 'Designation');
+        $columnIndex = 'C'; // Start from column C for dates
+
+        $startDate = Carbon::create($year, $month, 15)->subMonth();
+        $endDate = Carbon::create($year, $month, 14);
+        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+            $sheet->setCellValue("{$columnIndex}1", $date->format('M d Y'));
+            $columnIndex++;
+        }
+
+        // Populate Data
+        $rowIndex = 2;
+        foreach ($attendanceData as $data) {
+            $sheet->setCellValue("A{$rowIndex}", $data['employee_name']);
+            $sheet->setCellValue("B{$rowIndex}", $data['designation']);
+
+            $columnIndex = 'C'; // Reset to column C for attendance data
+            foreach ($data['attendance'] as $date => $details) {
+                $sheet->setCellValue("{$columnIndex}{$rowIndex}", $details['status']);
+                $columnIndex++;
+            }
+            $rowIndex++;
+        }
+        if (!is_dir(storage_path('app/public'))) {
+            mkdir(storage_path('app/public'), 0755, true);
+        }
+        // Correct File Path and Extension
+        $filePath = storage_path("app/public/attendance_sheet_{$year}_{$month}.xlsx");
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        // Save File
+        $writer->save($filePath);
+
+        // Logging for Debugging
+        if (!file_exists($filePath)) {
+            Log::error("Excel file not found at: {$filePath}");
+            throw new \Exception('Excel file not saved.');
+        }
+
+        Log::info("Excel file generated successfully at: {$filePath}");
+        return response()->download($filePath)->deleteFileAfterSend();
+    } catch (\Exception $e) {
+        Log::error("Error generating Excel file: {$e->getMessage()}");
+        return response()->json(['error' => 'Failed to generate Excel file: ' . $e->getMessage()], 500);
+    }
+}
+
+private function generatePDF($attendanceData, $month, $year)
+{
+    try {
+        $pdf = Pdf::loadView('admin.pdf.attendance-sheet', [
+            'attendanceData' => $attendanceData,
+            'month' => $month,
+            'year' => $year,
+        ]);
+
+        $filePath = storage_path("app/public/attendance-sheet-{$year}-{$month}.pdf");
+
+        // Save PDF
+        $pdf->save($filePath);
+
+        // Logging for Debugging
+        if (!file_exists($filePath)) {
+            Log::error("PDF file not found at: {$filePath}");
+            throw new \Exception('PDF file not saved.');
+        }
+
+        Log::info("PDF file generated successfully at: {$filePath}");
+        return response()->download($filePath)->deleteFileAfterSend();
+    } catch (\Exception $e) {
+        Log::error("Error generating PDF file: {$e->getMessage()}");
+        return response()->json(['error' => 'Failed to generate PDF file: ' . $e->getMessage()], 500);
+    }
+}
+
 }
