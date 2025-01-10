@@ -165,12 +165,12 @@
     <section class="content">
         <div class="container-fluid">
             <div class="d-flex justify-content-end">
-                <div class="mx-2 mb-2 d-flex justify-content-end">
+                <div class="mb-2 d-flex justify-content-end">
                     <button id="toggle-all" class="btn btn-primary" style="background-color: #891010; border: none;">Open All</button>
                 </div>
-                <div class="dropdown">
+                <div class=" dropdown">
                     <button
-                        class="btn btn-primary dropdown-toggle"
+                        class="mx-2 btn btn-primary dropdown-toggle"
                         type="button"
                         id="downloadAttendanceDropdown"
                         data-bs-toggle="dropdown"
@@ -226,7 +226,6 @@
             </div>
         </div>
     </section>
-    <!-- Edit Attendance Modal -->
     <div class="modal fade" id="editAttendanceModal" tabindex="-1" role="dialog"
         aria-labelledby="editAttendanceModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -281,7 +280,6 @@
             </div>
         </div>
     </div>
-
 </div>
 @section('footer-script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -658,14 +656,12 @@ $(document).on('click', '.download-format', function (e) {
         return;
     }
 
-    // Show loading spinner on the dropdown button
     const button = $('#downloadAttendanceDropdown');
     button.html('<i class="fas fa-spinner fa-spin"></i> Generating...');
     button.prop('disabled', true);
 
-    // Send AJAX request to generate the file
     $.ajax({
-        url: '{{ route("admin.attendance.generate") }}', // Replace with your route
+        url: '{{ route("admin.attendance.generate") }}',
         type: 'POST',
         data: {
             month: month,
@@ -674,14 +670,15 @@ $(document).on('click', '.download-format', function (e) {
             _token: '{{ csrf_token() }}'
         },
         success: function (response) {
-            // Reset button text
+            const fileExtension = format === 'excel' ? 'xlsx' : format;
+
             button.html('Download Attendance Sheet');
             button.prop('disabled', false);
 
             // Create a temporary link to download the file
             const link = document.createElement('a');
             link.href = response.file_url;
-            link.download = `attendance-sheet.${format}`;
+            link.download = `attendance-sheet.${fileExtension}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

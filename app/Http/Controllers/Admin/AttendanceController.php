@@ -226,9 +226,13 @@ class AttendanceController extends Controller
             return response()->json(['error' => 'Invalid month or year'], 400);
         }
 
-        // Fetch attendance data
-        $startDate = Carbon::create($year, $month, 15)->subMonth();
-        $endDate = Carbon::create($year, $month, 14);
+        if ($employee->emp_type === 'Fulltime') {
+            $startDate = Carbon::create($year, $month, 15)->subMonth();
+            $endDate = Carbon::create($year, $month, 14);
+        } else {
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = Carbon::create($year, $month)->endOfMonth();
+        }
 
         $attendances = Attendance::where('emp_code', $employee->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
@@ -337,86 +341,134 @@ class AttendanceController extends Controller
     }
 
     private function generateExcel($attendanceData, $month, $year)
-{
-    try {
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+    {
+        try {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
 
-        // Header Row
-        $sheet->setCellValue('A1', 'Employee Name');
-        $sheet->setCellValue('B1', 'Designation');
-        $columnIndex = 'C'; // Start from column C for dates
+            $sheet->getDefaultColumnDimension()->setWidth(12);
+            $sheet->getDefaultRowDimension()->setRowHeight(20);
+            $sheet->getStyle('A1:Z100')->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A1:Z100')->getAlignment()->setVertical('center');
 
-        $startDate = Carbon::create($year, $month, 15)->subMonth();
-        $endDate = Carbon::create($year, $month, 14);
-        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
-            $sheet->setCellValue("{$columnIndex}1", $date->format('M d Y'));
-            $columnIndex++;
-        }
+            $sheet->setCellValue('A1', 'Employee Name');
+            $sheet->setCellValue('B1', 'Designation');
+            $columnIndex = 'C';
 
-        // Populate Data
-        $rowIndex = 2;
-        foreach ($attendanceData as $data) {
-            $sheet->setCellValue("A{$rowIndex}", $data['employee_name']);
-            $sheet->setCellValue("B{$rowIndex}", $data['designation']);
+            $startDate = Carbon::create($year, $month, 15)->subMonth();
+            $endDate = Carbon::create($year, $month, 14);
 
-            $columnIndex = 'C'; // Reset to column C for attendance data
-            foreach ($data['attendance'] as $date => $details) {
-                $sheet->setCellValue("{$columnIndex}{$rowIndex}", $details['status']);
+            for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+                $sheet->setCellValue("{$columnIndex}1", $date->format('D'));
+                $sheet->setCellValue("{$columnIndex}2", $date->format('M d'));
+                $sheet->getColumnDimension($columnIndex)->setWidth(6);
                 $columnIndex++;
             }
-            $rowIndex++;
-        }
-        if (!is_dir(storage_path('app/public'))) {
-            mkdir(storage_path('app/public'), 0755, true);
-        }
-        // Correct File Path and Extension
-        $filePath = storage_path("app/public/attendance_sheet_{$year}_{$month}.xlsx");
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
 
-        // Save File
-        $writer->save($filePath);
+              // Add total calculation headers
+        $sheet->setCellValue("{$columnIndex}1", 'MTD Week Off Days');
+        $sheet->setCellValue("{$columnIndex}2", '(WO)');
+        $weekOffColumn = $columnIndex++;
 
-        // Logging for Debugging
-        if (!file_exists($filePath)) {
-            Log::error("Excel file not found at: {$filePath}");
-            throw new \Exception('Excel file not saved.');
+        $sheet->setCellValue("{$columnIndex}1", 'MTD Present Days');
+        $sheet->setCellValue("{$columnIndex}2", '(P)');
+        $presentColumn = $columnIndex++;
+
+        $sheet->setCellValue("{$columnIndex}1", 'MTD Absent Days');
+        $sheet->setCellValue("{$columnIndex}2", '(A)');
+        $absentColumn = $columnIndex++;
+
+        $sheet->setCellValue("{$columnIndex}1", 'MTD Half Day');
+        $sheet->setCellValue("{$columnIndex}2", '(H)');
+        $halfDayColumn = $columnIndex++;
+
+        $sheet->setCellValue("{$columnIndex}1", 'Total Present Days');
+        $sheet->mergeCells("{$columnIndex}1:{$columnIndex}2");
+        $totalPresentColumn = $columnIndex++;
+
+
+            $sheet->mergeCells('A1:A2');
+            $sheet->mergeCells('B1:B2');
+            $sheet->getStyle('A1:AL2')->getFont()->setBold(true);
+            $sheet->getStyle('A1:AL2')->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('891010');
+            $sheet->getStyle('A1:AL2')->getFont()->getColor()->setARGB('FFFFFF');
+            $rowIndex = 3;
+            foreach ($attendanceData as $data) {
+                $sheet->setCellValue("A{$rowIndex}", $data['employee_name']);
+                $sheet->setCellValue("B{$rowIndex}", $data['designation']);
+
+                $columnIndex = 'C';
+                foreach ($data['attendance'] as $date => $details) {
+                    $shortStatus = match (strtolower($details['status'])) {
+                        'present' => 'P',
+                        'absent' => 'A',
+                        'halfday' => 'H',
+                        'weekend' => 'WO',
+                        'holiday' => 'HO',
+                        default => '--',
+                    };
+
+                    $sheet->setCellValue("{$columnIndex}{$rowIndex}", $shortStatus);
+
+                    $color = match ($shortStatus) {
+                        'P' => '90EE90',
+                        'A' => 'FF6347',
+                        'H' => 'FFFF99',
+                        'WO' => '87CEEB',
+                        'HO' => 'ADD8E6',
+                        default => 'FFFFFF',
+                    };
+                    $sheet->getStyle("{$columnIndex}{$rowIndex}")->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()->setARGB($color);
+
+                    $columnIndex++;
+                }
+                $sheet->setCellValue("{$weekOffColumn}{$rowIndex}", 0);
+                $sheet->setCellValue("{$presentColumn}{$rowIndex}", 0);
+                $sheet->setCellValue("{$absentColumn}{$rowIndex}", 0);
+                $sheet->setCellValue("{$halfDayColumn}{$rowIndex}", 0);
+                $sheet->setCellValue("{$totalPresentColumn}{$rowIndex}", 0 + (0 / 2));
+                $rowIndex++;
+            }
+            $rowIndex--;
+            $sheet->getStyle("A1:AL{$rowIndex}")
+                ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+            $fileName = "attendance-sheet-{$year}-{$month}.xlsx";
+            $filePath = storage_path("app/public/{$fileName}");
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save($filePath);
+
+            if (!file_exists($filePath)) {
+                throw new \Exception('Excel file not saved.');
+            }
+            $fileUrl = asset("storage/{$fileName}");
+            return response()->json(['file_url' => $fileUrl], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to generate Excel file: ' . $e->getMessage()], 500);
         }
-
-        Log::info("Excel file generated successfully at: {$filePath}");
-        return response()->download($filePath)->deleteFileAfterSend();
-    } catch (\Exception $e) {
-        Log::error("Error generating Excel file: {$e->getMessage()}");
-        return response()->json(['error' => 'Failed to generate Excel file: ' . $e->getMessage()], 500);
     }
-}
 
-private function generatePDF($attendanceData, $month, $year)
-{
-    try {
-        $pdf = Pdf::loadView('admin.pdf.attendance-sheet', [
-            'attendanceData' => $attendanceData,
-            'month' => $month,
-            'year' => $year,
-        ]);
 
-        $filePath = storage_path("app/public/attendance-sheet-{$year}-{$month}.pdf");
-
-        // Save PDF
-        $pdf->save($filePath);
-
-        // Logging for Debugging
-        if (!file_exists($filePath)) {
-            Log::error("PDF file not found at: {$filePath}");
-            throw new \Exception('PDF file not saved.');
+    private function generatePDF($attendanceData, $month, $year)
+    {
+        try {
+            $pdf = Pdf::loadView('admin.pdf.attendance-sheet', [
+                'attendanceData' => $attendanceData,
+                'month' => $month,
+                'year' => $year,
+            ]);
+            $fileName = "attendance-sheet-{$year}-{$month}.pdf";
+            $filePath = storage_path("app/public/{$fileName}");
+            $pdf->save($filePath);
+            $fileUrl = asset("storage/{$fileName}");
+            return response()->json(['file_url' => $fileUrl], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to generate PDF file: ' . $e->getMessage()], 500);
         }
-
-        Log::info("PDF file generated successfully at: {$filePath}");
-        return response()->download($filePath)->deleteFileAfterSend();
-    } catch (\Exception $e) {
-        Log::error("Error generating PDF file: {$e->getMessage()}");
-        return response()->json(['error' => 'Failed to generate PDF file: ' . $e->getMessage()], 500);
     }
-}
-
 }

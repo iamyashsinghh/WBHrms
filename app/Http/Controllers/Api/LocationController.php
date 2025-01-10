@@ -22,14 +22,12 @@ class LocationController extends Controller
         $validated = $request->validate([
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
-            'recorded_at' => 'required|date_format:Y-m-d H:i:s',
         ]);
-
         $location = StoreLocation::create([
             'emp_code' => $user->emp_code,
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
-            'recorded_at' => $validated['recorded_at'],
+            'recorded_at' => now(),
         ]);
 
         return response()->json([
