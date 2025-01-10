@@ -45,7 +45,7 @@
                     .bindPopup(`Updated location for {{ $user->name }}`)
                     .openPopup();
 
-                map.setView([latitude, longitude], 13);
+                map.setView([latitude, longitude], 20);
             },
             error: function(error) {
                 console.error('Error fetching location:', error);
