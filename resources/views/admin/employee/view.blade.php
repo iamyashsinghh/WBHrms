@@ -49,7 +49,9 @@
                                 <a href="{{ route('admin.employee.manage') }}/{{ $user->emp_code }}" class="btn btn-sm btn-info" target="_blank"><i
                                     class="fa fa-edit"
                                     style=""></i></a>
-
+                                    <a href="{{ route('admin.geo.index', ['emp_code' => $user->emp_code]) }}" class="btn btn-sm btn-info" target="_blank">
+                                        <i class="fa fa-location"></i>
+                                    </a>
                         </div>
                     </div>
                 </div>

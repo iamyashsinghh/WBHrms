@@ -164,6 +164,17 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('/env-update', [Controllers\Admin\EnvController::class, 'index'])->name('index');
                 Route::post('/env-update', [Controllers\Admin\EnvController::class, 'update'])->name('update');
             });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Admin GEO Location
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/geo')->name('geo.')->group(function () {
+                Route::get('/{emp_code}/live-location', [Controllers\Admin\GeoController::class, 'index'])->name('index');
+                Route::post('/{emp_code}/last-location', [Controllers\Admin\GeoController::class, 'get_last_location_ajax'])->name('get_last_location_ajax');
+            });
         });
 
         /*
