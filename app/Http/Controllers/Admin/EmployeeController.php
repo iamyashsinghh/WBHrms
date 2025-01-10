@@ -172,4 +172,17 @@ class EmployeeController extends Controller
         $total_ctc = $ctc*12;
         return view('admin.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc', 'managers'));
     }
+
+    public function is_active_status($emp_code, $status){
+        $employee = Employee::where('emp_code', $emp_code)->first();
+        if (!$employee) {
+            return abort(404);
+        }
+
+        $employee->is_active = $status;
+        $employee->save();
+
+        session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Status updated."]);
+        return redirect()->back();
+    }
 }

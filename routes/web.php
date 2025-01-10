@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers;
+use App\Http\Controllers\Controller;
 use App\Mail\OfferLetter;
 use App\Models\Employee;
 use App\Models\Salary;
@@ -52,6 +53,7 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('view/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'view'])->name('view');
                 Route::get('manage/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'manage'])->name('manage');
                 Route::post('manage_process/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'manage_process'])->name('manage_process');
+                Route::get('is_active_status_update/{emp_code?}/{status?}', [Controllers\Admin\EmployeeController::class, 'is_active_status'])->name('is_active_status');
                 Route::get('delete/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'delete'])->name('delete');
 
                 Route::post('updateEmploymentInfo', [Controllers\EmployeeDataController::class, 'updateEmploymentInfo'])->name('updateEmploymentInfo');

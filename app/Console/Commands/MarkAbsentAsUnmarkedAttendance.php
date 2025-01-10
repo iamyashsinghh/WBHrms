@@ -28,6 +28,5 @@ class MarkAbsentAsUnmarkedAttendance extends Command
     {
         $now = Carbon::now();
         
-
     }
 }

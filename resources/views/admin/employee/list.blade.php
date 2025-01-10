@@ -104,6 +104,10 @@
                     {
                         data: 'is_active',
                         name: 'is_active',
+                        searchable:false,
+                        render: function (data, type, row){
+                            return `<a href="{{route('admin.employee.is_active_status')}}/${row.emp_code}/${data == 1 ? 0 : 1}" style="font-size: 22px;"><i class="fa ${data == 1 ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger'} "></i></a>`;
+                        }
                     },
                     {
                         data: 'id',
