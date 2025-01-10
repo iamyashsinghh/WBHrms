@@ -1,3 +1,15 @@
+@extends('admin.layouts.app')
+
+@section('header-css')
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+@endsection
+
+@section('title', $page_heading)
+
+@section('main')
+<div id="map" style="height: 87vh; width: 100%;"></div>
+@endsection
+
 @section('footer-script')
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
