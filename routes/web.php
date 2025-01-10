@@ -169,7 +169,9 @@ Route::middleware('verify_token')->group(function () {
             */
             Route::prefix('/geo')->name('geo.')->group(function () {
                 Route::get('/{emp_code}/live-location', [Controllers\Admin\GeoController::class, 'index'])->name('index');
+                Route::get('/{emp_code}/location-history', [Controllers\Admin\GeoController::class, 'index_history'])->name('index_history');
                 Route::post('/{emp_code}/last-location', [Controllers\Admin\GeoController::class, 'get_last_location_ajax'])->name('get_last_location_ajax');
+                Route::post('/{emp_code}/get_location_history_ajax', [Controllers\Admin\GeoController::class, 'get_location_history_ajax'])->name('get_location_history_ajax');
             });
         });
 
