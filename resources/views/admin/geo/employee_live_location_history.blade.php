@@ -73,7 +73,6 @@
         popupAnchor: [0, -60]
     });
 
-    // Fetch location data for a specific date
     const fetchLocationsByDate = (date) => {
         $.ajax({
             url: "{{ route('admin.geo.get_location_history_ajax', ':emp_code') }}".replace(':emp_code', empCode),
@@ -83,22 +82,18 @@
                 date: date
             },
             success: function (response) {
-                // Clear existing route line if any
                 if (routeLine) {
                     map.removeLayer(routeLine);
                     routeLine = null;
                 }
 
-                // Update locations array
                 locations = response;
 
-                // If we have data
                 if (locations.length) {
                     initializeMap(locations[0]);
                     drawFullRoute(locations);
                 }
 
-                // Reset playback
                 resetPlayback();
             },
             error: function (error) {
@@ -107,7 +102,6 @@
         });
     };
 
-    // Initialize map if not already
     const initializeMap = (firstLocation) => {
         if (!map) {
             if (!firstLocation.latitude || !firstLocation.longitude) {
@@ -124,12 +118,9 @@
         }
     };
 
-    // Draw the full route on the map in #891010
     const drawFullRoute = (locationData) => {
-        // Convert location array into lat-lng pairs
         let routeCoordinates = locationData.map(loc => [loc.latitude, loc.longitude]);
 
-        // Create or update the route polyline
         routeLine = L.polyline(routeCoordinates, {
             color: '#891010',
             weight: 2,
@@ -153,21 +144,45 @@
     };
 
     const playLocations = () => {
-        isPlaying = true;
-        clearInterval(playbackInterval);
+    isPlaying = true;
+    clearInterval(playbackInterval);
 
-        const intervalDuration = 1000 / playbackSpeed;
+    const animateMarker = (start, end, duration) => {
+        let startTime = null;
 
-        playbackInterval = setInterval(() => {
-            if (currentIndex < locations.length) {
-                updateMarker(locations[currentIndex]);
-                currentIndex++;
-                updateProgressBar();
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+
+            const progress = Math.min((timestamp - startTime) / duration, 1); // Calculate progress (0 to 1)
+            const lat = start.latitude + progress * (end.latitude - start.latitude);
+            const lng = start.longitude + progress * (end.longitude - start.longitude);
+
+            // Update marker position
+            marker.setLatLng([lat, lng]);
+
+            if (progress < 1) {
+                requestAnimationFrame(step); // Continue the animation
             } else {
-                pausePlayback();
+                currentIndex++;
+                if (currentIndex < locations.length - 1 && isPlaying) {
+                    // Animate to the next location
+                    animateMarker(locations[currentIndex], locations[currentIndex + 1], duration);
+                } else {
+                    // End playback if we reach the last location
+                    pausePlayback();
+                }
             }
-        }, intervalDuration);
+        };
+
+        requestAnimationFrame(step);
     };
+
+    if (locations.length > 1) {
+        // Start animation between the first two locations
+        animateMarker(locations[currentIndex], locations[currentIndex + 1], 1000 / playbackSpeed);
+    }
+};
+
 
     const pausePlayback = () => {
         isPlaying = false;
