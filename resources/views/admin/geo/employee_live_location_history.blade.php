@@ -25,14 +25,14 @@
         <select id="speedSelect" class="form-control" style="width: 100px; display: inline-block; margin-left: 10px;">
             <option value="1">1x</option>
             <option value="2">2x</option>
-            <option value="3">3x</option>
             <option value="4">4x</option>
-            <option value="5">5x</option>
             <option value="6">6x</option>
-            <option value="7">7x</option>
             <option value="8">8x</option>
-            <option value="9">9x</option>
             <option value="10">10x</option>
+            <option value="12">12x</option>
+            <option value="15">15x</option>
+            <option value="20">20x</option>
+            <option value="25">25x</option>
         </select>
     </div>
 </div>
