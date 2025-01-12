@@ -164,18 +164,15 @@
                 return;
             }
 
-            // Update marker position
             marker.setLatLng([lat, lng]);
 
             if (progress < 1) {
-                requestAnimationFrame(step); // Continue the animation
+                requestAnimationFrame(step);
             } else {
                 currentIndex++;
                 if (currentIndex < locations.length - 1 && isPlaying) {
-                    // Animate to the next location
                     animateMarker(locations[currentIndex], locations[currentIndex + 1], duration);
                 } else {
-                    // End playback if we reach the last location
                     pausePlayback();
                 }
             }
@@ -185,7 +182,6 @@
     };
 
     if (locations.length > 1) {
-        // Start animation between the first two locations
         animateMarker(locations[currentIndex], locations[currentIndex + 1], 1000 / playbackSpeed);
     }
 };
@@ -207,9 +203,14 @@
     };
 
     const updateProgressBar = () => {
-        const progress = locations.length ? (currentIndex / locations.length) * 100 : 0;
+    if (locations.length > 0) {
+        const progress = (currentIndex / (locations.length - 1)) * 100; // Calculate progress percentage
         $('#progressBar').val(progress);
-    };
+    } else {
+        $('#progressBar').val(0); // Reset progress bar if no locations
+    }
+};
+
 
     $('#datePicker').on('change', (e) => {
         const selectedDate = e.target.value;
