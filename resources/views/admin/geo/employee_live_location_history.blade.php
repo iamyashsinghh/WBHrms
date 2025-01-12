@@ -44,7 +44,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
 <script>
-    // Global Variables
     const empCode = "{{ $user->emp_code }}";
     let map = null;
     let marker = null;
@@ -52,10 +51,9 @@
     let currentIndex = 0;
     let isPlaying = false;
     let playbackInterval = null;
-    let playbackSpeed = 1; // default to 1x
-    let routeLine = null;  // polyline to show full route
+    let playbackSpeed = 1;
+    let routeLine = null;
 
-    // Custom Icon
     const customIcon = L.divIcon({
         className: '',
         html: `
@@ -154,8 +152,17 @@
             if (!startTime) startTime = timestamp;
 
             const progress = Math.min((timestamp - startTime) / duration, 1); // Calculate progress (0 to 1)
-            const lat = start.latitude + progress * (end.latitude - start.latitude);
-            const lng = start.longitude + progress * (end.longitude - start.longitude);
+
+            // Interpolate latitude and longitude
+            const lat = parseFloat(start.latitude) + progress * (parseFloat(end.latitude) - parseFloat(start.latitude));
+            const lng = parseFloat(start.longitude) + progress * (parseFloat(end.longitude) - parseFloat(start.longitude));
+
+            // Validate lat and lng before updating the marker
+            if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                console.error('Invalid LatLng object:', lat, lng);
+                pausePlayback();
+                return;
+            }
 
             // Update marker position
             marker.setLatLng([lat, lng]);
@@ -182,6 +189,7 @@
         animateMarker(locations[currentIndex], locations[currentIndex + 1], 1000 / playbackSpeed);
     }
 };
+
 
 
     const pausePlayback = () => {
