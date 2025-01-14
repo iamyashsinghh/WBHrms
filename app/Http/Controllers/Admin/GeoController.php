@@ -43,25 +43,28 @@ class GeoController extends Controller
 
     public function index_all()
     {
-        $employees_id_with_location = Attendance::whereNotNull('punch_in_time')
-            ->whereNull('punch_out_time')
-            ->whereDate('date', Carbon::now()->toDateString())
-            ->pluck('emp_code');
-        $employees_with_location = Employee::whereIn('emp_code', $employees_id_with_location)->get();
-
         $page_heading = "Live location";
         return view('admin.geo.live_location', [
             'page_heading' => $page_heading,
-            'employees_with_location' => $employees_with_location,
-            'employees_id_with_location' => $employees_id_with_location
         ]);
     }
 
     public function get_all_emp_location_ajax()
     {
-        $latestLocations = StoreLocation::select('store_locations.*','employees.name as employee_name', 'employees.profile_img')
+        $todayDate = Carbon::today()->toDateString();
+        $latestLocations = StoreLocation::select('store_locations.*',
+        'employees.name as employee_name',
+        'employees.profile_img',
+        'attendances.status as attendance_status',
+        'attendances.punch_in_time',
+        'attendances.punch_out_time',
+        )
         ->join('employees', 'employees.emp_code', '=', 'store_locations.emp_code')
-            ->joinSub(
+        ->leftJoin('attendances', function ($join) use ($todayDate) {
+            $join->on('store_locations.emp_code', '=', 'attendances.emp_code')
+                ->whereDate('attendances.date', '=', $todayDate);
+        })
+        ->joinSub(
                 StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
                     ->groupBy('emp_code'),
                 'latest_locations',
