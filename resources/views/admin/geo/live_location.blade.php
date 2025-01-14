@@ -119,13 +119,16 @@
     <br> Attendance: ${location.attendance_status ? location.attendance_status : 'N/A'}
     <br> Punch In at: ${location.punch_in_time ? moment(location.punch_in_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
     <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
-    <br> View History: <a href="${history_url || '#'}">View</a>
-    <button
-        style="background: none; border: none; color: #007bff; cursor: pointer;"
-        onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
-        title="Zoom to Location">
-        <i class="fas fa-search-plus"></i>
-    </button>
+    <br>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>View History: <a href="${location.history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a></div>
+        <button
+            style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
+            onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
+            title="Zoom to Location">
+            <i class="fas fa-search-plus"></i>
+        </button>
+    </div>
 `);
                             markersGroup.addLayer(marker);
                         }
@@ -139,7 +142,7 @@
 
         function zoomToLocation(lat, lng) {
     if (map) {
-        map.setView([lat, lng], 19); // Zoom level 15 or adjust as needed
+        map.setView([lat, lng], 19);
     }
 }
 
