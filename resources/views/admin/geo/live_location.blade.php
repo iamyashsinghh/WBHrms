@@ -7,11 +7,11 @@
 @section('title', 'All Employees Live Location')
 @section('main')
 <div class="content-wrapper">
-    <select id="employeeSelector" style="margin-bottom: 10px; width: 100%; padding: 8px;">
+    <select id="employeeSelector" style="width: 100%; padding: 8px;">
         <option value="">Select Employee</option>
     </select>
+    <div id="map" style="height: 85vh; width: 100%;"></div>
 </div>
-<div id="map" style="height: 85vh; width: 100%;"></div>
 @endsection
 
 @section('footer-script')
