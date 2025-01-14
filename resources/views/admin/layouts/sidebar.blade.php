@@ -71,6 +71,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.geo.index_all') }}" class="nav-link {{ $uri == 'admin.geo.index_all' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-location"></i>
+                        <p>Live Location</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.env.index') }}" class="nav-link {{ $uri == 'admin.env.index' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>Hrms Settings</p>
