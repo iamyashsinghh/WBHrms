@@ -61,16 +61,16 @@
                 }
                  @keyframes pulses {
                     0% {
-                        transform: scale(1.5);
-                        opacity: 0.8;
-                    }
-                    50% {
                         transform: scale(2);
                         opacity: 0.4;
                     }
-                    100% {
+                    50% {
                         transform: scale(1.5);
                         opacity: 0.8;
+                    }
+                    100% {
+                        transform: scale(2);
+                        opacity: 0.4;
                     }
                 }
             </style>
