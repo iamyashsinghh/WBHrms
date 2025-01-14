@@ -94,8 +94,8 @@
     <br> Status: ${isOnline ? 'Online' : 'Offline'}
     <br> Recorded at: ${formattedTime}
     <br> Attendance: ${location.attendance_status ? location.attendance_status : 'N/A'}
-    <br> Punch In at: ${location.punch_in_time ? location.punch_in_time.format('h:mm:ss a') : 'N/A'}
-    <br> Punch Out at: ${location.punch_out_time ? location.punch_out_time.format('h:mm:ss a') : 'N/A'}
+    <br> Punch In at: ${location.punch_in_time ? moment(location.punch_in_time).format('h:mm:ss a') : 'N/A'}
+    <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time).format('h:mm:ss a')  : 'N/A'}
     <br> View History: <a href="${history_url || '#'}">View</a>
 `);
                             markersGroup.addLayer(marker);
