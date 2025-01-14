@@ -18,7 +18,6 @@ function handleViewImage(image_url, image_change_request_url = null) {
     div.setAttribute("tabindex", "-1");
     div.setAttribute("aria-labelledby", "viewImageModalLabel");
     div.setAttribute("aria-hidden", "true");
-
     const modal_elem = `
         <div class="modal-dialog">
             <div class="modal-content">
