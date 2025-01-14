@@ -59,24 +59,22 @@ class GeoController extends Controller
 
     public function get_all_emp_location_ajax()
     {
-        $latestLocations = StoreLocation::select('store_locations.*')
-        ->joinSub(
-            StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
-                ->groupBy('emp_code'),
-            'latest_locations',
-            function ($join) {
-                $join->on('store_locations.emp_code', '=', 'latest_locations.emp_code')
-                    ->on('store_locations.created_at', '=', 'latest_locations.latest_time');
-            }
-        )
-        ->get();
-
-    if ($latestLocations->isEmpty()) {
-        return response()->json(['message' => 'No locations found'], 404);
-    }
-
-    return response()->json($latestLocations);
-
+        $latestLocations = StoreLocation::select('store_locations.*','employees.name as employee_name', 'employees.profile_img')
+        ->join('employees', 'employees.emp_code', '=', 'store_locations.emp_code')
+            ->joinSub(
+                StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
+                    ->groupBy('emp_code'),
+                'latest_locations',
+                function ($join) {
+                    $join->on('store_locations.emp_code', '=', 'latest_locations.emp_code')
+                        ->on('store_locations.created_at', '=', 'latest_locations.latest_time');
+                }
+            )
+            ->get();
+        if ($latestLocations->isEmpty()) {
+            return response()->json(['message' => 'No locations found'], 404);
+        }
+        return response()->json($latestLocations);
     }
 
     public function index_history($emp_code)
