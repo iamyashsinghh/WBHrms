@@ -5,13 +5,9 @@
 @endsection
 
 @section('title', 'All Employees Live Location')
+
 @section('main')
-<div class="content-wrapper">
-    <select id="employeeSelector" style="width: 100%; padding: 8px;">
-        <option value="">Select Employee</option>
-    </select>
-    <div id="map" style="height: 85vh; width: 100%;"></div>
-</div>
+<div id="map" style="height: 89vh; width: 100%;"></div>
 @endsection
 
 @section('footer-script')
@@ -21,92 +17,84 @@
 
 <script>
     let map = null;
-    const markers = {};
     const customIcon = (profileImg, isOnline) => L.divIcon({
-        className: '',
-        html: `
-            <div style="position: relative; width: 40px; height: 60px;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="90" fill="${isOnline ? '#A06B14' : '#891010'}">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 4.25 4.77 10.17 6.44 12.38a1 1 0 0 0 1.56 0C14.23 19.17 19 13.25 19 9c0-3.87-3.13-7-7-7zm0 15c-1.76-2.16-5-6.5-5-8 0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.5-3.24 5.84-5 8zm0-10.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path>
-                </svg>
-                <div style="position: absolute; top: 22px; left: 15px; width: 30px; height: 30px; border-radius: 50%; overflow: hidden;">
-                    <img src="${profileImg}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                ${isOnline ? `
-                <div style="position: absolute; top: 65px; left: 40%; transform: translateX(-50%); width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; animation: pulse 1.5s infinite; z-index: -1;"></div>
-                ` : ''}
+    className: '',
+    html: `
+        <div style="position: relative; width: 40px; height: 60px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="60" height="90" fill="${isOnline ? '#891010' : '#891010'}">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 4.25 4.77 10.17 6.44 12.38a1 1 0 0 0 1.56 0C14.23 19.17 19 13.25 19 9c0-3.87-3.13-7-7-7zm0 15c-1.76-2.16-5-6.5-5-8 0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.5-3.24 5.84-5 8zm0-10.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path>
+            </svg>
+            <div style="position: absolute; top: 22px; left: 15px; width: 30px; height: 30px; border-radius: 50%; overflow: hidden;">
+                <img src="${profileImg}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-        `,
-        iconSize: [40, 60],
-        iconAnchor: [20, 60],
-        popupAnchor: [0, -60]
-    });
-
-    const fetchAllLocations = () => {
-        $.ajax({
-            url: "{{ route('admin.geo.get_all_locations_ajax') }}",
-            type: 'POST',
-            data: {
-                _token: "{{ csrf_token() }}"
-            },
-            success: function(response) {
-                if (!map) {
-                    map = L.map('map').setView([28.6139, 77.2090], 5);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; <a href="https://weddingbanquets.in" target="_blank">Wedding Banquets</a>'
-                    }).addTo(map);
+            ${isOnline ? `
+            <div style="position: absolute; top: 65px; left: 40%; transform: translateX(-50%); width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; animation: pulse 1.5s infinite; z-index: -1;"></div>
+            ` : ''}
+        </div>
+        <style>
+            @keyframes pulse {
+                0% {
+                    transform: scale(1);
+                    opacity: 0.8;
                 }
-
-                // Clear the dropdown
-                const selector = $("#employeeSelector");
-                selector.empty();
-                selector.append(`<option value="">Select Employee</option>`);
-
-                response.forEach(location => {
-                    if (location.latitude && location.longitude) {
-                        const lastRecorded = moment(location.recorded_at);
-                        const currentTime = moment();
-                        const isOnline = currentTime.diff(lastRecorded, 'minutes') <= 1;
-                        const formattedTime = lastRecorded.format('MMMM Do YYYY, h:mm:ss a');
-
-                        // Update or create marker
-                        if (markers[location.employee_id]) {
-                            markers[location.employee_id].setLatLng([location.latitude, location.longitude]);
-                        } else {
-                            markers[location.employee_id] = L.marker([location.latitude, location.longitude], {
-                                icon: customIcon(location.profile_img, isOnline)
-                            }).addTo(map);
-
-                            markers[location.employee_id].bindPopup(`
-                                <b>${location.employee_name}</b>
-                                <br> Battery: 45%
-                                <br> Status: ${isOnline ? 'Online' : 'Offline'}
-                                <br> Recorded at: ${formattedTime}
-                            `);
-                        }
-
-                        // Add employee to dropdown
-                        selector.append(`<option value="${location.employee_id}">${location.employee_name}</option>`);
-                    }
-                });
-            },
-            error: function(error) {
-                console.error('Error fetching locations:', error);
+                50% {
+                    transform: scale(1.5);
+                    opacity: 0.4;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 0.8;
+                }
             }
-        });
-    };
+        </style>
+    `,
+    iconSize: [40, 60],
+    iconAnchor: [20, 60],
+    popupAnchor: [0, -60]
+});
 
-    // Center map on selected employee
-    $("#employeeSelector").on("change", function() {
-        const employeeId = $(this).val();
-        if (employeeId && markers[employeeId]) {
-            const marker = markers[employeeId];
-            map.setView(marker.getLatLng(), 12);
-            marker.openPopup();
+const fetchAllLocations = () => {
+    $.ajax({
+        url: "{{ route('admin.geo.get_all_locations_ajax') }}",
+        type: 'POST',
+        data: {
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            if (!map) {
+                map = L.map('map').setView([28.6139, 77.2090], 5);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://weddingbanquets.in" target="_blank">Wedding Banquets</a>'
+                }).addTo(map);
+            }
+
+            response.forEach(location => {
+                if (location.latitude && location.longitude) {
+                    const lastRecorded = moment(location.recorded_at);
+                    const currentTime = moment();
+                    const isOnline = currentTime.diff(lastRecorded, 'minutes') <= 1;
+                    const formattedTime = lastRecorded.format('MMMM Do YYYY, h:mm:ss a');
+
+                    const marker = L.marker([location.latitude, location.longitude], {
+                        icon: customIcon(location.profile_img, isOnline)
+                    }).addTo(map);
+
+                    marker.bindPopup(`
+                        <b>${location.employee_name}</b>
+                        <br> Battery: 45%
+                        <br> Status: ${isOnline ? 'Online' : 'Offline'}
+                        <br> Recorded at: ${formattedTime}
+                    `);
+                }
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching locations:', error);
         }
     });
+};
 
-    fetchAllLocations();
-    setInterval(fetchAllLocations, 5000);
+fetchAllLocations();
+setInterval(fetchAllLocations, 5000);
 </script>
 @endsection
