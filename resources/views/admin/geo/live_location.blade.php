@@ -31,7 +31,16 @@
                 </div>
                 ${
                     isOnline
-                    ? `<div style="position: absolute; top: 65px; left: 40%; transform: translateX(-50%); width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; animation: pulse 1.5s infinite; z-index: -1;"></div>`
+                    ? `<div style="position: absolute; top: 65px;
+                     left: 40%; transform: translateX(-50%);
+                      width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5);
+                       border-radius: 50%; animation: pulse 1.5s infinite;
+                        z-index: -1;"></div>
+                        <div style="position: absolute; top: 65px;
+                     left: 40%; transform: translateX(-50%);
+                      width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5);
+                       border-radius: 50%; animation: pulses 1.5s infinite;
+                        z-index: -1;"></div>`
                     : ''
                 }
             </div>
@@ -47,6 +56,20 @@
                     }
                     100% {
                         transform: scale(1);
+                        opacity: 0.8;
+                    }
+                }
+                 @keyframes pulses {
+                    0% {
+                        transform: scale(1.5);
+                        opacity: 0.8;
+                    }
+                    50% {
+                        transform: scale(2);
+                        opacity: 0.4;
+                    }
+                    100% {
+                        transform: scale(1.5);
                         opacity: 0.8;
                     }
                 }
