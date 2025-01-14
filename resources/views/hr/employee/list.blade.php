@@ -71,7 +71,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return `<a onclick="handle_view_image('${data}', '{{ route('hr.employee.update_profile_image') }}/${row.emp_code}')" href="javascript:void(0);"><img class="img-thumbnail" src="${data}" style="width: 50px;" onerror="this.onerror=null; this.src='{{ asset('images/default-user.png') }}'"></a>`;
+                            return `<a onclick="handleViewImage('${data}', '{{ route('hr.employee.update_profile_image') }}/${row.emp_code}')" href="javascript:void(0);"><img class="img-thumbnail" src="${data}" style="width: 50px;" onerror="this.onerror=null; this.src='{{ asset('images/default-user.png') }}'"></a>`;
                         }
                     },
                     {
