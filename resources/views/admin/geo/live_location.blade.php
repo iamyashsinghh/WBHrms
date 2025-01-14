@@ -65,21 +65,15 @@
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
-                // If map is not initialized yet, initialize it
                 if (!map) {
                     map = L.map('map').setView([28.6139, 77.2090], 5);
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://weddingbanquets.in" target="_blank">Wedding Banquets</a>'
                     }).addTo(map);
 
-                    // Create a layer group for markers
                     markersGroup = L.layerGroup().addTo(map);
                 }
-
-                // Clear out old markers
                 markersGroup.clearLayers();
-
-                // Add new markers
                 response.forEach(location => {
                     if (location.latitude && location.longitude) {
                         const lastRecorded = moment(location.recorded_at);
@@ -91,15 +85,14 @@
                             [location.latitude, location.longitude],
                             { icon: customIcon(location.profile_img, isOnline) }
                         );
-
+                        let history_url = "{{route('admin.geo.index_history', ':emp_code')}}".replace(':emp_code', location.emp_code);
                         marker.bindPopup(`
                             <b>${location.employee_name}</b>
                             <br> Battery: 45%
                             <br> Status: ${isOnline ? 'Online' : 'Offline'}
                             <br> Recorded at: ${formattedTime}
+                            <br> View History: <a href="${history_url}">View</a>
                         `);
-
-                        // Add marker to our layer group
                         markersGroup.addLayer(marker);
                     }
                 });
