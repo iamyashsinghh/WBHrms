@@ -23,8 +23,7 @@
                 <div style="position: absolute; top: 22px; left: 15px; width: 30px; height: 30px; border-radius: 50%; overflow: hidden;">
                     <img src="${profileImg}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                ${
-                    isOnline
+                ${isOnline
                     ? `<div style="position: absolute; top: 65px;
                      left: 40%; transform: translateX(-50%);
                       width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5);
@@ -35,8 +34,7 @@
                       width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5);
                        border-radius: 50%; animation: pulses 1.5s infinite;
                         z-index: -1;"></div>`
-                    : ''
-                }
+                    : ''}
             </div>
             <style>
                 @keyframes pulse {
@@ -53,7 +51,7 @@
                         opacity: 0.8;
                     }
                 }
-                 @keyframes pulses {
+                @keyframes pulses {
                     0% {
                         transform: scale(2);
                         opacity: 0.4;
@@ -67,8 +65,7 @@
                         opacity: 0.4;
                     }
                 }
-            </style>
-        `,
+            </style>`,
             iconSize: [40, 60],
             iconAnchor: [20, 60],
             popupAnchor: [0, -60]
