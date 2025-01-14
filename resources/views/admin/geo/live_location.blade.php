@@ -141,7 +141,7 @@
     }
 }
         fetchAllLocations();
-        setInterval(fetchAllLocations, 50000);
+        setInterval(fetchAllLocations, 5000);
         function getBatteryColor(level, status) {
     if (status === 'charging') {
         return '#76c7c0'; // Green for charging
