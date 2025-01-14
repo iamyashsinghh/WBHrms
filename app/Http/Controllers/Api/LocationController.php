@@ -22,11 +22,15 @@ class LocationController extends Controller
         $validated = $request->validate([
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'battery_status' => 'required',
+            'battery_level' => 'required',
         ]);
         $location = StoreLocation::create([
             'emp_code' => $user->emp_code,
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
+            'battery_status' => $validated['battery_status'],
+            'battery_level' => $validated['battery_level'],
             'recorded_at' => now(),
         ]);
 
