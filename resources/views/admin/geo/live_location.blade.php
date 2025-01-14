@@ -117,9 +117,6 @@
         <div style="flex: 1; text-align: center; padding-left: 10px;">
             <div style="position: relative; width: 60px; height: 120px; background: #ddd; border-radius: 10px; overflow: hidden; margin: auto;">
                 <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: ${location.battery_level * 100}%; background: ${getBatteryColor(location.battery_level, location.battery_status)};"></div>
-                <!-- Battery Cap -->
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: #bbb; border-radius: 10px 10px 0 0; z-index: 1;"></div>
-                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; background: #bbb; border-radius: 3px; z-index: 2;"></div>
             </div>
             <div style="margin-top: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px;">
                 ${getBatteryIcon(location.battery_status)}
@@ -151,7 +148,8 @@
     } else if (status === 'full') {
         return '#4caf50'; // Dark green for full
     } else if (status === 'unplugged') {
-        if (level > 0.5) return '#ffeb3b'; // Yellow for > 50%
+        if (level > 0.8) return '#4caf50'; // Dark green for > 80%
+        else if (level > 0.5) return '#ffeb3b'; // Yellow for > 50%
         else if (level > 0.2) return '#ffa726'; // Orange for 20%-50%
         else return '#f44336'; // Red for < 20%
     } else {
