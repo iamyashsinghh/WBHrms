@@ -1,24 +1,18 @@
 @extends('admin.layouts.app')
-
 @section('header-css')
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 @endsection
-
 @section('title', 'All Employees Live Location')
-
 @section('main')
     <div id="map" style="height: 89vh; width: 100%;"></div>
 @endsection
-
 @section('footer-script')
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-
     <script>
         let map = null;
         let markersGroup = null;
-
         const customIcon = (profileImg, isOnline) => L.divIcon({
             className: '',
             html: `
@@ -93,7 +87,6 @@
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             attribution: '&copy; <a href="https://weddingbanquets.in" target="_blank">Wedding Banquets</a>'
                         }).addTo(map);
-
                         markersGroup = L.layerGroup().addTo(map);
                     }
                     markersGroup.clearLayers();
@@ -103,7 +96,6 @@
                             const currentTime = moment();
                             const isOnline = currentTime.diff(lastRecorded, 'minutes') <= 1;
                             const formattedTime = lastRecorded.format('MMMM Do YYYY, h:mm:ss a');
-
                             const marker = L.marker(
                                 [location.latitude, location.longitude], {
                                     icon: customIcon(location.profile_img, isOnline)
@@ -121,7 +113,7 @@
     <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
     <br>
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>View History: <a href="${location.history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a></div>
+        <div>View History: <a href="${history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a></div>
         <button
             style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
             onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
@@ -139,14 +131,11 @@
                 }
             });
         };
-
         function zoomToLocation(lat, lng) {
     if (map) {
         map.setView([lat, lng], 19);
     }
 }
-
-
         fetchAllLocations();
         setInterval(fetchAllLocations, 5000);
     </script>
