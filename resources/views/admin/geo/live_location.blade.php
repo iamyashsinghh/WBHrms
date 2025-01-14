@@ -28,7 +28,7 @@
                 <img src="${profileImg}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             ${isOnline ? `
-            <div style="position: absolute; top: 65px; left: 40%; transform: translateX(-50%); width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+            <div style="position: absolute; top: 65px; left: 40%; transform: translateX(-50%); width: 30px; height: 10px; background: rgba(0, 255, 0, 0.5); border-radius: 50%; animation: pulse 1.5s infinite; z-index: -1;"></div>
             ` : ''}
         </div>
         <style>
