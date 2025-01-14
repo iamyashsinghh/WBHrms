@@ -117,8 +117,9 @@
         <div style="flex: 1; text-align: center; padding-left: 10px;">
             <div style="position: relative; width: 60px; height: 120px; background: #ddd; border-radius: 10px; overflow: hidden; margin: auto;">
                 <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: ${location.battery_level * 100}%; background: ${getBatteryColor(location.battery_level, location.battery_status)};"></div>
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: #bbb; border-radius: 10px 10px 0 0;"></div>
-                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; background: #bbb; border-radius: 3px;"></div>
+                <!-- Battery Cap -->
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: #bbb; border-radius: 10px 10px 0 0; z-index: 1;"></div>
+                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 10px; background: #bbb; border-radius: 3px; z-index: 2;"></div>
             </div>
             <div style="margin-top: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px;">
                 ${getBatteryIcon(location.battery_status)}
