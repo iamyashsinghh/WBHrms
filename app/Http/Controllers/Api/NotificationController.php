@@ -14,7 +14,7 @@ class NotificationController extends Controller
     {
         $user = $request->user();
         $notifications = Notification::orderBy('created_at', 'desc')->get();
-        $attendance = Attendance::where('date', Carbon::today()->toDateString())->where('emp_code', $user->emo_code);
+        $attendance = Attendance::where('date', Carbon::today()->toDateString())->where('emp_code', $user->emo_code)->first();
         return response()->json([
             'notifications' => $notifications,
             'attendance' => $attendance,
