@@ -229,5 +229,34 @@
             playLocations();
         }
     });
+
+    function getBatteryColor(level, status) {
+    if (status === 'charging') {
+        return '#76c7c0';
+    } else if (status === 'full') {
+        return '#4caf50';
+    } else if (status === 'unplugged') {
+        if (level > 0.8) return '#4caf50';
+        else if (level > 0.5) return '#ffeb3b';
+        else if (level > 0.2) return '#ffa726';
+        else return '#f44336';
+    } else {
+        return '#9e9e9e';
+    }
+}
+
+function getBatteryIcon(status) {
+    const iconStyles = 'width: 20px; height: 20px;';
+    if (status === 'charging') {
+        return `<img src="https://cdn-icons-png.flaticon.com/512/833/833472.png" style="${iconStyles}" alt="Charging Icon" />`; // Charging icon
+    } else if (status === 'full') {
+        return `<img src="https://cdn-icons-png.flaticon.com/512/833/833480.png" style="${iconStyles}" alt="Full Battery Icon" />`; // Full icon
+    } else if (status === 'unplugged') {
+        return `<img src="https://cdn-icons-png.flaticon.com/512/833/833482.png" style="${iconStyles}" alt="Unplugged Icon" />`; // Unplugged icon
+    } else {
+        return `<img src="https://cdn-icons-png.flaticon.com/512/833/833484.png" style="${iconStyles}" alt="Unknown Icon" />`; // Unknown icon
+    }
+}
+
 </script>
 @endsection
