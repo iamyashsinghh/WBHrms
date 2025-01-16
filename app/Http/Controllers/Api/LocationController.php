@@ -13,7 +13,6 @@ class LocationController extends Controller
     {
         $u = $request->user();
         $user = Employee::where('emp_code', $u->emp_code)->first();
-        Log::info('store_location');
 
         if (!$user) {
             return response()->json(['error' => 'Employee not found'], 404);
