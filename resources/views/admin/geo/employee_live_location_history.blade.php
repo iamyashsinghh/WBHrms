@@ -164,7 +164,12 @@
     `).openPopup();
         }
     };
-
+    
+    function zoomToLocation(lat, lng) {
+    if (map) {
+        map.setView([lat, lng], 19);
+    }
+}
     const playLocations = () => {
         isPlaying = true;
         clearInterval(playbackInterval);
