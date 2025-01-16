@@ -143,8 +143,7 @@
             <br> Punch In at: ${location.punch_in_time ? moment(location.punch_in_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
             <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
             <br>   <div style="display: flex; justify-content: space-between; align-items: center;">
-        <br>Zoom to Location:<button>
-            style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
+        <br>Zoom to Location:<button style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
             onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
             title="Zoom to Location">
             <i class="fas fa-search-plus"></i>
