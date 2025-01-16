@@ -1,17 +1,17 @@
 @extends('admin.layouts.app')
 @section('header-css')
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 @endsection
 @section('title', 'All Employees Live Location')
 @section('main')
-    <div id="map" style="height: 89vh; width: 100%;"></div>
+<div id="map" style="height: 89vh; width: 100%;"></div>
 @endsection
 @section('footer-script')
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script>
-        let map = null;
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script>
+    let map = null;
         let markersGroup = null;
         const customIcon = (profileImg, isOnline) => L.divIcon({
             className: '',
@@ -175,6 +175,6 @@ function getBatteryIcon(status) {
         return `<img src="https://cdn-icons-png.flaticon.com/512/833/833484.png" style="${iconStyles}" alt="Unknown Icon" />`; // Unknown icon
     }
 }
-    </script>
+</script>
 
 @endsection

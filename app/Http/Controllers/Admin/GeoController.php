@@ -40,7 +40,6 @@ class GeoController extends Controller
         return response()->json($location);
     }
 
-
     public function index_all()
     {
         $page_heading = "Live location";
@@ -52,19 +51,20 @@ class GeoController extends Controller
     public function get_all_emp_location_ajax()
     {
         $todayDate = Carbon::today()->toDateString();
-        $latestLocations = StoreLocation::select('store_locations.*',
-        'employees.name as employee_name',
-        'employees.profile_img',
-        'attendances.status as attendance_status',
-        'attendances.punch_in_time',
-        'attendances.punch_out_time',
+        $latestLocations = StoreLocation::select(
+            'store_locations.*',
+            'employees.name as employee_name',
+            'employees.profile_img',
+            'attendances.status as attendance_status',
+            'attendances.punch_in_time',
+            'attendances.punch_out_time',
         )
-        ->join('employees', 'employees.emp_code', '=', 'store_locations.emp_code')
-        ->leftJoin('attendances', function ($join) use ($todayDate) {
-            $join->on('store_locations.emp_code', '=', 'attendances.emp_code')
-                ->whereDate('attendances.date', '=', $todayDate);
-        })
-        ->joinSub(
+            ->join('employees', 'employees.emp_code', '=', 'store_locations.emp_code')
+            ->leftJoin('attendances', function ($join) use ($todayDate) {
+                $join->on('store_locations.emp_code', '=', 'attendances.emp_code')
+                    ->whereDate('attendances.date', '=', $todayDate);
+            })
+            ->joinSub(
                 StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
                     ->groupBy('emp_code'),
                 'latest_locations',
@@ -103,13 +103,37 @@ class GeoController extends Controller
             return response()->json(['message' => 'No employee found'], 404);
         }
 
-        $query = StoreLocation::where('emp_code', $user->emp_code);
+        $todayDate = Carbon::now()->toDateString();
+        $query = StoreLocation::where('store_locations.emp_code', $user->emp_code)
+            ->select(
+                'store_locations.*',
+                'employees.name as employee_name',
+                'employees.profile_img',
+                'attendances.status as attendance_status',
+                'attendances.punch_in_time',
+                'attendances.punch_out_time'
+            )
+            ->join('employees', 'store_locations.emp_code', '=', 'employees.emp_code')
+            ->leftJoin('attendances', function ($join) use ($todayDate) {
+                $join->on('store_locations.emp_code', '=', 'attendances.emp_code')
+                    ->whereDate('attendances.date', '=', $todayDate);
+            })
+            ->joinSub(
+                StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
+                    ->groupBy('emp_code'),
+                'latest_locations',
+                function ($join) {
+                    $join->on('store_locations.emp_code', '=', 'latest_locations.emp_code')
+                        ->on('store_locations.created_at', '=', 'latest_locations.latest_time');
+                }
+            );
 
         if ($request->has('date')) {
-            $query->whereDate('recorded_at', $request->date);
+            $query->whereDate('store_locations.recorded_at', $request->date);
         }
 
-        $locations = $query->orderBy('recorded_at')->get();
+        $locations = $query->orderBy('store_locations.recorded_at')->get();
+
 
         if ($locations->isEmpty()) {
             return response()->json(['message' => 'No locations found for this employee'], 404);

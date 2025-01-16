@@ -134,11 +134,35 @@
         const formattedTime = moment(location.recorded_at).format('MMMM Do YYYY, h:mm:ss a');
         if (marker) {
             marker.setLatLng([location.latitude, location.longitude])
-                .bindPopup(`
-                    Updated location for {{ $user->name }}
-                    <br> Battery: 45%
-                    <br> Recorded at ${formattedTime}
-                `)
+                .bindPopup(`<div style="display: flex; justify-content: space-between; align-items: center; width: 300px;">
+        <!-- Employee Information -->
+        <div style="flex: 1; padding-right: 10px; border-right: 1px solid #ddd;">
+            <b>${location.employee_name}</b>
+            <br> Recorded at: ${formattedTime}
+            <br> Attendance: ${location.attendance_status ? location.attendance_status : 'N/A'}
+            <br> Punch In at: ${location.punch_in_time ? moment(location.punch_in_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
+            <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
+            <br>   <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>History: <a href="${history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a></div>
+        <button
+            style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
+            onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
+            title="Zoom to Location">
+            <i class="fas fa-search-plus"></i>
+        </button>
+        </div>
+        </div>
+        <!-- Battery Information -->
+        <div style="flex: 1; text-align: center; padding-left: 10px;">
+            <div style="position: relative; width: 60px; height: 120px; background: #ddd; border-radius: 10px; overflow: hidden; margin: auto;">
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: ${location.battery_level * 100}%; background: ${getBatteryColor(location.battery_level, location.battery_status)};"></div>
+            </div>
+            <div style="margin-top: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                ${getBatteryIcon(location.battery_status)}
+                ${Math.round(location.battery_level * 100)}% (${location.battery_status})
+            </div>
+        </div>
+    </div>`)
                 .openPopup();
         }
     };
