@@ -161,8 +161,7 @@
             </div>
         </div>
     </div>
-    `);
-                .openPopup();
+    `).openPopup();
         }
     };
 
