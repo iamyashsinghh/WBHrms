@@ -26,7 +26,7 @@ class NotificationController extends Controller
     public function setNotificationToken(Request $request)
     {
         $validated = $request->validate([
-            'token' => 'required|string',
+            'notification_token' => 'required|string',
         ]);
         $user = $request->user();
         $employee = Employee::where('emp_code', $user->emp_code)->first();
@@ -35,7 +35,7 @@ class NotificationController extends Controller
                 'error' => 'Employee not found.',
             ], 404);
         }
-        $employee->notification_token = $validated['token'];
+        $employee->notification_token = $validated['notification_token'];
         $employee->save();
         return response()->json([
             'message' => 'Notification token updated successfully.',
