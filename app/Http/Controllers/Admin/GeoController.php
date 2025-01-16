@@ -117,24 +117,12 @@ class GeoController extends Controller
             ->leftJoin('attendances', function ($join) use ($todayDate) {
                 $join->on('store_locations.emp_code', '=', 'attendances.emp_code')
                     ->whereDate('attendances.date', '=', $todayDate);
-            })
-            ->joinSub(
-                StoreLocation::selectRaw('emp_code, MAX(created_at) as latest_time')
-                    ->groupBy('emp_code'),
-                'latest_locations',
-                function ($join) {
-                    $join->on('store_locations.emp_code', '=', 'latest_locations.emp_code')
-                        ->on('store_locations.created_at', '=', 'latest_locations.latest_time');
-                }
-            );
+            });
 
         if ($request->has('date')) {
             $query->whereDate('store_locations.recorded_at', $request->date);
         }
-
         $locations = $query->orderBy('store_locations.recorded_at')->get();
-
-
         if ($locations->isEmpty()) {
             return response()->json(['message' => 'No locations found for this employee'], 404);
         }
