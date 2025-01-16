@@ -110,9 +110,16 @@
             <br> Attendance: ${location.attendance_status ? location.attendance_status : 'N/A'}
             <br> Punch In at: ${location.punch_in_time ? moment(location.punch_in_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
             <br> Punch Out at: ${location.punch_out_time ? moment(location.punch_out_time, 'HH:mm:ss').format('h:mm:ss a') : 'N/A'}
-            <br> View History: <a href="${history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a>
+            <br>   <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>View History: <a href="${history_url || '#'}" target="_blank" rel="noopener noreferrer">View</a></div>
+        <button
+            style="background: none; border: none; color: #891010; cursor: pointer; margin-left: 10px;"
+            onclick="zoomToLocation(${location.latitude}, ${location.longitude})"
+            title="Zoom to Location">
+            <i class="fas fa-search-plus"></i>
+        </button>
         </div>
-
+        </div>
         <!-- Battery Information -->
         <div style="flex: 1; text-align: center; padding-left: 10px;">
             <div style="position: relative; width: 60px; height: 120px; background: #ddd; border-radius: 10px; overflow: hidden; margin: auto;">
@@ -125,7 +132,6 @@
         </div>
     </div>
 `);
-
                             markersGroup.addLayer(marker);
                         }
                     });
@@ -144,16 +150,16 @@
         setInterval(fetchAllLocations, 5000);
         function getBatteryColor(level, status) {
     if (status === 'charging') {
-        return '#76c7c0'; // Green for charging
+        return '#76c7c0';
     } else if (status === 'full') {
-        return '#4caf50'; // Dark green for full
+        return '#4caf50';
     } else if (status === 'unplugged') {
-        if (level > 0.8) return '#4caf50'; // Dark green for > 80%
-        else if (level > 0.5) return '#ffeb3b'; // Yellow for > 50%
-        else if (level > 0.2) return '#ffa726'; // Orange for 20%-50%
-        else return '#f44336'; // Red for < 20%
+        if (level > 0.8) return '#4caf50';
+        else if (level > 0.5) return '#ffeb3b';
+        else if (level > 0.2) return '#ffa726';
+        else return '#f44336';
     } else {
-        return '#9e9e9e'; // Gray for unknown
+        return '#9e9e9e';
     }
 }
 
@@ -169,7 +175,6 @@ function getBatteryIcon(status) {
         return `<img src="https://cdn-icons-png.flaticon.com/512/833/833484.png" style="${iconStyles}" alt="Unknown Icon" />`; // Unknown icon
     }
 }
-
     </script>
 
 @endsection
