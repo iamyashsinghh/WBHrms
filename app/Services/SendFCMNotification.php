@@ -17,8 +17,10 @@ class SendFCMNotification
             $client->setAuthConfig($serviceAccountPath);
             $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
             $accessToken = $client->fetchAccessTokenWithAssertion()['access_token'];
+
             $fcmUrl = 'https://fcm.googleapis.com/v1/projects/weddingbanquetsfcm/messages:send';
-            $stringifiedData = array_map('strval', $data);
+            $data = is_array($data) && count($data) ? array_map('strval', $data) : new \stdClass();
+
             $message = [
                 'message' => [
                     'token' => $fcmToken,
@@ -26,17 +28,24 @@ class SendFCMNotification
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => $stringifiedData,
+                    'data' => $data, // Now always a valid map or empty object
                 ],
             ];
+
             if ($imageUrl) {
                 $message['message']['notification']['image'] = $imageUrl;
             }
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
             ])->post($fcmUrl, $message);
-            Log::info($response);
+
+            Log::info('FCM Response:', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
             return $response->json();
         } catch (\Exception $e) {
             Log::error("Error in FCM Notification: " . $e->getMessage());
