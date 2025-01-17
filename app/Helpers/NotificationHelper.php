@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Google\Client;
+use Google_Client;
 
 /**
  * Send an FCM Notification.
@@ -20,34 +20,33 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
     $serviceAccountPath = storage_path('app/service-account.json');
 
     // Initialize Google Client
-    $client = new Client();
+    $client = new Google_Client();
     $client->setAuthConfig($serviceAccountPath);
     $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
 
     // Get an access token
     $accessToken = $client->fetchAccessTokenWithAssertion()['access_token'];
 
-    // Firebase FCM endpoint (replace 'your-project-id' with your actual project ID)
+    // Firebase FCM endpoint
     $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
 
-    // Build the message payload
+    // Build the notification payload
     $message = [
         'message' => [
-            'token' => $fcmToken, // Target device FCM token
+            'token' => $fcmToken,
             'notification' => [
                 'title' => $title,
                 'body' => $body,
             ],
-            'data' => $data, // Optional custom data for app-specific processing
+            'data' => $data,
         ],
     ];
 
-    // Include an image in the notification if provided
     if ($imageUrl) {
         $message['message']['notification']['image'] = $imageUrl;
     }
 
-    // Send the notification request to FCM
+    // Send the request
     $response = Http::withHeaders([
         'Authorization' => 'Bearer ' . $accessToken,
         'Content-Type' => 'application/json',
