@@ -16,46 +16,58 @@ use Google_Client;
  */
 function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = null)
 {
-    // Path to your service account JSON file
-    $serviceAccountPath = storage_path('app/service-account.json');
+    try {
+        // Path to your service account JSON file
+        $serviceAccountPath = storage_path('app/service-account.json');
 
-    // Initialize Google Client
-    $client = new Google_Client();
-    $client->setAuthConfig($serviceAccountPath);
-    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        // Initialize Google Client
+        $client = new Google_Client();
+        $client->setAuthConfig($serviceAccountPath);
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
 
-    // Get an access token
-    $accessToken = $client->fetchAccessTokenWithAssertion()['access_token'];
+        // Get an access token
+        $accessToken = $client->fetchAccessTokenWithAssertion()['access_token'];
 
-    // Firebase FCM endpoint
-    $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
+        // Log the access token for debugging
+        Log::info("Generated Access Token: " . $accessToken);
 
-    // Convert all data values to strings
-    $stringifiedData = array_map('strval', $data);
+        // Firebase FCM endpoint
+        $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
 
-    // Build the notification payload
-    $message = [
-        'message' => [
-            'token' => $fcmToken,
-            'notification' => [
-                'title' => $title,
-                'body' => $body,
+        // Convert all data values to strings
+        $stringifiedData = array_map('strval', $data);
+
+        // Build the notification payload
+        $message = [
+            'message' => [
+                'token' => $fcmToken,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $body,
+                ],
+                'data' => $stringifiedData, // Use the stringified data here
             ],
-            'data' => $stringifiedData, // Use the stringified data here
-        ],
-    ];
+        ];
 
-    if ($imageUrl) {
-        $message['message']['notification']['image'] = $imageUrl;
+        if ($imageUrl) {
+            $message['message']['notification']['image'] = $imageUrl;
+        }
+
+        // Send the request
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Content-Type' => 'application/json',
+        ])->post($fcmUrl, $message);
+
+        // Log the response for debugging
+        Log::info('FCM Request Payload: ', $message);
+        Log::info('FCM Response: ', $response->json());
+
+        // Return the FCM response
+        return $response->json();
+    } catch (\Exception $e) {
+        // Log any exceptions for debugging
+        Log::error("Error in FCM Notification: " . $e->getMessage());
+        return ['error' => $e->getMessage()];
     }
-
-    // Send the request
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $accessToken,
-        'Content-Type' => 'application/json',
-    ])->post($fcmUrl, $message);
-
-    Log::info($response);
-    // Return the FCM response
-    return $response->json();
 }
