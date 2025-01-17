@@ -30,6 +30,9 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
     // Firebase FCM endpoint
     $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
 
+    // Convert all data values to strings
+    $stringifiedData = array_map('strval', $data);
+
     // Build the notification payload
     $message = [
         'message' => [
@@ -38,7 +41,7 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
                 'title' => $title,
                 'body' => $body,
             ],
-            'data' => $data,
+            'data' => $stringifiedData, // Use the stringified data here
         ],
     ];
 
