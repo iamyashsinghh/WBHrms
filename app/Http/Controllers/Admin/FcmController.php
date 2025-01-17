@@ -36,7 +36,7 @@ class FcmController extends Controller
             ? Employee::where('is_active', 1)
             : Employee::whereIn('id', $employees);
 
-        $employeesData = $employeeQuery->get(['id', 'notification_token', 'profile_image']); // Include profile image in the query
+        $employeesData = $employeeQuery->get(['id', 'notification_token', 'profile_img']); // Include profile image in the query
 
         $imageUrl = null;
 
