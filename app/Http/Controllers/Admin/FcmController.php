@@ -55,6 +55,7 @@ class FcmController extends Controller
             if ($imageType === 'profile_image') {
                 $finalImageUrl = $employee->profile_img ? asset('storage/employee-profile/' . $employee->profile_img) : null;
             }
+            Log::info($finalImageUrl);
             if ($employee->notification_token) {
                 SendFCMNotification::to($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
