@@ -31,6 +31,7 @@ class FcmController extends Controller
         $body = $request->input('body');
         $imageType = $request->input('image_type');
         $customImage = $request->file('custom_image');
+
         $tokens = [];
         $employeeQuery = in_array('all', $employees)
             ? Employee::where('is_active', 1)
@@ -41,26 +42,29 @@ class FcmController extends Controller
         $imageUrl = null;
 
         if ($imageType === 'profile_image') {
+            // No action here since profile image is handled dynamically
         } elseif ($imageType === 'wedding_banquets_logo') {
-            $imageUrl = 'path/to/wedding_banquets_logo.jpg';
+            $imageUrl = 'https://cms.wbcrm.in/wb-logo2.webp';
         } elseif ($imageType === 'wedding_banquets_favicon') {
-            $imageUrl = 'path/to/wedding_banquets_favicon.jpg';
+            $imageUrl = 'https://cms.wbcrm.in/favicon.jpg';
         } elseif ($imageType === 'custom_image' && $customImage) {
-            $imageUrl = $customImage->store('uploads/fcm_images', 'public');
+            // Store the image in the `public` disk and get the public URL
+            $imagePath = $customImage->store('uploads/fcm_images', 'public');
+            $imageUrl = asset('storage/' . $imagePath); // Generate a publicly accessible URL
         }
 
         foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
-            Log::info("message");
+
             if ($imageType === 'profile_image') {
-                $finalImageUrl = $employee->profile_img ? $employee->profile_img : null;
+                $finalImageUrl = $employee->profile_img ? asset('storage/employee-profile/' . $employee->profile_img) : null;
             }
 
             if ($employee->notification_token) {
-                Log::info("SENDFCM");
                 SendFCMNotification::to($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
         }
+
         session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Notifications sent successfully!']);
         return redirect()->back()->with('success', 'Notifications sent successfully!');
     }
