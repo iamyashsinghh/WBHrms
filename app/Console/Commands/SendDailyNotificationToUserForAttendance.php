@@ -31,6 +31,7 @@ class SendDailyNotificationToUserForAttendance extends Command
         $now = Carbon::now()->format('H:i');
         Log::info($now);
         $employees = Employee::whereNotNull('notification_token')->whereRaw("DATE_FORMAT(punch_in_time, '%H:%i') = ?", [$now])->get();
+        Log::info($employees);
         foreach ($employees as $employee) {
             $response = sendFCMNotification(
                 $employee->notification_token,
