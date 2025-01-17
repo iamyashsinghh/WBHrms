@@ -46,7 +46,9 @@ class FcmController extends Controller
             $imageUrl = 'https://cms.wbcrm.in/favicon.jpg';
         } elseif ($imageType === 'custom_image' && $customImage) {
             $imagePath = $customImage->store('uploads/fcm_images', 'public');
+            Log::info("$imagePath");
             $imageUrl = asset('storage/' . $imagePath);
+            Log::info("$imageUrl");
         }
         foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
