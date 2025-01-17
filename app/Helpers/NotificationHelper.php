@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Google\Client;
 
 /**
  * Send an FCM Notification.
@@ -15,43 +16,44 @@ use Illuminate\Support\Facades\Log;
  */
 function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = null)
 {
+    // Path to your service account JSON file
+    $serviceAccountPath = storage_path('app/service-account.json');
 
-    Log::info($fcmToken);
-    Log::info($title);
-    Log::info($body);
-    Log::info( $data);
-    Log::info( $imageUrl);
-    // Firebase Server Key (replace with your actual server key)
-    $serverKey = 'AAAA9pCpvEQ:APA91bFjajQJpXdBw1fW_sLPD0KxQlUFA1zTvbPWYwpR5jkY1oLQe_aAe-t4fDjQclOG7pCkeVTb2ITPjWbgIs5eQHS-0aiQxqtJ0P2AIaLAV11dQwU-hJOqbwWVPFwDXLq1JKGpcpAN';
+    // Initialize Google Client
+    $client = new Client();
+    $client->setAuthConfig($serviceAccountPath);
+    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
 
-    // Firebase FCM endpoint
-    $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+    // Get an access token
+    $accessToken = $client->fetchAccessTokenWithAssertion()['access_token'];
 
-    // Build the notification payload
-    $notificationPayload = [
-        'title' => $title,       // Title of the notification
-        'body' => $body,         // Body message
-        'sound' => 'default',    // Default notification sound
+    // Firebase FCM endpoint (replace 'your-project-id' with your actual project ID)
+    $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
+
+    // Build the message payload
+    $message = [
+        'message' => [
+            'token' => $fcmToken, // Target device FCM token
+            'notification' => [
+                'title' => $title,
+                'body' => $body,
+            ],
+            'data' => $data, // Optional custom data for app-specific processing
+        ],
     ];
 
-    // Add the image URL if provided
+    // Include an image in the notification if provided
     if ($imageUrl) {
-        $notificationPayload['image'] = $imageUrl;
+        $message['message']['notification']['image'] = $imageUrl;
     }
-
-    // Complete payload with notification and optional custom data
-    $payload = [
-        'to' => $fcmToken,                 // Target device token
-        'notification' => $notificationPayload, // Notification details
-        'data' => $data,                   // Custom data for app-specific processing
-    ];
 
     // Send the notification request to FCM
     $response = Http::withHeaders([
-        'Authorization' => 'key=' . $serverKey, // Add server key to authorization header
-        'Content-Type' => 'application/json',  // JSON content type
-    ])->post($fcmUrl, $payload);
-Log::info($response);
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type' => 'application/json',
+    ])->post($fcmUrl, $message);
+
+    Log::info($response);
     // Return the FCM response
     return $response->json();
 }
