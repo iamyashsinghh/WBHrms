@@ -28,18 +28,15 @@ class SendDailyNotificationToUserForAttendance extends Command
      */
     public function handle()
     {
-
         $now = Carbon::now()->format('H:i');
-        Log::info($now);
         $employees = Employee::whereNotNull('notification_token')->whereRaw("DATE_FORMAT(punch_in_time, '%H:%i') = ?", [$now])->get();
-        Log::info($employees);
         foreach ($employees as $employee) {
             $response = sendFCMNotification(
                 $employee->notification_token,
                 "Attendance Reminder",
                 "Hello {$employee->name}, it's time to punch in.",
                 ['employee_id' => $employee->id],
-                'https://wbcrm.in/wb-logo2.webp'
+                $employee->profile_img
             );
         }
     }
