@@ -145,7 +145,6 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('fetch-attendance', [Controllers\Admin\AttendanceController::class, 'fetchAttendance'])->name('fetch');
                 Route::get('get/{emp_code?}/{date?}', [Controllers\Admin\AttendanceController::class, 'get_attendance'])->name('get');
                 Route::post('store/{emp_code?}/{date?}', [Controllers\Admin\AttendanceController::class, 'store_attendance'])->name('store');
-
                 Route::post('/admin/attendance/download', [Controllers\Admin\AttendanceController::class, 'downloadAttendance'])->name('download');
                 Route::post('/admin/attendance/generate', [Controllers\Admin\AttendanceController::class, 'generateAttendanceSheet'])->name('generate');
 
@@ -174,6 +173,17 @@ Route::middleware('verify_token')->group(function () {
                 Route::post('/{emp_code}/last-location', [Controllers\Admin\GeoController::class, 'get_last_location_ajax'])->name('get_last_location_ajax');
                 Route::post('/{emp_code}/get_location_history_ajax', [Controllers\Admin\GeoController::class, 'get_location_history_ajax'])->name('get_location_history_ajax');
                 Route::post('admin/geo/get-all-locations-ajax', [Controllers\Admin\GeoController::class, 'get_all_emp_location_ajax'])->name('get_all_locations_ajax');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Admin Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/fcm')->name('fcm.')->group(function () {
+                Route::get('/notification', [Controllers\Admin\FcmController::class, 'index'])->name('index');
+                Route::post('/send', [Controllers\Admin\FcmController::class, 'send'])->name('send');
             });
         });
 

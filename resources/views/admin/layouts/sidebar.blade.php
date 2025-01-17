@@ -77,6 +77,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.fcm.index') }}" class="nav-link {{ $uri == 'admin.fcm.index' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cogs"></i>
+                        <p>App Notification</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.env.index') }}" class="nav-link {{ $uri == 'admin.env.index' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>Hrms Settings</p>
