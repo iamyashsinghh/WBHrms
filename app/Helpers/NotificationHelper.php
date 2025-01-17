@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Send an FCM Notification.
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Http;
  */
 function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = null)
 {
+
+    Log::info($fcmToken);
+    Log::info($title);
+    Log::info($body);
+    Log::info( $data);
+    Log::info( $imageUrl);
     // Firebase Server Key (replace with your actual server key)
     $serverKey = 'AAAA9pCpvEQ:APA91bFjajQJpXdBw1fW_sLPD0KxQlUFA1zTvbPWYwpR5jkY1oLQe_aAe-t4fDjQclOG7pCkeVTb2ITPjWbgIs5eQHS-0aiQxqtJ0P2AIaLAV11dQwU-hJOqbwWVPFwDXLq1JKGpcpAN';
 
@@ -44,7 +51,7 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
         'Authorization' => 'key=' . $serverKey, // Add server key to authorization header
         'Content-Type' => 'application/json',  // JSON content type
     ])->post($fcmUrl, $payload);
-
+Log::info($response);
     // Return the FCM response
     return $response->json();
 }
