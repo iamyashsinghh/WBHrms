@@ -14,8 +14,6 @@ use Google_Client;
  * @param string|null $imageUrl URL of the image to include in the notification (optional).
  * @return array Response from FCM API.
  */
-use Google_Client;
-use Illuminate\Support\Facades\Log;
 
 function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = null)
 {
