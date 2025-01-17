@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -27,6 +28,7 @@ class MarkAbsentAsUnmarkedAttendance extends Command
     public function handle()
     {
         $now = Carbon::now();
-        
+        $today = Carbon::now()->toDateString();
+        $attendance = Attendance::where('date', $today)->first();
     }
 }

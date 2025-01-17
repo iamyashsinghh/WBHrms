@@ -43,9 +43,13 @@ Route::group(['middleware' => 'api.auth'], function () {
 
         //salary routes
         Route::get('get-salary-preview/{month?}/{year?}', [Api\SalaryPreviewController::class, 'get_salary']);
+
+        // leave mgmt
+        Route::get('leave-requests', [Api\LeaveManegment::class , 'leaveApprovalRequest']);
     });
 });
 
 Route::get('yash', function(){
     return 'hello';
 });
+
