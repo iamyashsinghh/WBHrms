@@ -32,7 +32,7 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
         Log::info("Generated Access Token: " . $accessToken);
 
         // Firebase FCM endpoint
-        $fcmUrl = 'https://fcm.googleapis.com/v1/projects/your-project-id/messages:send';
+        $fcmUrl = 'https://fcm.googleapis.com/v1/projects/weddingbanquetsfcm/messages:send';
 
         // Convert all data values to strings
         $stringifiedData = array_map('strval', $data);
