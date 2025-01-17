@@ -54,7 +54,7 @@ class FcmController extends Controller
         foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
             if ($imageType === 'profile_image') {
-                $finalImageUrl = $employee->profile_img ? asset('storage/employee-profile/' . $employee->profile_img) : null;
+                $finalImageUrl = $employee->profile_img ? $employee->profile_img : null;
             }
             Log::info($finalImageUrl);
             if ($employee->notification_token) {
