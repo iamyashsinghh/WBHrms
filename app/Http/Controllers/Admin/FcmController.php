@@ -50,7 +50,7 @@ class FcmController extends Controller
             $imageUrl = asset('storage/' . $imagePath);
             Log::info("$imageUrl");
         }
-        Log:::info("jdsokd");
+        Log::info("jdsokd");
         foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
             if ($imageType === 'profile_image') {
