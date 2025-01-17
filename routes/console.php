@@ -8,4 +8,4 @@ use Illuminate\Support\Facades\Schedule;
 //     $this->comment(Inspiring::quote());
 // })->purpose('Display an inspiring quote')->hourly();
 
-Schedule::command('app:send-daily-notification-to-user-for-attendance')->purpose('Send FCM Notification to employees')->everyMinute();
+Schedule::command('app:send-daily-notification-to-user-for-attendance')->everyMinute();
