@@ -36,9 +36,8 @@ class SendFCMNotification
                 'Authorization' => 'Bearer ' . $accessToken,
                 'Content-Type' => 'application/json',
             ])->post($fcmUrl, $message);
-            return $response->json();
-
             Log::info($response);
+            return $response->json();
         } catch (\Exception $e) {
             Log::error("Error in FCM Notification: " . $e->getMessage());
             return ['error' => $e->getMessage()];
