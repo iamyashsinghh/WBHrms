@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Services\SendFCMNotification;
+use Illuminate\Support\Facades\Log;
 
 class FcmController extends Controller
 {
@@ -50,12 +51,13 @@ class FcmController extends Controller
 
         foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
-
+            Log::info("message");
             if ($imageType === 'profile_image') {
                 $finalImageUrl = $employee->profile_img ? $employee->profile_img : null;
             }
 
             if ($employee->notification_token) {
+                Log::info("SENDFCM");
                 SendFCMNotification::to($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
         }

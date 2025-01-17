@@ -11,6 +11,7 @@ class SendFCMNotification
     public static function to($fcmToken, $title, $body, $data = [], $imageUrl = null)
     {
         try {
+            Log::info('START');
             $serviceAccountPath = storage_path('app/service-account.json');
             $client = new Google_Client();
             $client->setAuthConfig($serviceAccountPath);
