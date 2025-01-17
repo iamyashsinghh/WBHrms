@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Services\SendFCMNotification;
 
 class FcmController extends Controller
 {
@@ -29,9 +30,7 @@ class FcmController extends Controller
         $body = $request->input('body');
         $imageType = $request->input('image_type');
         $customImage = $request->file('custom_image');
-
         $tokens = [];
-
         $employeeQuery = in_array('all', $employees)
             ? Employee::where('is_active', 1)
             : Employee::whereIn('id', $employees);
@@ -57,7 +56,7 @@ class FcmController extends Controller
             }
 
             if ($employee->notification_token) {
-                sendFCMNotification($employee->notification_token, $title, $body, [], $finalImageUrl);
+                SendFCMNotification::to($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
         }
         session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Notifications sent successfully!']);
