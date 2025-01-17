@@ -36,7 +36,7 @@ class FcmController extends Controller
             ? Employee::where('is_active', 1)
             : Employee::whereIn('id', $employees);
 
-        $employeesData = $employeeQuery->get(['id', 'notification_token', 'profile_img']); // Include profile image in the query
+        $employeesData = $employeeQuery->get(['id', 'notification_token', 'profile_img']);
 
         $imageUrl = null;
 
@@ -60,7 +60,7 @@ class FcmController extends Controller
                 sendFCMNotification($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
         }
-
+        session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Notifications sent successfully!']);
         return redirect()->back()->with('success', 'Notifications sent successfully!');
     }
 }

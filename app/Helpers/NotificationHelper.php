@@ -43,6 +43,8 @@ function sendFCMNotification($fcmToken, $title, $body, $data = [], $imageUrl = n
             'Content-Type' => 'application/json',
         ])->post($fcmUrl, $message);
         return $response->json();
+
+        Log::info($response);
     } catch (\Exception $e) {
         Log::error("Error in FCM Notification: " . $e->getMessage());
         return ['error' => $e->getMessage()];
