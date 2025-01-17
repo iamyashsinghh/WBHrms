@@ -39,7 +39,7 @@ Route::group(['middleware' => 'api.auth'], function () {
 
         // notification route
         Route::get('get-notification', [Api\NotificationController::class, 'index']);
-        Route::get('save-notification-token', [Api\NotificationController::class, 'setNotificationToken']);
+        Route::post('save-notification-token', [Api\NotificationController::class, 'setNotificationToken']);
 
         //salary routes
         Route::get('get-salary-preview/{month?}/{year?}', [Api\SalaryPreviewController::class, 'get_salary']);
