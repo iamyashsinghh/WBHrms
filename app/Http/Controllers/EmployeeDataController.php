@@ -93,7 +93,6 @@ public function update_profile_image(Request $request, $emp_code) {
 
         try {
             $stored = Storage::disk('public')->putFileAs('usersProfileImages', $file, $file_name);
-            Log::info($stored);
             if ($stored) {
                 $profile_image_url = asset("storage/usersProfileImages/$file_name");
 
