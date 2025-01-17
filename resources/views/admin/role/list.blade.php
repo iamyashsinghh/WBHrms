@@ -82,9 +82,7 @@
 @endsection
 @section('footer-script')
 <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-
 <script>
-    initialize_datatable();
     $(document).ready(function () {
         $('.login-time').on('change', function () {
             const roleId = $(this).data('role-id');
