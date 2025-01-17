@@ -23,7 +23,7 @@ class FcmController extends Controller
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'image_type' => 'required|string',
-            'custom_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'custom_image' => 'nullable',
         ]);
         $employees = $request->input('employees');
         $title = $request->input('title');
