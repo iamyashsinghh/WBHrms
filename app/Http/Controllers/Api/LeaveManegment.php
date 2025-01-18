@@ -95,8 +95,7 @@ class LeaveManegment extends Controller
                 $attendance->save();
                 $user->save();
             }
-            session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Approved."]);
-            return redirect()->back();
+            return response()->json(['success' => true, 'alert_type' => 'error', 'message' => 'Approved'], 200);
         }
     }
 
@@ -232,8 +231,7 @@ class LeaveManegment extends Controller
             if ($status == 2) {
                 $approval->is_approved = $status;
                 $approval->save();
-                session()->flash('status', ['success' => true, 'alert_type' => 'error', 'message' => "Approval Rejected."]);
-                return redirect()->back();
+                return response()->json(['success' => true, 'alert_type' => 'error', 'message' => 'Approval rejected'], 200);
             } else if ($status == 1) {
                 $approval->is_approved = $status;
                 $approval->hr_desc = "Approved by $auth_name, Emp Code: $auth_code";
@@ -291,8 +289,7 @@ class LeaveManegment extends Controller
                     $attendance->save();
                     $user->save();
                 }
-                session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Approved."]);
-                return redirect()->back();
+                return response()->json(['success' => true, 'alert_type' => 'error', 'message' => 'Approved'], 200);
             }
         } else {
             return response()->json(['success' => false, 'alert_type' => 'error', 'message' => 'Internal Server Error'], 500);
