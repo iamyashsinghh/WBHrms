@@ -46,6 +46,7 @@ Route::group(['middleware' => 'api.auth'], function () {
 
         // leave mgmt
         Route::get('leave-requests', [Api\LeaveManegment::class , 'leaveApprovalRequest']);
+        Route::post('leave-requests-update-status/{id}/{status}', [Api\LeaveManegment::class , 'update_status']);
     });
 });
 
