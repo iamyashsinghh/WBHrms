@@ -49,7 +49,7 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::post('leave-requests-update-status/{id}/{status}', [Api\LeaveManegment::class , 'update_status']);
         Route::get('leave-get-users', [Api\LeaveManegment::class , 'getUsers']);
         Route::get('leave-get-user/{emp_code}', [Api\LeaveManegment::class , 'getUser']);
-        Route::get('leave-new-approval/{emp_code}', [Api\LeaveManegment::class , 'leaveNewApproval']);
+        Route::post('leave-new-approval/{emp_code}', [Api\LeaveManegment::class , 'leaveNewApproval']);
     });
 });
 
