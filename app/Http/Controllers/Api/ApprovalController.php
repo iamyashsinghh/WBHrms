@@ -92,15 +92,16 @@ class ApprovalController extends Controller
         $approaval->emp_code = $user->emp_code;
         $approaval->type = $request->input('type');
         $approaval->start = $request->input('start');
+        $approaval->emp_desc = $request->input('emp_desc');
 
         if ($request->input('type') == 'sl' || $request->input('type') == 'hd') {
             $time = $request->input('time');
             $hr_desc = "Leave at $time";
-            $approaval->hr_desc = $hr_desc;
+            $approaval->emp_desc .= $hr_desc;
         } elseif ($request->input('type') == 'pl') {
             $approaval->end = $request->input('end');
             $hr_desc = "From " . $request->input('start') . ' to ' .  $request->input('end');
-            $approaval->hr_desc = $hr_desc;
+            $approaval->emp_desc .= $hr_desc;
         } elseif ($request->input('type') == 'cl') {
             $startInput = $request->input('start');
 
@@ -135,7 +136,7 @@ class ApprovalController extends Controller
 
             $startDate = Carbon::parse($startInput);
             $endDate = Carbon::parse($endInput);
-            $approaval->hr_desc = "Weakoff end date $endInput";
+            $approaval->emp_desc .= "Weakoff end date $endInput";
 
             if ($user->emp_type == 'Fulltime') {
                 $cycleStart = Carbon::create(now()->year, now()->month, 15)->subMonth();
@@ -168,7 +169,6 @@ class ApprovalController extends Controller
             }
             $approaval->end = $endInput;
         }
-        $approaval->emp_desc = $request->input('emp_desc');
 
         if ($approaval->save()) {
             return response()->json(['success' => true, 'alert_type' => 'success', 'message' => 'Applied Successfully Please wait For Approval.'], 200);

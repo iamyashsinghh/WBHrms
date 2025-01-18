@@ -10,6 +10,7 @@ use DateInterval;
 use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class ApprovalController extends Controller
@@ -28,6 +29,10 @@ class ApprovalController extends Controller
 
     public function update_status($id, $status)
     {
+
+        $auth_user = Auth::guard('admin')->user();
+        $auth_name = $auth_user->name;
+        $auth_code = $auth_user->emp_code;
         $approval = Approval::findOrFail($id);
         $user = Employee::where('emp_code', $approval->emp_code)->first();
 
@@ -38,6 +43,7 @@ class ApprovalController extends Controller
             return redirect()->back();
         } else if ($status == 1) {
             $approval->is_approved = $status;
+            $approval->hr_desc = "Approved by $auth_name, Emp Code: $auth_code";
             $approval->save();
 
             if ($approval->type == 'pl') {

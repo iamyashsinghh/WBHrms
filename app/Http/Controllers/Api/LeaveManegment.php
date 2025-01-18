@@ -23,8 +23,11 @@ class LeaveManegment extends Controller
         return response()->json(['approval' => $approvals]);
     }
 
-    public function update_status($id, $status)
+    public function update_status(Request $request,$id, $status)
     {
+        $auth_user = $request->user();
+        $auth_name = $auth_user->name;
+        $auth_code = $auth_user->emp_code;
         $approval = Approval::findOrFail($id);
         $user = Employee::where('emp_code', $approval->emp_code)->first();
 
@@ -35,6 +38,7 @@ class LeaveManegment extends Controller
             return redirect()->back();
         } else if ($status == 1) {
             $approval->is_approved = $status;
+            $approval->hr_desc = "Approved by $auth_name, Emp Code: $auth_code";
             $approval->save();
 
             if ($approval->type == 'pl') {
