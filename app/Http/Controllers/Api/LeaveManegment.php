@@ -101,7 +101,15 @@ class LeaveManegment extends Controller
 
     public function getUsers(Request $request){
         $auth_user = $request->user();
-        $users =Employee::where('reporting_manager', $auth_user->emp_code)->get();
-        return response()->json(['users' => $users]);
+        if($auth_user->role_id == 6){
+            $users = Employee::where('reporting_manager', $auth_user->emp_code)->get();
+            return response()->json(['users' => $users]);
+        }else if($auth_user->role_id == 1){
+            $users = Employee::all();
+            return response()->json(['users' => $users]);
+        }else if($auth_user->role_id == 2){
+            $users = Employee::where('role_id', '!=', 1)->get();
+            return response()->json(['users' => $users]);
+        }
     }
 }
