@@ -33,7 +33,7 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::get('attendance-for-cl/{month}/{year}', [Api\ApprovalController::class, 'clApprovalDates']);
         Route::get('get-approvals', [Api\ApprovalController::class, 'getApprovals']);
 
-        //documents route
+        // documents route
         Route::get('get-docs', [Api\DocumentController::class, 'getDocs']);
         Route::post('create-doc', [Api\DocumentController::class, 'createDocs']);
 
@@ -41,7 +41,7 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::get('get-notification', [Api\NotificationController::class, 'index']);
         Route::post('save-notification-token', [Api\NotificationController::class, 'setNotificationToken']);
 
-        //salary routes
+        // salary routes
         Route::get('get-salary-preview/{month?}/{year?}', [Api\SalaryPreviewController::class, 'get_salary']);
 
         // leave mgmt
@@ -49,6 +49,7 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::post('leave-requests-update-status/{id}/{status}', [Api\LeaveManegment::class , 'update_status']);
         Route::get('leave-get-users', [Api\LeaveManegment::class , 'getUsers']);
         Route::get('leave-get-user/{emp_code}', [Api\LeaveManegment::class , 'getUser']);
+        Route::get('leave-new-approval/{emp_code}', [Api\LeaveManegment::class , 'leaveNewApproval']);
     });
 });
 
