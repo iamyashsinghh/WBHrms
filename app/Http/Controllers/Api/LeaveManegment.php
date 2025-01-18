@@ -97,4 +97,11 @@ class LeaveManegment extends Controller
             return redirect()->back();
         }
     }
+
+
+    public function getUsers(Request $request){
+        $auth_user = $request->user();
+        $users =Employee::where('reporting_manager', $auth_user->emp_code)->get();
+        return response()->json(['users' => $users]);
+    }
 }
