@@ -14,16 +14,17 @@ use Illuminate\Http\Request;
 
 class LeaveManegment extends Controller
 {
-    public function leaveApprovalRequest(Request $request){
+    public function leaveApprovalRequest(Request $request)
+    {
         $auth_user = $request->user();
         $approvals = Approval::select('approvals.*', 'employees.name as emp_name')->where('approvals.created_at', '>=', Carbon::now()->subDays(45))
-        ->join('employees', 'approvals.emp_code', '=', 'employees.emp_code')
-        ->where('employees.reporting_manager', $auth_user->emp_code)
-        ->get();
+            ->join('employees', 'approvals.emp_code', '=', 'employees.emp_code')
+            ->where('employees.reporting_manager', $auth_user->emp_code)
+            ->get();
         return response()->json(['approval' => $approvals]);
     }
 
-    public function update_status(Request $request,$id, $status)
+    public function update_status(Request $request, $id, $status)
     {
         $auth_user = $request->user();
         $auth_name = $auth_user->name;
@@ -59,7 +60,7 @@ class LeaveManegment extends Controller
                     $attendance->save();
                 }
             }
-            if($approval->type == 'wo'){
+            if ($approval->type == 'wo') {
                 $start = new DateTime($approval->start);
                 $end = ($approval->end) ? new DateTime($approval->end) : $start;
 
@@ -76,7 +77,7 @@ class LeaveManegment extends Controller
                     $attendance->save();
                 }
             }
-            if($approval->type == 'sl' || $approval->type == 'hd' || $approval->type == 'cl'){
+            if ($approval->type == 'sl' || $approval->type == 'hd' || $approval->type == 'cl') {
                 $attendance = Attendance::firstOrNew(['date' => $approval->start, 'emp_code' => $approval->emp_code]);
                 switch ($approval->type) {
                     case 'sl':
@@ -98,18 +99,25 @@ class LeaveManegment extends Controller
         }
     }
 
-
-    public function getUsers(Request $request){
+    public function getUsers(Request $request)
+    {
         $auth_user = $request->user();
-        if($auth_user->role_id == 6){
+        if ($auth_user->role_id == 6) {
             $users = Employee::where('reporting_manager', $auth_user->emp_code)->get();
             return response()->json(['users' => $users]);
-        }else if($auth_user->role_id == 1){
+        } else if ($auth_user->role_id == 1) {
             $users = Employee::all();
             return response()->json(['users' => $users]);
-        }else if($auth_user->role_id == 2){
+        } else if ($auth_user->role_id == 2) {
             $users = Employee::where('role_id', '!=', 1)->get();
             return response()->json(['users' => $users]);
         }
+    }
+
+
+    public function getUser($emp_code)
+    {
+        $user = Employee::where('emp_code', $emp_code)->first();
+        return response()->json(['user' => $user]);
     }
 }
