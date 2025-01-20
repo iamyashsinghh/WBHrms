@@ -29,6 +29,9 @@ class SendFCMNotification
                         'body' => $body,
                     ],
                     'data' => $data, // Now always a valid map or empty object
+                    'android' => [
+                        'priority' => 'high',
+                    ],
                 ],
             ];
 
