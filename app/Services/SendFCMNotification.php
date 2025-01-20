@@ -28,9 +28,13 @@ class SendFCMNotification
                         'title' => $title,
                         'body' => $body,
                     ],
-                    'data' => $data, // Now always a valid map or empty object
+                    'data' => $data,
                     'android' => [
                         'priority' => 'high',
+                        'notification' => [
+                            'sound' => 'default',
+                            'channel_id' => 'high-priority',
+                        ],
                     ],
                 ],
             ];
