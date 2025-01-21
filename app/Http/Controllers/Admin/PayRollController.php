@@ -24,16 +24,18 @@ class PayRollController extends Controller
         return view('admin.payroll.list', compact('page_heading', 'users'));
     }
 
-    public function ajax_list(Request $request){
+    public function ajax_list(Request $request)
+    {
         $approval = SalarySlip::with('employee:emp_code,name');
         return DataTables::of($approval)->make(true);
     }
 
-    public function update_is_paid($id){
-        
+    public function update_is_paid($id)
+    {
     }
 
-    public function generateSalarySlip(Request $request){
+    public function generateSalarySlip(Request $request)
+    {
         $emp_code = $request->input('employee');
         $month = $request->input('month');
         $year = $request->input('year');
@@ -136,14 +138,15 @@ class PayRollController extends Controller
         if (!file_exists(storage_path('app/public/salaryslip'))) {
             mkdir(storage_path('app/public/salaryslip'), 0777, true);
         }
-        $salary_slip = new SalarySlip();
-        $salary_slip->emp_code = $emp_code;
-        $salary_slip->created_by = $auth_user->emp_code;
+        $pdf->save($filePath);
+
+        $salary_slip = SalarySlip::firstOrNew(
+            ['emp_code' => $emp_code, 'month' => $month, 'year' => $year],
+            ['created_by' => $auth_user->emp_code]
+        );
         $salary_slip->is_paid = '0';
         $salary_slip->path = $filePath;
         $salary_slip->save();
-
-        $pdf->save($filePath);
 
     }
 }

@@ -59,7 +59,8 @@
                             <th>Emp Code</th>
                             <th>Name</th>
                             <th>Created By</th>
-                            <th>created At</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
                             <th>Status</th>
                             <th class="text-center no-sort">Actions</th>
                         </tr>
@@ -98,7 +99,14 @@
                         data: 'created_at',
                         name: 'created_at',
                         render: function(data) {
-                            return moment.utc(data).utcOffset(330).format('DD-MM-YYYY HH:mm a');
+                            return moment.utc(data).utcOffset(330).format('DD MMM YYYY HH:mm a');
+                        }
+                    },
+                    {
+                        data: 'updated_at',
+                        name: 'updated_at',
+                        render: function(data) {
+                            return moment.utc(data).utcOffset(330).format('DD MMM YYYY HH:mm a');
                         }
                     },
                     {
