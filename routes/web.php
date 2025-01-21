@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use App\Mail\OfferLetter;
 use App\Models\Employee;
 use App\Services\HrMail;
+use Illuminate\Support\Facades\Redirect;
 
 Route::group(['middleware' => 'AuthCheck'], function () {
     Route::get('/', [AuthController::class, 'login'])->name('login');
@@ -18,6 +19,8 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('mail/{emp_code?}/{type?}', function ($emp_code, $type) {
     $emp = Employee::where('emp_code', $emp_code)->first();
     HrMail::to($emp->email)->send(new OfferLetter($emp_code));
+    session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Offer letter send.']);
+    return redirect()->back();
 })->name('send.hr.mail');
 
 Route::post('/employee/update-profile-image/{emp_code?}', [Controllers\EmployeeDataController::class, 'update_profile_image'])->name('updateProfileImage');
