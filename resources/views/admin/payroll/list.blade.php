@@ -47,19 +47,22 @@
                     </button>
                 </form>
             </div>
-            {{-- <div class="table-responsive">
-                <table id="documentTypeTable" class="table text-sm">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Emp Code</th>
-                            <th>Name</th>
-                            <th>Is Paid</th>
-                            <th class="text-center no-sort">Actions</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div> --}}
+        </div>
+    </section>
+    <section class="content">
+        <div class="table-responsive">
+            <table id="documentTypeTable" class="table text-sm">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Emp Code</th>
+                        <th>Name</th>
+                        <th>Created By</th>
+                        <th>created At</th>
+                        <th class="text-center no-sort">Actions</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </section>
 </div>
@@ -67,31 +70,40 @@
 
 @section('footer-script')
 <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
 <script>
-//     $(document).ready(function() {
-//             const documentTypeTable = $('#documentTypeTable').DataTable({
-//     processing: true,
-//     serverSide: true,
-//     ajax: "{{ route('admin.notification.ajax_list') }}",
-//     columns: [
-//         { data: 'id', name: 'id' },
-//         { data: 'value', name: 'value' },
-//         {
-//             data: 'id',
-//             name: 'actions',
-//             orderable: false,
-//             searchable: false,
-//             className: 'text-center',
-//             render: function(data, type, row) {
-//                 return `
-//                    Hello
-//                 `;
-//             }
-//         }
-//     ]
-// })
-// })
-//
+    $(document).ready(function() {
+            const documentTypeTable = $('#documentTypeTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: "{{ route('admin.payroll.ajax_list') }}",
+    columns: [
+        { data: 'id', name: 'id' },
+        { data: 'emp_code', name: 'emp_code' },
+        { data: 'employee.name', name: 'employee.name' },
+        { data: 'created_by', name: 'created_by' },
+        { data: 'created_at', name: 'created_at',
+        render: function (data) {
+        return moment.utc(data).utcOffset(330).format('DD-MM-YYYY HH:mm a');
+        }
+ },
+        {
+            data: 'id',
+            name: 'actions',
+            orderable: false,
+            searchable: false,
+            className: 'text-center',
+            render: function(data, type, row) {
+                return `Hello`;
+            }
+        }
+    ],
+    order: [
+                    [0, 'desc']
+                ],
+})
+})
+
     document.getElementById('filter-button').addEventListener('click', function () {
         const button = this;
         const loadingIcon = document.getElementById('loading-icon');
@@ -109,10 +121,17 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({ employee, month, year })
+        }).then(response=> {
+            console.log('Response:', response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+          .then(data => {
+            console.log('Data:', data); // Log parsed data for debugging
+                if (data?.success) {
+                    $('#documentTypeTable').DataTable().ajax.reload(null, false);
                     toastr.success(data.message || 'Payslips generated successfully!');
                 } else {
                     toastr.error(data.message || 'An error occurred while generating payslips.');

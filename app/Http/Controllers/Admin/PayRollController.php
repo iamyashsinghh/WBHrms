@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
 
 class PayRollController extends Controller
 {
@@ -21,6 +22,11 @@ class PayRollController extends Controller
         $page_heading = "Payroll";
         $users = Employee::where('is_active', 1)->get();
         return view('admin.payroll.list', compact('page_heading', 'users'));
+    }
+
+    public function ajax_list(Request $request){
+        $approval = SalarySlip::with('employee:emp_code,name');
+        return DataTables::of($approval)->make(true);
     }
 
     public function generateSalarySlip(Request $request){
@@ -89,7 +95,7 @@ class PayRollController extends Controller
 
     private function generatePDF($emp_code = null, $month = null, $year = null)
     {
-        $auth_user = Auth::guard('admin')->user();
+        $auth_user = Auth::user();
         $employee = Employee::where('emp_code', $emp_code)->first();
         $data = $this->generate($employee->emp_code, $month, $year);
         $salaryTypes = SalaryType::all();
@@ -126,12 +132,14 @@ class PayRollController extends Controller
         if (!file_exists(storage_path('app/public/salaryslip'))) {
             mkdir(storage_path('app/public/salaryslip'), 0777, true);
         }
-        $pdf->save($filePath);
         $salary_slip = new SalarySlip();
         $salary_slip->emp_code = $emp_code;
-        $salary_slip->created_by = $$auth_user->emp_code;
+        $salary_slip->created_by = $auth_user->emp_code;
         $salary_slip->is_paid = '0';
         $salary_slip->path = $filePath;
         $salary_slip->save();
+        
+        $pdf->save($filePath);
+
     }
 }

@@ -193,6 +193,7 @@ Route::middleware('verify_token')->group(function () {
             */
             Route::prefix('/payroll')->name('payroll.')->group(function () {
                 Route::get('/index', [Controllers\Admin\PayRollController::class, 'index'])->name('index');
+                Route::get('ajax_list', [Controllers\Admin\PayRollController::class, 'ajax_list'])->name('ajax_list');
                 Route::post('/generate', [Controllers\Admin\PayRollController::class, 'generateSalarySlip'])->name('generate');
             });
         });

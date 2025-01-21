@@ -46,9 +46,7 @@ class FcmController extends Controller
             $imageUrl = 'https://cms.wbcrm.in/favicon.jpg';
         } elseif ($imageType === 'custom_image' && $customImage) {
             $imagePath = $customImage->store('uploads/fcm_images', 'public');
-            Log::info("$imagePath");
             $imageUrl = asset('storage/' . $imagePath);
-            Log::info("$imageUrl");
         }
         Log::info("jdsokd");
         foreach ($employeesData as $employee) {
@@ -56,7 +54,6 @@ class FcmController extends Controller
             if ($imageType === 'profile_image') {
                 $finalImageUrl = $employee->profile_img ? $employee->profile_img : null;
             }
-            Log::info($finalImageUrl);
             if ($employee->notification_token) {
                 SendFCMNotification::to($employee->notification_token, $title, $body, [], $finalImageUrl);
             }
