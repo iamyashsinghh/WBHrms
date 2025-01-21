@@ -172,7 +172,7 @@
             Warm regards,<br /><br />
 
             Sincerely,<br />
-            {{env('HR_NAME')}}<br />
+            {{$hr_name->name}}<br />
             Hr Executive<br />
             <a href="https://weddingbanquets.in"><b>Wedding Banquets</b></a>
         </div>

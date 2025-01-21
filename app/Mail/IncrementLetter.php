@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Document;
+use App\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,7 +30,8 @@ class IncrementLetter extends Mailable
     public function build()
     {
         $data = $this->data;
-        $pdf = PDF::loadView('mail.increment.incrementletterpdf', compact('data'))
+        $hr_name = Employee::where('role_id', 2)->latest()->first();
+        $pdf = PDF::loadView('mail.increment.incrementletterpdf', compact('data', 'hr_name'))
         ->setPaper('a4', 'portrait')
         ->setOption('margin-top', '0mm')
         ->setOption('margin-bottom', '0mm')
@@ -50,7 +52,7 @@ class IncrementLetter extends Mailable
         $document->path = 'storage/' . $fullPath;
         $document->save();
 
-        return $this->view('mail.increment.incrementletter', compact('data'))
+        return $this->view('mail.increment.incrementletter', compact('data', 'hr_name'))
             ->attachData($pdf->output(), 'IncrementLetter.pdf', [
                 'mime' => 'application/pdf',
             ]);

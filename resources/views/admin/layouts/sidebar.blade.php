@@ -30,61 +30,61 @@ $uri =  Route::currentRouteName();
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}" class="nav-link {{ $uri == 'admin.dashboard' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-home"></i>
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.employee.list') }}" class="nav-link {{ $uri == 'admin.employee.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user"></i>
+                        <i class="nav-icon fas fa-users"></i>
                         <p>Employee</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.approval.list') }}" class="nav-link {{ $uri == 'admin.approval.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>Leave Manegment</p>
+                        <i class="nav-icon fas fa-calendar-check"></i>
+                        <p>Leave Management</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.role.list') }}" class="nav-link {{ $uri == 'admin.role.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user"></i>
+                        <i class="nav-icon fas fa-user-tag"></i>
                         <p>Roles</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.salary-type.list') }}" class="nav-link {{ $uri == 'admin.salary-type.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-money-bill-alt"></i>
+                        <i class="nav-icon fas fa-coins"></i>
                         <p>Salary Type</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.payroll.index') }}" class="nav-link {{ $uri == 'admin.payroll.index' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-location"></i>
+                        <i class="nav-icon fas fa-file-invoice-dollar"></i>
                         <p>Payroll</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.notification.list') }}" class="nav-link {{ $uri == 'admin.notification.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file"></i>
+                        <i class="nav-icon fas fa-bell"></i>
                         <p>Notification</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.document-type.list') }}" class="nav-link {{ $uri == 'admin.document-type.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file"></i>
+                        <i class="nav-icon fas fa-folder-open"></i>
                         <p>Document Type</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.geo.index_all') }}" class="nav-link {{ $uri == 'admin.geo.index_all' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-location"></i>
+                        <i class="nav-icon fas fa-map-marker-alt"></i>
                         <p>Live Location</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('admin.fcm.index') }}" class="nav-link {{ $uri == 'admin.fcm.index' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
+                        <i class="nav-icon fas fa-mobile-alt"></i>
                         <p>App Notification</p>
                     </a>
                 </li>

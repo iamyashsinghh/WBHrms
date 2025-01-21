@@ -51,7 +51,7 @@ If you have any questions or need further clarification, feel free to reach out.
 Thank you for your contributions to our team.<br/><br/>
 
     Thanks & Regards<br/>
-    {{env('HR_NAME')}}<br/>
+    {{$hr_name->name}}<br/>
     HR Executive<br/>
     Wedding Banquets Pvt Ltd<br/>
     <a href="https://weddingbanquets.in">weddingbanquets.in</a>

@@ -51,7 +51,7 @@
     We look forward to welcoming you to Wedding Banquets.<br/><br/><br/>
 
     Thanks & Regards<br/>
-    {{env('HR_NAME')}}<br/>
+    {{$hr_name->name}}<br/>
     HR Executive<br/>
     Wedding Banquets<br/>
     <a href="https://weddingbanquets.in">weddingbanquets.in</a>

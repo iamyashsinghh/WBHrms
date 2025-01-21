@@ -51,8 +51,9 @@ class OfferLetter extends Mailable
                 'per_annum' => $perAnnum,
             ];
         }
+        $hr_name = Employee::where('role_id', 2)->latest()->first();
 
-        $pdf = PDF::loadView('mail.offer.offerletterpdf', compact('data', 'salarySummary'))
+        $pdf = PDF::loadView('mail.offer.offerletterpdf', compact('data', 'salarySummary', 'hr_name'))
         ->setPaper('a4', 'portrait')
         ->setOption('margin-top', '0mm')
         ->setOption('margin-bottom', '0mm')
@@ -73,8 +74,9 @@ class OfferLetter extends Mailable
         $document->path = 'storage/' . $fullPath;
         $document->save();
 
+        $hr_name = Employee::where('role_id', 2)->latest()->first();
 
-        return $this->view('mail.offer.offerletter', compact('data', 'salarySummary'))
+        return $this->view('mail.offer.offerletter', compact('data', 'salarySummary', 'hr_name'))
             ->attachData($pdf->output(), 'OfferLetter.pdf', [
                 'mime' => 'application/pdf',
             ]);
