@@ -185,4 +185,12 @@ class EmployeeController extends Controller
         session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Status updated."]);
         return redirect()->back();
     }
+
+    public function destroy($emp_code)
+    {
+        $employee = Employee::where('emp_code', $emp_code);
+        $employee->delete();
+
+        return response()->json(['success' => 'Employee deleted successfully.']);
+    }
 }

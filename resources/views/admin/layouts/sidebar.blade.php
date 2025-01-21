@@ -59,6 +59,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.payroll.index') }}" class="nav-link {{ $uri == 'admin.payroll.index' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-location"></i>
+                        <p>Payroll</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.notification.list') }}" class="nav-link {{ $uri == 'admin.notification.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file"></i>
                         <p>Notification</p>

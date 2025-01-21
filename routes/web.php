@@ -50,8 +50,7 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('manage/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'manage'])->name('manage');
                 Route::post('manage_process/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'manage_process'])->name('manage_process');
                 Route::get('is_active_status_update/{emp_code?}/{status?}', [Controllers\Admin\EmployeeController::class, 'is_active_status'])->name('is_active_status');
-                Route::get('delete/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'delete'])->name('delete');
-
+                Route::get('destroy/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'destroy'])->name('destroy');
                 Route::post('updateEmploymentInfo', [Controllers\EmployeeDataController::class, 'updateEmploymentInfo'])->name('updateEmploymentInfo');
             });
 
@@ -184,6 +183,17 @@ Route::middleware('verify_token')->group(function () {
             Route::prefix('/fcm')->name('fcm.')->group(function () {
                 Route::get('/notification', [Controllers\Admin\FcmController::class, 'index'])->name('index');
                 Route::post('/send', [Controllers\Admin\FcmController::class, 'send'])->name('send');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Admin Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/payroll')->name('payroll.')->group(function () {
+                Route::get('/index', [Controllers\Admin\PayRollController::class, 'index'])->name('index');
+                Route::post('/generate', [Controllers\Admin\PayRollController::class, 'generateSalarySlip'])->name('generate');
             });
         });
 

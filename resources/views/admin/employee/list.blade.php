@@ -118,7 +118,7 @@
                             return `<td class="d-flex justify-content-around">
                                             <a href="{{ route('admin.employee.view') }}/${row.emp_code}" class="mx-2 text-dark" title="View"><i class="fa fa-eye" style="font-size: 15px;"></i></a>
                                             <a href="{{ route('admin.employee.manage') }}/${row.emp_code}" class="mx-2 text-success" title="Edit"><i class="fa fa-edit" style="font-size: 15px;"></i></a>
-                                            <a href="{{ route('admin.employee.delete') }}/${row.emp_code}" onclick="return confirm('Are you sure want to delete?')" class="mx-2 text-danger" title="Delete"><i class="fa fa-trash-alt" style="font-size: 15px;"></i></a>
+                                            <a href="{{ route('admin.employee.destroy') }}/${row.emp_code}" onclick="return confirm('Are you sure want to delete?')" class="mx-2 text-danger" title="Delete"><i class="fa fa-trash-alt" style="font-size: 15px;"></i></a>
                                         <div class="mx-2 dropdown d-inline-block">
                                             <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fa fa-caret-down text-dark"></i>

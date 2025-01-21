@@ -46,7 +46,7 @@ class NotificationController extends Controller
         $notification = Notification::findOrFail($id);
         $notification->delete();
 
-        return response()->json(['success' => 'Salary type deleted successfully.']);
+        return response()->json(['success' => 'Notification deleted successfully.']);
     }
 
 }
