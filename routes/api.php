@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 
 
 Route::group(['middleware' => 'api.auth'], function () {
-    Route::get('test', function () {
-        return json_encode(['msg' => 'Hi']);
+    Route::get('yash-auth', function () {
+        return json_encode(['msg' => 'Hello Auth User']);
     });
 
     // login routes
@@ -53,6 +53,8 @@ Route::group(['middleware' => 'api.auth'], function () {
     });
 });
 
+
+// test api
 Route::get('yash', function(){
     return 'hello';
 });

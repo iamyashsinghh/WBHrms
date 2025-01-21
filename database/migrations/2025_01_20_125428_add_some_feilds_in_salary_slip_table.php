@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('emp_code')->nullable();
             $table->string('created_by')->nullable();
             $table->string('is_paid')->nullable();
-            $table->date('date')->nullable();
+            $table->string('path')->nullable();
         });
     }
 

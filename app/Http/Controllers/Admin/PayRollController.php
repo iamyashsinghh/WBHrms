@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Salary;
+use App\Models\SalarySlip;
 use App\Models\SalaryType;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PayRollController extends Controller
 {
@@ -86,6 +89,7 @@ class PayRollController extends Controller
 
     private function generatePDF($emp_code = null, $month = null, $year = null)
     {
+        $auth_user = Auth::guard('admin')->user();
         $employee = Employee::where('emp_code', $emp_code)->first();
         $data = $this->generate($employee->emp_code, $month, $year);
         $salaryTypes = SalaryType::all();
@@ -113,7 +117,7 @@ class PayRollController extends Controller
             'total_salary',
             'per_day_salary',
             'salary_to_be_paid',
-            'paying_salaries'
+            'paying_salaries',
         );
         $pdf = PDF::loadView('pdf.salary_slip', $compact_data);
         $timestamp = now()->format('YmdHis');
@@ -123,5 +127,11 @@ class PayRollController extends Controller
             mkdir(storage_path('app/public/salaryslip'), 0777, true);
         }
         $pdf->save($filePath);
+        $salary_slip = new SalarySlip();
+        $salary_slip->emp_code = $emp_code;
+        $salary_slip->created_by = $$auth_user->emp_code;
+        $salary_slip->is_paid = '0';
+        $salary_slip->path = $filePath;
+        $salary_slip->save();
     }
 }
