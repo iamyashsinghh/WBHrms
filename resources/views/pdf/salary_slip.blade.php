@@ -81,7 +81,8 @@
                 <th>Employee Code</th>
                 <td>{{ $employee['emp_code'] }}</td>
                 <th>Salary Mode</th>
-                <td>Cash</td>
+                {{-- <td>Cash</td> --}}
+                <td></td>
             </tr>
             <tr>
                 <th>Name of Employee</th>
