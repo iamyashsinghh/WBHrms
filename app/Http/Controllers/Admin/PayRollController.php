@@ -151,18 +151,17 @@ class PayRollController extends Controller
         $pdf = PDF::loadView('pdf.salary_slip', $compact_data);
         $timestamp = now()->format('YmdHis');
         $fileName = "salary_slip_{$emp_code}_{$timestamp}.pdf";
+
         $filePath = storage_path("app/public/salaryslip/{$fileName}");
-        if (!file_exists(storage_path('app/public/salaryslip'))) {
-            mkdir(storage_path('app/public/salaryslip'), 0777, true);
-        }
         $pdf->save($filePath);
+        $fileUrl = asset("storage/" . basename($filePath));
 
         $salary_slip = SalarySlip::firstOrNew(
             ['emp_code' => $emp_code, 'month' => $month, 'year' => $year],
             ['created_by' => $auth_user->emp_code]
         );
         $salary_slip->is_paid = '0';
-        $salary_slip->path = $filePath;
+        $salary_slip->path = $fileUrl;
         $salary_slip->save();
 
     }
