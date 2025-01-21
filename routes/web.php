@@ -195,6 +195,8 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('/index', [Controllers\Admin\PayRollController::class, 'index'])->name('index');
                 Route::get('ajax_list', [Controllers\Admin\PayRollController::class, 'ajax_list'])->name('ajax_list');
                 Route::post('/generate', [Controllers\Admin\PayRollController::class, 'generateSalarySlip'])->name('generate');
+                Route::post('/update_is_paid', [Controllers\Admin\PayRollController::class, 'update_is_paid'])->name('update_is_paid');
+                Route::post('/generate', [Controllers\Admin\PayRollController::class, 'generateSalarySlip'])->name('generate');
             });
         });
 

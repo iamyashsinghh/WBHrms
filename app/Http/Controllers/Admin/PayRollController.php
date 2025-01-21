@@ -29,6 +29,10 @@ class PayRollController extends Controller
         return DataTables::of($approval)->make(true);
     }
 
+    public function update_is_paid($id){
+        
+    }
+
     public function generateSalarySlip(Request $request){
         $emp_code = $request->input('employee');
         $month = $request->input('month');
@@ -138,7 +142,7 @@ class PayRollController extends Controller
         $salary_slip->is_paid = '0';
         $salary_slip->path = $filePath;
         $salary_slip->save();
-        
+
         $pdf->save($filePath);
 
     }
