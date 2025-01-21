@@ -32,6 +32,23 @@ class PayRollController extends Controller
 
     public function update_is_paid($id)
     {
+        $salary_slip = SalarySlip::findorfail($id);
+        $salary_slip->is_paid = '1';
+        $salary_slip->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Status Updated.',
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $salary_slip = SalarySlip::findorfail($id);
+        $salary_slip->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Deleted.',
+        ]);
     }
 
     public function generateSalarySlip(Request $request)

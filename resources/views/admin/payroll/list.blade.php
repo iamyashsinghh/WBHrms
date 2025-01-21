@@ -68,6 +68,23 @@
                 </table>
             </div>
         </section>
+        <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="pdfPreview" src="" frameborder="0" style="width: 100%; height: 600px;"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a id="downloadPdf" href="#" target="_blank" class="btn btn-primary">Download</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 @section('footer-script')
@@ -113,10 +130,10 @@
                         data: 'is_paid',
                         name: 'is_paid',
                         render: function(data) {
-                            if (data === 1) {
-                                return `<div class="badge badge-success">Paid</div>`;
+                            if (data == 1) {
+                                return `<div class="p-2 badge badge-success">Paid</div>`;
                             } else {
-                                return `<div class="badge badge-danger">Unpaid</div>`;
+                                return `<div class="p-2 badge badge-danger">Unpaid</div>`;
                             }
                         }
                     },
@@ -129,14 +146,14 @@
                         render: function(data, type, row) {
                             if (row.is_paid == 1) {
                                 return `<div class="d-flex">
-                                <a href='#' class="mx-2 badge badge-warning" title="View"><i class="p-2 fa-solid fa-file"></i></a>
-                                <a href='#' class="badge badge-danger" title="Delete"><i class="p-2 fa-solid fa-trash"></i></a>
+                                <a href='#' onclick="openPdfModal('${row.path}')" class="mx-2 badge badge-warning" title="View"><i class="p-2 fa-solid fa-file"></i></a>
+                                <a href='#'  onclick="deleteSalarySlip(${data})" class="badge badge-danger" title="Delete"><i class="p-2 fa-solid fa-trash"></i></a>
                                 </div>`;
                             } else {
                                 return `<div class="d-flex">
-                                <a href='#' class="badge badge-warning" title="View"><i class="p-2 fa-solid fa-file"></i></a>
-                                <a href='#' class="mx-2 badge badge-success" title="Mark as paid"><i class="p-2 fa-solid fa-indian-rupee-sign"></i></a>
-                                <a href='#' class="badge badge-danger" title="Delete"><i class="p-2 fa-solid fa-trash"></i></a>
+                                <a href='#' onclick="openPdfModal('${row.path}')" class="badge badge-warning" title="View"><i class="p-2 fa-solid fa-file"></i></a>
+                                <a href='#' onclick="updateIsPaid(${data})" class="mx-2 badge badge-success" title="Mark as paid"><i class="p-2 fa-solid fa-indian-rupee-sign"></i></a>
+                                <a href='#' onclick="deleteSalarySlip(${data})" class="badge badge-danger" title="Delete"><i class="p-2 fa-solid fa-trash"></i></a>
                                 </div>`;
                             }
                         }
@@ -147,7 +164,6 @@
                 ],
             })
         })
-
         document.getElementById('filter-button').addEventListener('click', function() {
             const button = this;
             const loadingIcon = document.getElementById('loading-icon');
@@ -188,5 +204,62 @@
                     loadingIcon.style.display = 'none';
                 });
         });
+
+        function updateIsPaid(id) {
+            if (confirm("Are you sure you want to mark this as paid?")) {
+                fetch(`{{ route('admin.payroll.update_is_paid', ':id') }}`.replace(':id', id), {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (data?.success) {
+                            $('#documentTypeTable').DataTable().ajax.reload(null, false);
+                            toastr.success(data.message || 'Status updated successfully!');
+                        } else {
+                            toastr.error(data.message || 'An error occurred while updating.');
+                        }
+                    })
+                    .catch(error => {
+                        toastr.error('An unexpected error occurred.');
+                    });
+            }
+        }
+
+        function deleteSalarySlip(id) {
+            if (confirm("Are you sure you want to delete this salary slip?")) {
+                fetch(`{{ route('admin.payroll.destroy', ':id') }}`.replace(':id', id), {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (data?.success) {
+                            $('#documentTypeTable').DataTable().ajax.reload(null, false);
+                            toastr.success(data.message || 'Record deleted successfully!');
+                        } else {
+                            toastr.error(data.message || 'An error occurred while deleting.');
+                        }
+                    })
+                    .catch(error => {
+                        toastr.error('An unexpected error occurred.');
+                    });
+            }
+        }
+
+        function openPdfModal(pdfPath) {
+            const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'), {
+                keyboard: true
+            });
+            const pdfPreview = document.getElementById('pdfPreview');
+            pdfPreview.src = pdfPath;
+            const downloadButton = document.getElementById('downloadPdf');
+            downloadButton.href = pdfPath;
+            pdfModal.show();
+        }
     </script>
 @endsection
