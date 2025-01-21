@@ -154,7 +154,7 @@ class PayRollController extends Controller
 
         $filePath = storage_path("app/public/salaryslip/{$fileName}");
         $pdf->save($filePath);
-        $fileUrl = asset("storage/public/salaryslip" . basename($filePath));
+        $fileUrl = asset("storage/public/salaryslip/" . basename($filePath));
 
         $salary_slip = SalarySlip::firstOrNew(
             ['emp_code' => $emp_code, 'month' => $month, 'year' => $year],
