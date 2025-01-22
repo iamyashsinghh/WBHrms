@@ -46,12 +46,12 @@
                         <div>
                             <a href="{{ route('send.hr.mail') }}/{{ $user->emp_code }}/offerletter"
                                 class="btn btn-sm btn-warning">Release Offer Letter</a>
-                                <a href="{{ route('admin.employee.manage') }}/{{ $user->emp_code }}" class="btn btn-sm btn-info" target="_blank"><i
-                                    class="fa fa-edit"
-                                    style=""></i></a>
-                                    <a href="{{ route('admin.geo.index', ['emp_code' => $user->emp_code]) }}" class="btn btn-sm btn-info" target="_blank">
-                                        <i class="fa fa-location"></i>
-                                    </a>
+                            <a href="{{ route('admin.employee.manage') }}/{{ $user->emp_code }}"
+                                class="btn btn-sm btn-info" target="_blank"><i class="fa fa-edit" style=""></i></a>
+                            <a href="{{ route('admin.geo.index', ['emp_code' => $user->emp_code]) }}"
+                                class="btn btn-sm btn-info" target="_blank">
+                                <i class="fa fa-location"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -219,7 +219,8 @@
                                                         }}>Male</option>
                                                     <option value="female" {{ $user->gender == 'female' ? 'selected' :
                                                         '' }}>Female</option>
-                                                    <option value="others" {{ $user->gender == 'others' ? 'selected' : ''
+                                                    <option value="others" {{ $user->gender == 'others' ? 'selected' :
+                                                        ''
                                                         }}>Others</option>
                                                 </select>
                                             </span>
@@ -233,15 +234,19 @@
 
                                         <div class="mb-3 col-md-6">
                                             <strong>Marital Status:</strong> <span class="text-muted">
-                                                <select class="form-control personal-input read-only-input" id="marital_status"
-                                                    disabled>
-                                                    <option value="single" {{ $user->marital_status == 'single' ? 'selected' :
+                                                <select class="form-control personal-input read-only-input"
+                                                    id="marital_status" disabled>
+                                                    <option value="single" {{ $user->marital_status == 'single' ?
+                                                        'selected' :
                                                         '' }}>Single</option>
-                                                    <option value="married" {{ $user->marital_status == 'married' ? 'selected' :
+                                                    <option value="married" {{ $user->marital_status == 'married' ?
+                                                        'selected' :
                                                         '' }}>Married</option>
-                                                    <option value="divorced" {{ $user->marital_status == 'divorced' ? 'selected'
+                                                    <option value="divorced" {{ $user->marital_status == 'divorced' ?
+                                                        'selected'
                                                         : '' }}>Divorced</option>
-                                                    <option value="widowed" {{ $user->marital_status == 'widowed' ? 'selected' :
+                                                    <option value="widowed" {{ $user->marital_status == 'widowed' ?
+                                                        'selected' :
                                                         '' }}>Widowed</option>
                                                 </select>
                                             </span>
@@ -474,15 +479,17 @@
                                         </div>
                                         <div class="mb-3 col-md-6">
                                             <strong>Reporting Manager:</strong> <span class="text-muted">
-                                                <select class="form-control professional-input read-only-input" id="reporting_manager" disabled>
+                                                <select class="form-control professional-input read-only-input"
+                                                    id="reporting_manager" disabled>
                                                     <option value="">Select Manager</option>
                                                     @foreach($managers as $manager)
-                                                        <option value="{{ $manager->emp_code }}" {{ $user->reporting_manager == $manager->emp_code ? 'selected' : '' }}>
-                                                            {{ $manager->name }}
-                                                        </option>
+                                                    <option value="{{ $manager->emp_code }}" {{ $user->reporting_manager
+                                                        == $manager->emp_code ? 'selected' : '' }}>
+                                                        {{ $manager->name }}
+                                                    </option>
                                                     @endforeach
                                                 </select>
-                                               </span>
+                                            </span>
                                         </div>
                                     </div>
                                     <hr>
@@ -563,7 +570,9 @@
                                         </div>
                                         <div class="mb-3 col-md-12">
                                             <strong>Recovery Info:</strong>
-                                            <textarea type="text" class="form-control official-input read-only-input" id="office_email_recovery_info" disabled>{{ $user->office_email_recovery_info }}</textarea>
+                                            <textarea type="text" class="form-control official-input read-only-input"
+                                                id="office_email_recovery_info"
+                                                disabled>{{ $user->office_email_recovery_info }}</textarea>
                                         </div>
                                     </div>
                                     <hr>
@@ -792,7 +801,6 @@
             $('.upload-btn, .reupload-btn').on('click', function() {
                 var docId = $(this).data('doc-id') || '';
                 var docType = $(this).data('doc-type');
-
                 $('#document_id').val(docId);
                 $('#doc_type').val(docType);
             });
@@ -802,9 +810,7 @@
                 var docType = $(this).data('doc-type').toLowerCase();
                 var previewContainer = $('#document-preview');
                 var downloadLink = $('#download-link');
-
                 previewContainer.html('');
-
                 if (docType === 'jpg' || docType === 'jpeg' || docType === 'png' || docType === 'gif') {
                     previewContainer.html('<img src="' + docPath + '" alt="Document" class="img-fluid">');
                 } else if (docType === 'pdf') {
@@ -848,7 +854,9 @@
                         salary: calculatedSalary.toFixed(2),
                     });
                 });
-                saveSalaries(salaryData);
+                if (confirm('Are you sure you want to update the salary details?')) {
+                    saveSalaries(salaryData);
+                }
             });
 
             function saveSalaries(salaryData) {

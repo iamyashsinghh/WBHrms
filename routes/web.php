@@ -202,6 +202,15 @@ Route::middleware('verify_token')->group(function () {
                 Route::post('/destroy/{id?}', [Controllers\Admin\PayRollController::class, 'destroy'])->name('destroy');
                 Route::post('/generate', [Controllers\Admin\PayRollController::class, 'generateSalarySlip'])->name('generate');
             });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Admin Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/resign')->name('resign.')->group(function () {
+                Route::get('/index', [Controllers\Admin\ResignController::class, 'index'])->name('list');
+            });
         });
 
         /*

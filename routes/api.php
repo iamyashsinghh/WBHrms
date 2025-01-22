@@ -50,6 +50,10 @@ Route::group(['middleware' => 'api.auth'], function () {
         Route::get('leave-get-users', [Api\LeaveManegment::class , 'getUsers']);
         Route::get('leave-get-user/{emp_code}', [Api\LeaveManegment::class , 'getUser']);
         Route::post('leave-new-approval/{emp_code}', [Api\LeaveManegment::class , 'leaveNewApproval']);
+
+        // resignation mgmt
+        Route::get('/user/resignation',  [Api\ResignController::class , 'getUserResignation']);
+        Route::post('/user/applyresignation',  [Api\ResignController::class , 'save']);
     });
 });
 
