@@ -57,7 +57,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('admin.approval.ajax_list') }}",
+                url: "{{ route('admin.resign.ajax_list') }}",
                 type: 'GET'
             },
             columns: [{
@@ -79,54 +79,41 @@
                 {
                     data: 'type',
                     name: 'type',
-                    render: function (data, type, row){
-                        if(data == 'sl'){
-                            return `Short Leave`;
-                        }else if(data == 'cl'){
-                            return `CL`;
-                        }else if(data == 'pl'){
-                            return `PL`;
-                        }else if(data == 'hd'){
-                            return `Half Day`;
-                        }else if(data == 'wo'){
-                            return `Week Off`;
-                        }
-                    }
                 },
                 {
-                    data: 'start',
-                    name: 'start',
+                    data: 'resign_at',
+                    name: 'resign_at',
                 },
                 {
-                    data: 'emp_desc',
-                    name: 'emp_desc',
+                    data: 'detail',
+                    name: 'detail',
                      render: function (data, type, row){
                         var escapedData = data.replace(/(\r\n|\n|\r)/gm, " ").replace(/"/g, '\\"');
                         return `<button class="btn" onclick='handle_view_message("${escapedData}")'><i class="fa fa-comment-dots" style="color: var(--wb-renosand);"></i></button>`;
                      }
                 },
-                
+
                 {
-                    data: 'is_approved',
-                    name: 'is_approved',
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row) {
-                        if(data == 0){
-                            return `<div class="my-1 button-group d-flex">
-                                            <a href="{{route('admin.approval.update_status')}}/${row.id}/2" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-dark-red)">Reject</a>
-                                            <a href="{{route('admin.approval.update_status')}}/${row.id}/1" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-renosand)">Approve</a>
-                                        </div>`;
-                        }else if(data == 1){
-                            return `<div class="my-1 button-group d-flex">
-                                            <a href="#" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-renosand)">Approved</a>
-                                        </div>`;
-                        }else{
-                            return `<div class="my-1 button-group d-flex">
-                                            <a href="#" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-dark-red)">Rejected</a>
-                                        </div>`;
-                        }
-                    }
+                    data: 'accepted_by',
+                    name: 'accepted_by',
+                    // orderable: false,
+                    // searchable: false,
+                    // render: function(data, type, row) {
+                    //     if(data == 0){
+                    //         return `<div class="my-1 button-group d-flex">
+                    //                         <a href="{{route('admin.approval.update_status')}}/${row.id}/2" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-dark-red)">Reject</a>
+                    //                         <a href="{{route('admin.approval.update_status')}}/${row.id}/1" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-renosand)">Approve</a>
+                    //                     </div>`;
+                    //     }else if(data == 1){
+                    //         return `<div class="my-1 button-group d-flex">
+                    //                         <a href="#" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-renosand)">Approved</a>
+                    //                     </div>`;
+                    //     }else{
+                    //         return `<div class="my-1 button-group d-flex">
+                    //                         <a href="#" class="mx-1 btn text-light btn-sm buttons-print" style="background-color: var(--wb-dark-red)">Rejected</a>
+                    //                     </div>`;
+                    //     }
+                    // }
                 }
             ],
             order: [

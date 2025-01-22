@@ -210,6 +210,7 @@ Route::middleware('verify_token')->group(function () {
             */
             Route::prefix('/resign')->name('resign.')->group(function () {
                 Route::get('/index', [Controllers\Admin\ResignController::class, 'index'])->name('list');
+                Route::get('/ajax_list', [Controllers\Admin\ResignController::class, 'ajax_list'])->name('ajax_list');
             });
         });
 
