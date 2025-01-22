@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('resign_at')->nullable();
             $table->string('accepted_by')->nullable();
             $table->dateTime('accepted_at')->nullable();
-            $table->date('notice_period')->nullable();
+            $table->string('notice_period')->nullable();
             $table->timestamps();
         });
     }
