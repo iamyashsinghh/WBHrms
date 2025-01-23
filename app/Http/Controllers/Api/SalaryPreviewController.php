@@ -56,7 +56,7 @@ class SalaryPreviewController extends Controller
         ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
 
         $unmarked = 30 - $attendances->count();
-        $salary_slip = SalarySlip::where(['emp_code', $user->emp_code, 'month'=> $month, 'year' => $year])->get();
+        $salary_slip = SalarySlip::where(['emp_code', $user->emp_code, 'month'=> $month, 'year' => $year])->first();
         return response()->json([
             'attendances' => $attendances,
             'absent' => $absent,
