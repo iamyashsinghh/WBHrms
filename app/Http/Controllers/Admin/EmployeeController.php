@@ -131,7 +131,7 @@ class EmployeeController extends Controller
             'ifsc_code' => 'nullable|string|max:11',
             'holder_name' => 'nullable|string|max:255',
         ]);
-
+        $validatedData['status'] = 'Provision';
         if ($emp_code == 0) {
             $rolePrefixes = [
                 1 => 'A-',
