@@ -48,10 +48,19 @@ class ResignController extends Controller
 
     public function index(Request $request)
     {
-        $resignations = Resignation::with('employee')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        $auth_user = $request->user();
+        if ($auth_user->role_id == 6) {
+            $resignations = Resignation::with('employee')
+                ->whereHas('employee', function ($query) use ($auth_user) {
+                    $query->where('reporting_manager', $auth_user->emp_code);
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $resignations = Resignation::with('employee')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
         return response()->json([
             'success' => true,
             'data' => $resignations,
@@ -65,7 +74,7 @@ class ResignController extends Controller
         if (!$resignation) {
             return response()->json(['success' => false, 'message' => 'Resignation not found.'], 404);
         }
-        
+
         $resignation->notice_period = $request->notice_period ?? 0;
         $resignation->accepted_at = now();
         $resignation->accepted_by = $auth_user->emp_code;
@@ -77,5 +86,4 @@ class ResignController extends Controller
             'data' => $resignation,
         ]);
     }
-
 }
