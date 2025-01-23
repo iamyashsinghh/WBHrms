@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\SalarySlip;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,7 @@ class SalaryPreviewController extends Controller
             $startDate = Carbon::create($salyear, $salmonth, 1);
             $endDate = Carbon::create($salyear, $salmonth)->endOfMonth();
         }
+
 
         $attendances = Attendance::where('emp_code', $user->emp_code)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
@@ -54,6 +56,7 @@ class SalaryPreviewController extends Controller
         ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])->count();
 
         $unmarked = 30 - $attendances->count();
+        $salary_slip = SalarySlip::where(['emp_code', $user->emp_code, 'month'=> $month, 'year' => $year])->get();
         return response()->json([
             'attendances' => $attendances,
             'absent' => $absent,
@@ -65,6 +68,7 @@ class SalaryPreviewController extends Controller
             'present' => $present,
             'shortleave' => $shortleave,
             'unmarked' => $unmarked,
+            'salary_slip' =>$salary_slip,
         ]);
     }
 }
