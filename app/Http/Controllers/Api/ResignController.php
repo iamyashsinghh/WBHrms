@@ -65,8 +65,7 @@ class ResignController extends Controller
         if (!$resignation) {
             return response()->json(['success' => false, 'message' => 'Resignation not found.'], 404);
         }
-
-        $resignation->status = 'approved';
+        
         $resignation->notice_period = $request->notice_period ?? 0;
         $resignation->accepted_at = now();
         $resignation->accepted_by = $auth_user->emp_code;
