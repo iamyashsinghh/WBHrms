@@ -49,7 +49,7 @@ $uri =  Route::currentRouteName();
                 <li class="nav-item">
                     <a href="{{ route('admin.resign.list') }}" class="nav-link {{ $uri == 'admin.resign.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-check"></i>
-                        <p>Resignation Management</p>
+                        <p>Resignation Mgmt</p>
                     </a>
                 </li>
                 <li class="nav-item">

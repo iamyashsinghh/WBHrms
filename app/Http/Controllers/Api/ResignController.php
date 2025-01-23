@@ -45,4 +45,38 @@ class ResignController extends Controller
             'resignation' => $resignation
         ]);
     }
+
+    public function index(Request $request)
+    {
+        $resignations = Resignation::with('employee')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $resignations,
+        ]);
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $resignation = Resignation::find($id);
+        $auth_user = $request->user();
+        if (!$resignation) {
+            return response()->json(['success' => false, 'message' => 'Resignation not found.'], 404);
+        }
+
+        $resignation->status = 'approved';
+        $resignation->notice_period = $request->notice_period ?? 0;
+        $resignation->accepted_at = now();
+        $resignation->accepted_by = $auth_user->emp_code;
+        $resignation->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Resignation approved successfully.',
+            'data' => $resignation,
+        ]);
+    }
+
 }

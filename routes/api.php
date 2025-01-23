@@ -54,6 +54,9 @@ Route::group(['middleware' => 'api.auth'], function () {
         // resignation mgmt
         Route::get('/user/resignation',  [Api\ResignController::class , 'getUserResignation']);
         Route::post('/user/applyresignation',  [Api\ResignController::class , 'save']);
+        // resignation mgmt
+        Route::get('/resignations', [Api\ResignController::class, 'index']);
+        Route::post('/resignations/{id}/approve', [Api\ResignController::class, 'approve']);
     });
 });
 
