@@ -289,6 +289,9 @@
                                 <button class="btn btn-sm btn-primary" onclick="handleManageSalaryType('${row.id}', '${row.name}', '${row.value}', '${row.category}')">
                                     <i class="fa fa-edit"></i>
                                 </button>
+                                <button class="btn btn-sm btn-danger" onclick="handleDeleteSalaryType('${row.id}')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
                             `;
                         }
                     }

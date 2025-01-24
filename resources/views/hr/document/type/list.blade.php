@@ -136,6 +136,9 @@
                                 <button class="btn btn-sm btn-primary" onclick="handleManageDocumentType(${data})">
                                     <i class="fa fa-edit"></i>
                                 </button>
+                                <button class="btn btn-sm btn-danger" onclick="handleDeleteDocumentType(${data})">
+                                    <i class="fa fa-trash"></i>
+                                </button>
                             `;
                         }
                     }

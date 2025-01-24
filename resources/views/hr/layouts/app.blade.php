@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="{{asset('plugins/toastr/toastr.min.css')}}">
     <link rel="stylesheet" href="{{asset('css/common.css')}}">
     <script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') | {{env('APP_NAME')}}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('header-css')
     @yield('header-script')
 </head>
@@ -61,7 +61,6 @@
     <script src="{{asset('plugins/toastr/toastr.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{asset('js/common.js')}}"></script>
-    <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
     @php
     if(session()->has('status')){
     $type = session('status');

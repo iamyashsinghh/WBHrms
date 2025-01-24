@@ -11,7 +11,7 @@ class NotificationController extends Controller
 {
     public function list(){
         $page_heading = 'Notifications';
-        return view('admin.notification.list', compact('page_heading'));
+        return view('hr.notification.list', compact('page_heading'));
     }
 
     public function ajax_list(Request $request)
@@ -46,7 +46,7 @@ class NotificationController extends Controller
         $notification = Notification::findOrFail($id);
         $notification->delete();
 
-        return response()->json(['success' => 'Salary type deleted successfully.']);
+        return response()->json(['success' => 'Notification deleted successfully.']);
     }
 
 }

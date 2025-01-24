@@ -225,16 +225,15 @@ Route::middleware('verify_token')->group(function () {
         Route::prefix('/hr')->middleware('hr')->name('hr.')->group(function () {
             /*
             |--------------------------------------------------------------------------
-            | HR Global Routes
+            | Hr Global Routes
             |--------------------------------------------------------------------------
             */
             Route::get('/dashboard', [Controllers\Hr\DashboardController::class, 'index'])->name('dashboard');
-            Route::get('update_profile_image', [Controllers\Hr\EmployeeController::class, 'update_profile_image'])->name('employee.update_profile_image');
             Route::get('bypass_login/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'bypass_login'])->name('employee.bypass_login');
 
             /*
             |--------------------------------------------------------------------------
-            | Hr Employee Routes
+            | hr Employee Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/employee')->name('employee.')->group(function () {
@@ -243,14 +242,15 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('view/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'view'])->name('view');
                 Route::get('manage/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'manage'])->name('manage');
                 Route::post('manage_process/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'manage_process'])->name('manage_process');
-                Route::get('delete/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'delete'])->name('delete');
-
+                Route::get('is_active_status_update/{emp_code?}/{status?}', [Controllers\Hr\EmployeeController::class, 'is_active_status'])->name('is_active_status');
+                Route::get('destroy/{emp_code?}', [Controllers\Hr\EmployeeController::class, 'destroy'])->name('destroy');
                 Route::post('updateEmploymentInfo', [Controllers\EmployeeDataController::class, 'updateEmploymentInfo'])->name('updateEmploymentInfo');
+                Route::post('update', [Controllers\EmployeeDataController::class, 'update'])->name('update');
             });
 
             /*
             |--------------------------------------------------------------------------
-            | Hr Salary Type Routes
+            | hr Salary Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/salary-type')->name('salary-type.')->group(function () {
@@ -263,7 +263,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Hr Salary Routes
+            | hr Salary Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/salary')->name('salary.')->group(function () {
@@ -272,7 +272,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Hr Document Type Routes
+            | hr Document Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/document-type')->name('document-type.')->group(function () {
@@ -284,7 +284,19 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Hr Document Routes
+            | hr Notification Type Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/notification')->name('notification.')->group(function () {
+                Route::get('list', [Controllers\Hr\NotificationController::class, 'list'])->name('list');
+                Route::get('ajax_list', [Controllers\Hr\NotificationController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Hr\NotificationController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Hr\NotificationController::class, 'destroy'])->name('destroy');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr Document Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/document')->name('document.')->group(function () {
@@ -294,13 +306,80 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Hr All Emp Attendance Routes
+            | hr Approval Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/approval')->name('approval.')->group(function () {
+                Route::get('list/{dashboard_filters?}', [Controllers\Hr\ApprovalController::class, 'index'])->name('list');
+                Route::get('approval/ajax_list', [Controllers\Hr\ApprovalController::class, 'ajax_list'])->name('ajax_list');
+                Route::get('approval/update/{id?}/{status?}', [Controllers\Hr\ApprovalController::class, 'update_status'])->name('update_status');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr All Emp Attendance Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('attendance-all')->name('attendance.')->group(function () {
                 Route::get('fetch-attendance', [Controllers\Hr\AttendanceController::class, 'fetchAttendance'])->name('fetch');
                 Route::get('get/{emp_code?}/{date?}', [Controllers\Hr\AttendanceController::class, 'get_attendance'])->name('get');
                 Route::post('store/{emp_code?}/{date?}', [Controllers\Hr\AttendanceController::class, 'store_attendance'])->name('store');
+                Route::post('/admin/attendance/download', [Controllers\Hr\AttendanceController::class, 'downloadAttendance'])->name('download');
+                Route::post('/admin/attendance/generate', [Controllers\Hr\AttendanceController::class, 'generateAttendanceSheet'])->name('generate');
+                Route::get('/attendance/daily', [Controllers\Hr\AttendanceController::class, 'dailyAttendancePage'])->name('daily');
+                Route::get('/attendance/daily/fetch', [Controllers\Hr\AttendanceController::class, 'fetchDailyAttendance'])->name('fetch.daily');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr GEO Location
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/geo')->name('geo.')->group(function () {
+                Route::get('/{emp_code}/live-location', [Controllers\Hr\GeoController::class, 'index'])->name('index');
+                Route::get('/{emp_code}/location-history', [Controllers\Hr\GeoController::class, 'index_history'])->name('index_history');
+                Route::get('/live-location', [Controllers\Hr\GeoController::class, 'index_all'])->name('index_all');
+                Route::post('/{emp_code}/last-location', [Controllers\Hr\GeoController::class, 'get_last_location_ajax'])->name('get_last_location_ajax');
+                Route::post('/{emp_code}/get_location_history_ajax', [Controllers\Hr\GeoController::class, 'get_location_history_ajax'])->name('get_location_history_ajax');
+                Route::post('admin/geo/get-all-locations-ajax', [Controllers\Hr\GeoController::class, 'get_all_emp_location_ajax'])->name('get_all_locations_ajax');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/fcm')->name('fcm.')->group(function () {
+                Route::get('/notification', [Controllers\Hr\FcmController::class, 'index'])->name('index');
+                Route::post('/send', [Controllers\Hr\FcmController::class, 'send'])->name('send');
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/payroll')->name('payroll.')->group(function () {
+                Route::get('/index', [Controllers\Hr\PayRollController::class, 'index'])->name('index');
+                Route::get('ajax_list', [Controllers\Hr\PayRollController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('/generate', [Controllers\Hr\PayRollController::class, 'generateSalarySlip'])->name('generate');
+                Route::post('/update_is_paid/{id?}', [Controllers\Hr\PayRollController::class, 'update_is_paid'])->name('update_is_paid');
+                Route::post('/destroy/{id?}', [Controllers\Hr\PayRollController::class, 'destroy'])->name('destroy');
+                Route::post('/generate', [Controllers\Hr\PayRollController::class, 'generateSalarySlip'])->name('generate');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | hr Fcm Notiication
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/resign')->name('resign.')->group(function () {
+                Route::get('/index', [Controllers\Hr\ResignController::class, 'index'])->name('list');
+                Route::get('/ajax_list', [Controllers\Hr\ResignController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('/approve', [Controllers\Hr\ResignController::class, 'approve'])->name('approve');
             });
         });
     });

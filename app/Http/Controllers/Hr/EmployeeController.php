@@ -17,7 +17,7 @@ class EmployeeController extends Controller
     public function list()
     {
         $page_heading = 'Employees';
-        $roles = Role::where('id', '!=' , 1)->get();
+        $roles = Role::all();
         return view('hr.employee.list', compact('page_heading', 'roles'));
     }
 
@@ -33,8 +33,15 @@ class EmployeeController extends Controller
             'employees.status',
             'employees.profile_img',
             'employees.employee_designation',
+            'employees.punch_in_time',
+            'employees.punch_out_time',
+            'employees.cl_left',
+            'employees.pl_left',
+            'employees.latings_left',
+            'employees.notification_token',
+            'employees.weekdays',
             'role.name as role_name',
-        )->leftJoin("roles as role", 'employees.role_id', '=', 'role.id')->where('employees.role_id', '!=', 1);
+        )->leftJoin("roles as role", 'employees.role_id', '=', 'role.id');
         if ($role_id) {
             $users->where('employees.role_id', $role_id);
         }
@@ -131,7 +138,7 @@ class EmployeeController extends Controller
             'ifsc_code' => 'nullable|string|max:11',
             'holder_name' => 'nullable|string|max:255',
         ]);
-
+        $validatedData['status'] = 'Provision';
         if ($emp_code == 0) {
             $rolePrefixes = [
                 1 => 'A-',
@@ -147,14 +154,14 @@ class EmployeeController extends Controller
             $validatedData['emp_code'] = $prefix . $referenceNumber;
             $validatedData['can_add_device'] = 1;
             Employee::create($validatedData);
-            return redirect()->route('hr.employee.list')->with('success', 'Employee created successfully!');
+            return redirect()->route('admin.employee.list')->with('success', 'Employee created successfully!');
         } else {
             $employee = Employee::where('emp_code', $emp_code)->first();
             if (!$employee) {
                 return abort(404);
             }
             $employee->update($validatedData);
-            return redirect()->route('hr.employee.list')->with('success', 'Employee updated successfully!');
+            return redirect()->route('admin.employee.list')->with('success', 'Employee updated successfully!');
         }
     }
 
@@ -171,5 +178,26 @@ class EmployeeController extends Controller
         $ctc = Salary::where('emp_code', $user->emp_code)->sum('salary');
         $total_ctc = $ctc*12;
         return view('hr.employee.view', compact('user', 'page_heading', 'doc_type', 'salary_type', 'ctc', 'total_ctc', 'managers'));
+    }
+
+    public function is_active_status($emp_code, $status){
+        $employee = Employee::where('emp_code', $emp_code)->first();
+        if (!$employee) {
+            return abort(404);
+        }
+
+        $employee->is_active = $status;
+        $employee->save();
+
+        session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => "Status updated."]);
+        return redirect()->back();
+    }
+
+    public function destroy($emp_code)
+    {
+        $employee = Employee::where('emp_code', $emp_code);
+        $employee->delete();
+
+        return response()->json(['success' => 'Employee deleted successfully.']);
     }
 }
