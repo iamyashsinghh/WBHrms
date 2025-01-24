@@ -10,6 +10,42 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployeeDataController extends Controller
 {
+
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'emp_code' => 'required|string|max:255',
+            'status' => 'required|string|max:255',
+            'punch_in_time' => 'nullable|date_format:H:i',
+            'punch_out_time' => 'nullable|date_format:H:i',
+            'cl_left' => 'nullable|integer',
+            'pl_left' => 'nullable|integer',
+            'latings_left' => 'nullable|integer',
+            'weekdays' => 'nullable|string|max:255',
+        ]);
+
+        $employee = Employee::where('emp_code', $validated['emp_code'])->first();
+
+        if (!$employee) {
+            return redirect()->back()->withErrors(['error' => 'Employee not found.']);
+        }
+
+        $employee->status = $validated['status'];
+        $employee->punch_in_time = $validated['punch_in_time'];
+        $employee->punch_out_time = $validated['punch_out_time'];
+        $employee->cl_left = $validated['cl_left'];
+        $employee->pl_left = $validated['pl_left'];
+        $employee->latings_left = $validated['latings_left'];
+        if($validated['weekdays'] === 'null'){
+            $employee->weekdays = null;
+        }else{
+            $employee->weekdays = $validated['weekdays'];
+        }
+        $employee->save();
+        session()->flash('status', ['success' => true, 'alert_type' => 'success', 'message' => 'Employee details updated successfully.']);
+        return redirect()->back()->with('success', 'Employee details updated successfully.');
+    }
+
     public function updateEmploymentInfo(Request $request)
     {
         try {
@@ -66,7 +102,6 @@ class EmployeeDataController extends Controller
     }
 
 public function update_profile_image(Request $request, $emp_code) {
-    // Validate the input file
     $validate = Validator::make($request->all(), [
         'profile_image' => 'required|mimes:jpg,jpeg,png,webp,gif|max:1024',
     ]);
@@ -75,8 +110,6 @@ public function update_profile_image(Request $request, $emp_code) {
         session()->flash('status', ['success' => false, 'alert_type' => 'error', 'message' => $validate->errors()->first()]);
         return redirect()->back();
     }
-
-    // Find the employee
     $user = Employee::where('emp_code', $emp_code)->first();
     if (!$user) {
         abort(404, 'Employee not found.');

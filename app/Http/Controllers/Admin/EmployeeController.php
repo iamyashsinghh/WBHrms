@@ -33,6 +33,13 @@ class EmployeeController extends Controller
             'employees.status',
             'employees.profile_img',
             'employees.employee_designation',
+            'employees.punch_in_time',
+            'employees.punch_out_time',
+            'employees.cl_left',
+            'employees.pl_left',
+            'employees.latings_left',
+            'employees.notification_token',
+            'employees.weekdays',
             'role.name as role_name',
         )->leftJoin("roles as role", 'employees.role_id', '=', 'role.id');
         if ($role_id) {

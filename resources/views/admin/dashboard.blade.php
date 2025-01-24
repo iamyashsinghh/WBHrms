@@ -166,17 +166,13 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-end">
                 <div class="mb-2 d-flex justify-content-end">
-                    <button id="toggle-all" class="btn btn-primary" style="background-color: #891010; border: none;">Open All</button>
+                    <button id="toggle-all" class="btn btn-primary"
+                        style="background-color: #891010; border: none;">Open All</button>
                 </div>
                 <div class=" dropdown">
-                    <button
-                        class="mx-2 btn btn-primary dropdown-toggle"
-                        type="button"
-                        id="downloadAttendanceDropdown"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        style="background-color: #891010; border: none;"
-                    >
+                    <button class="mx-2 btn btn-primary dropdown-toggle" type="button" id="downloadAttendanceDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        style="background-color: #891010; border: none;">
                         Download Attendance Sheet
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="downloadAttendanceDropdown">
@@ -204,7 +200,8 @@
                             @endfor
                         </select>
                     </div>
-                    <button type="button" id="filter-button" class="mb-2 btn btn-primary" style="background-color: #891010; border: none;">Filter</button>
+                    <button type="button" id="filter-button" class="mb-2 btn btn-primary"
+                        style="background-color: #891010; border: none;">Filter</button>
                 </form>
             </div>
             <div class="attendance-container">
@@ -250,8 +247,11 @@
                                 <option value="present">Present</option>
                                 <option value="absent">Absent</option>
                                 <option value="halfday">Half Day</option>
-                                <option value="weekend">Weekend</option>
+                                <option value="wo">Weekend</option>
                                 <option value="holiday">Holiday</option>
+                                <option value="shortleave">Short Leave</option>
+                                <option value="cl">CL</option>
+                                <option value="pl">PL</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -270,6 +270,16 @@
                             <label for="working-hours">Working Hours</label>
                             <input type="text" id="working-hours" name="working_hours" class="form-control" readonly>
                         </div>
+                        <div class="form-group">
+                            <label for="punch_in_address">Punch In Address</label>
+                            <textarea type="text" id="punch_in_address" name="punch_in_address" class="form-control"
+                                readonly></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="punch_out_address">Punch Out Address</label>
+                            <textarea type="text" id="punch_out_address" name="punch_out_address" class="form-control"
+                                readonly></textarea>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -284,7 +294,7 @@
 @section('footer-script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-        const get_last_day_of_the_month = Number("{{ date('t') }}");
+    const get_last_day_of_the_month = Number("{{ date('t') }}");
 
 const current_month_days_arr = [];
 for (let i = 1; i <= get_last_day_of_the_month; i++) {
@@ -362,18 +372,14 @@ new Chart("preDayAttendance", {
                     x: {
                         type: "category",
                         title: {
-                            // display: true,
-                            // text: "Days",
                         },
                     },
                     y: {
                         beginAtZero: true,
                         title: {
-                            // display: true,
-                            // text: "Leads Count",
                         },
                         ticks: {
-                            min: 1, // Minimum value on the y-axis
+                            min: 1,
                         },
                     },
                 },
@@ -473,7 +479,7 @@ new Chart("preDayAttendance", {
                                                         case 'HO': badgeClass = 'badge-holiday'; break;
                                                         case 'H': badgeClass = 'badge-halfday'; break;
                                                         case 'A': badgeClass = 'badge-absent'; break;
-                                                        default: badgeClass = '';
+                                                        default: badgeClass = 'badge-holiday';
                                                     }
 
                                                     return `<td><span class="badge ${badgeClass}" data-date="${date}" data-employee="${employee.emp_code}" onclick="editAttendance(this)">${attendanceStatus}</span></td>`;
@@ -528,6 +534,8 @@ new Chart("preDayAttendance", {
                         $('#punch-out-time').val(attendance.punch_out_time);
                         $('#working-hours').val(attendance.working_hours || calculateWorkingHours(attendance.punch_in_time, attendance.punch_out_time));
                         $('#desc').val(attendance.desc);
+                        $('#punch_in_address').val(attendance.punch_in_address);
+                        $('#punch_out_address').val(attendance.punch_out_address);
                         $('#attendance-date-display').val(date);
 
                     } else {
@@ -538,6 +546,8 @@ new Chart("preDayAttendance", {
                         $('#punch-out-time').val('');
                         $('#working-hours').val('');
                         $('#desc').val('');
+                        $('#punch_in_address').val('');
+                        $('#punch_out_address').val('');
                         $('#attendance-date-display').val(date);
                     }
                     $('#editAttendanceModal').modal('show');

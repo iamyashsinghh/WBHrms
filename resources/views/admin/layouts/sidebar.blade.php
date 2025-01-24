@@ -41,6 +41,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.attendance.daily') }}" class="nav-link {{ $uri == 'admin.attendance.daily' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Attendance</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin.approval.list') }}" class="nav-link {{ $uri == 'admin.approval.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>Leave Management</p>

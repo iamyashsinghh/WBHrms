@@ -55,6 +55,7 @@ Route::middleware('verify_token')->group(function () {
                 Route::get('is_active_status_update/{emp_code?}/{status?}', [Controllers\Admin\EmployeeController::class, 'is_active_status'])->name('is_active_status');
                 Route::get('destroy/{emp_code?}', [Controllers\Admin\EmployeeController::class, 'destroy'])->name('destroy');
                 Route::post('updateEmploymentInfo', [Controllers\EmployeeDataController::class, 'updateEmploymentInfo'])->name('updateEmploymentInfo');
+                Route::post('update', [Controllers\EmployeeDataController::class, 'update'])->name('update');
             });
 
             /*
@@ -149,7 +150,8 @@ Route::middleware('verify_token')->group(function () {
                 Route::post('store/{emp_code?}/{date?}', [Controllers\Admin\AttendanceController::class, 'store_attendance'])->name('store');
                 Route::post('/admin/attendance/download', [Controllers\Admin\AttendanceController::class, 'downloadAttendance'])->name('download');
                 Route::post('/admin/attendance/generate', [Controllers\Admin\AttendanceController::class, 'generateAttendanceSheet'])->name('generate');
-
+                Route::get('/attendance/daily', [Controllers\Admin\AttendanceController::class, 'dailyAttendancePage'])->name('daily');
+                Route::get('/attendance/daily/fetch', [Controllers\Admin\AttendanceController::class, 'fetchDailyAttendance'])->name('fetch.daily');
             });
 
             /*

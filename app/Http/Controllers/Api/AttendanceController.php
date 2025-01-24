@@ -189,14 +189,12 @@ class AttendanceController extends Controller
                     $now = Carbon::now();
                     $customDate = Carbon::create($now->year, $now->month, 14);
                     if ($attendance->date === $customDate) {
-                        $user->latings_left = 3;
-                        $user->save();
+                        // we can use some logics here
                     }
                 }else{
                     $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
                     if ($attendance->date === $endOfMonth) {
-                        $user->latings_left = 3;
-                        $user->save();
+                        // we can use some logics here
                     }
                 }
                 $now = Carbon::now();

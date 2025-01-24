@@ -14,6 +14,36 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
+    public function dailyAttendancePage()
+    {
+        return view('admin.attendance.daily');
+    }
+    public function fetchDailyAttendance(Request $request)
+    {
+        $date = $request->input('date') ?? now()->toDateString();
+
+        $employees = Employee::all();
+        $attendanceData = [];
+
+        foreach ($employees as $employee) {
+            $attendance = Attendance::where('emp_code', $employee->emp_code)
+                ->whereDate('date', $date)
+                ->first();
+
+            $attendanceData[] = [
+                'employee' => $employee,
+                'status' => $attendance->status ?? '--',
+                'working_hours' => $attendance->working_hours ?? '--',
+                'punch_in_time' => isset($attendance->punch_in_time) ? Carbon::parse($attendance->punch_in_time)->format('h:i a') : '--',
+                'punch_out_time' => isset($attendance->punch_out_time) ? Carbon::parse($attendance->punch_out_time)->format('h:i a') : '--',
+            ];
+        }
+
+        return response()->json([
+            'attendanceData' => $attendanceData,
+        ]);
+    }
+
     public function fetchAttendance(Request $request)
     {
         $month = $request->input('month') ?? now()->month;
@@ -54,7 +84,7 @@ class AttendanceController extends Controller
                                 'working_hours' => $attendance->working_hours ?? '--',
                             ];
                             break;
-                        case 'weekend':
+                        case 'wo':
                             $detailedAttendance[$currentDate] = [
                                 'status' => 'WO',
                                 'working_hours' => '--',
@@ -63,6 +93,18 @@ class AttendanceController extends Controller
                         case 'holiday':
                             $detailedAttendance[$currentDate] = [
                                 'status' => 'HO',
+                                'working_hours' => '--',
+                            ];
+                            break;
+                        case 'cl':
+                            $detailedAttendance[$currentDate] = [
+                                'status' => 'CL',
+                                'working_hours' => '--',
+                            ];
+                            break;
+                        case 'pl':
+                            $detailedAttendance[$currentDate] = [
+                                'status' => 'PL',
                                 'working_hours' => '--',
                             ];
                             break;
@@ -137,13 +179,7 @@ class AttendanceController extends Controller
         if ($attendance) {
             return response()->json([
                 'success' => true,
-                'attendance' => [
-                    'status' => $attendance->status,
-                    'punch_in_time' => $attendance->punch_in_time,
-                    'punch_out_time' => $attendance->punch_out_time,
-                    'working_hours' => $attendance->working_hours,
-                    'desc' => $attendance->desc,
-                ],
+                'attendance' => $attendance,
             ]);
         } else {
             return response()->json([
@@ -207,7 +243,6 @@ class AttendanceController extends Controller
             ]);
         }
     }
-
 
     public function downloadAttendance(Request $request)
     {
@@ -365,26 +400,26 @@ class AttendanceController extends Controller
                 $columnIndex++;
             }
 
-              // Add total calculation headers
-        $sheet->setCellValue("{$columnIndex}1", 'MTD Week Off Days');
-        $sheet->setCellValue("{$columnIndex}2", '(WO)');
-        $weekOffColumn = $columnIndex++;
+            // Add total calculation headers
+            $sheet->setCellValue("{$columnIndex}1", 'MTD Week Off Days');
+            $sheet->setCellValue("{$columnIndex}2", '(WO)');
+            $weekOffColumn = $columnIndex++;
 
-        $sheet->setCellValue("{$columnIndex}1", 'MTD Present Days');
-        $sheet->setCellValue("{$columnIndex}2", '(P)');
-        $presentColumn = $columnIndex++;
+            $sheet->setCellValue("{$columnIndex}1", 'MTD Present Days');
+            $sheet->setCellValue("{$columnIndex}2", '(P)');
+            $presentColumn = $columnIndex++;
 
-        $sheet->setCellValue("{$columnIndex}1", 'MTD Absent Days');
-        $sheet->setCellValue("{$columnIndex}2", '(A)');
-        $absentColumn = $columnIndex++;
+            $sheet->setCellValue("{$columnIndex}1", 'MTD Absent Days');
+            $sheet->setCellValue("{$columnIndex}2", '(A)');
+            $absentColumn = $columnIndex++;
 
-        $sheet->setCellValue("{$columnIndex}1", 'MTD Half Day');
-        $sheet->setCellValue("{$columnIndex}2", '(H)');
-        $halfDayColumn = $columnIndex++;
+            $sheet->setCellValue("{$columnIndex}1", 'MTD Half Day');
+            $sheet->setCellValue("{$columnIndex}2", '(H)');
+            $halfDayColumn = $columnIndex++;
 
-        $sheet->setCellValue("{$columnIndex}1", 'Total Present Days');
-        $sheet->mergeCells("{$columnIndex}1:{$columnIndex}2");
-        $totalPresentColumn = $columnIndex++;
+            $sheet->setCellValue("{$columnIndex}1", 'Total Present Days');
+            $sheet->mergeCells("{$columnIndex}1:{$columnIndex}2");
+            $totalPresentColumn = $columnIndex++;
 
 
             $sheet->mergeCells('A1:A2');
@@ -447,12 +482,10 @@ class AttendanceController extends Controller
             }
             $fileUrl = asset("storage/{$fileName}");
             return response()->json(['file_url' => $fileUrl], 200);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to generate Excel file: ' . $e->getMessage()], 500);
         }
     }
-
 
     private function generatePDF($attendanceData, $month, $year)
     {
