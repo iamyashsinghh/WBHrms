@@ -59,12 +59,6 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('hr.role.list') }}" class="nav-link {{ $uri == 'hr.role.list' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-tag"></i>
-                        <p>Roles</p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ route('hr.salary-type.list') }}" class="nav-link {{ $uri == 'hr.salary-type.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-coins"></i>
                         <p>Salary Type</p>
@@ -98,12 +92,6 @@ $uri =  Route::currentRouteName();
                     <a href="{{ route('hr.fcm.index') }}" class="nav-link {{ $uri == 'hr.fcm.index' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-mobile-alt"></i>
                         <p>App Notification</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('hr.env.index') }}" class="nav-link {{ $uri == 'hr.env.index' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Hrms Settings</p>
                     </a>
                 </li>
             </ul>
