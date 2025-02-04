@@ -34,7 +34,6 @@ class ResignAccept extends Mailable
         $last_working_day = Carbon::parse($resign->resign_at)
         ->addDays((int) $resign->notice_period)
         ->format('d/m/Y');
-        Log::info("$last_working_day");
         $hr_name = Employee::where('role_id', 2)->latest()->first();
         return $this->view('mail.resign.accept', compact('data', 'last_working_day', 'hr_name'));
     }
