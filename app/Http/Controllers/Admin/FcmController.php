@@ -48,8 +48,7 @@ class FcmController extends Controller
             $imagePath = $customImage->store('uploads/fcm_images', 'public');
             $imageUrl = asset('storage/' . $imagePath);
         }
-        Log::info("jdsokd");
-        foreach ($employeesData as $employee) {
+       foreach ($employeesData as $employee) {
             $finalImageUrl = $imageUrl;
             if ($imageType === 'profile_image') {
                 $finalImageUrl = $employee->profile_img ? $employee->profile_img : null;

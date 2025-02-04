@@ -197,18 +197,6 @@ class AttendanceController extends Controller
                         // we can use some logics here
                     }
                 }
-                $now = Carbon::now();
-                $customAccountsClosingYear = Carbon::create($now->year, 3, 31);
-                if ($attendance->date === $customAccountsClosingYear) {
-                    $user->cl_left = 12;
-                    $customAccountsStartingYear = Carbon::create($now->year, 4, 1);
-                    $totalPl = Attendance::where('emp_code', $user->emp_code)->where('status', 'pl')
-                    ->whereBetween('date', [$customAccountsStartingYear->toDateString(), $customAccountsClosingYear->toDateString()])->count();
-                    if($totalPl >= 10){
-                        $user->pl_left = $totalPl/2 + 10;
-                    }
-                    $user->save();
-                }
             } catch (\Exception $e) {
                 return response()->json(['message' => 'Error in working hours calculation'], 500);
             }

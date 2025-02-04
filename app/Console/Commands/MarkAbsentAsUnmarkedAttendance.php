@@ -30,5 +30,6 @@ class MarkAbsentAsUnmarkedAttendance extends Command
         $now = Carbon::now();
         $today = Carbon::now()->toDateString();
         $attendance = Attendance::where('date', $today)->first();
+        
     }
 }
