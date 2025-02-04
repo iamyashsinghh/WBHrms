@@ -31,10 +31,11 @@ class ResignController extends Controller
     {
         $auth_user = Auth::guard('admin')->user();
         $resignation = Resignation::find($request->id);
+        
         if ($resignation) {
             $resignation->notice_period = $request->notice_period ?? 0;
             $resignation->accepted_at = now();
-            $resignation->accepted_by = $auth_user->emp_code; 
+            $resignation->accepted_by = $auth_user->emp_code;
             if ($resignation->save()) {
                 $emp = Employee::where('emp_code', $resignation->emp_code)->first();
                 HrMail::to($emp->email)->send(new ResignAccept($resignation->emp_code));
