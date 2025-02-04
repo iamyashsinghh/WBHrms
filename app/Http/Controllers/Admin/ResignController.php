@@ -31,7 +31,7 @@ class ResignController extends Controller
     {
         $auth_user = Auth::guard('admin')->user();
         $resignation = Resignation::find($request->id);
-        
+
         if ($resignation) {
             $resignation->notice_period = $request->notice_period ?? 0;
             $resignation->accepted_at = now();
@@ -41,10 +41,10 @@ class ResignController extends Controller
                 HrMail::to($emp->email)->send(new ResignAccept($resignation->emp_code));
                 if ($emp->notification_token) {
                     $last_working_day = Carbon::parse($resignation->resign_at)
-                        ->addDays($resignation->notice_period)
+                        ->addDays((int) $resignation->notice_period)
                         ->format('d/m/Y');
                     $title = "Your Resignation is Accepted";
-                    $body = " Dear $emp->name, This is to inform you that your resignation is accepted and the last working day will be marked as $last_working_day";
+                    $body = " Dear $emp->name, This is to in form you that your resignation is accepted and the last working day will be marked as $last_working_day";
                     SendFCMNotification::to($emp->notification_token, $title, $body, [], 'https://cms.wbcrm.in/favicon.jpg');
                 }
             }

@@ -32,7 +32,7 @@ class ResignAccept extends Mailable
         $data = $emp;
         $resign = Resignation::where('emp_code', $data->emp_code)->first();
         $last_working_day = Carbon::parse($resign->resign_at)
-        ->addDays($resign->notice_period)
+        ->addDays((int) $resign->notice_period)
         ->format('d/m/Y');
         Log::info("$last_working_day");
         $hr_name = Employee::where('role_id', 2)->latest()->first();
