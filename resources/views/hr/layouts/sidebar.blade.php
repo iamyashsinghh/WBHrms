@@ -59,6 +59,12 @@ $uri =  Route::currentRouteName();
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('hr.holiday.list') }}" class="nav-link {{ $uri == 'hr.holiday.list' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-coins"></i>
+                        <p>Hpliday</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('hr.salary-type.list') }}" class="nav-link {{ $uri == 'hr.salary-type.list' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-coins"></i>
                         <p>Salary Type</p>

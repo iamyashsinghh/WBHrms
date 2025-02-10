@@ -96,11 +96,25 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
+            | Admin Holiday Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/holiday')->name('holiday.')->group(function () {
+                Route::get('list', [Controllers\Admin\HolidayController::class, 'list'])->name('list');
+                Route::get('get/{id?}', [Controllers\Admin\HolidayController::class, 'get'])->name('get');
+                Route::get('ajax_list', [Controllers\Admin\HolidayController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Admin\HolidayController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Admin\HolidayController::class, 'destroy'])->name('destroy');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
             | Admin Document Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/document-type')->name('document-type.')->group(function () {
                 Route::get('list', [Controllers\Admin\DocumentController::class, 'list'])->name('list');
+                Route::get('get/{id?}', [Controllers\Admin\DocumentController::class, 'get'])->name('get');
                 Route::get('ajax_list', [Controllers\Admin\DocumentController::class, 'ajax_list'])->name('ajax_list');
                 Route::post('manage_process/{id?}', [Controllers\Admin\DocumentController::class, 'manage_process'])->name('manage_process');
                 Route::delete('delete/{id}', [Controllers\Admin\DocumentController::class, 'destroy'])->name('destroy');
@@ -233,7 +247,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Employee Routes
+            | Hr Employee Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/employee')->name('employee.')->group(function () {
@@ -250,7 +264,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Salary Type Routes
+            | Hr Salary Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/salary-type')->name('salary-type.')->group(function () {
@@ -263,7 +277,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Salary Routes
+            | Hr Salary Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/salary')->name('salary.')->group(function () {
@@ -272,11 +286,25 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Document Type Routes
+            | Hr Holiday Routes
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('/holiday')->name('holiday.')->group(function () {
+                Route::get('list', [Controllers\Admin\HolidayController::class, 'list'])->name('list');
+                Route::get('get/{id?}', [Controllers\Admin\HolidayController::class, 'get'])->name('get');
+                Route::get('ajax_list', [Controllers\Admin\HolidayController::class, 'ajax_list'])->name('ajax_list');
+                Route::post('manage_process/{id?}', [Controllers\Admin\HolidayController::class, 'manage_process'])->name('manage_process');
+                Route::delete('delete/{id}', [Controllers\Admin\HolidayController::class, 'destroy'])->name('destroy');
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hr Document Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/document-type')->name('document-type.')->group(function () {
                 Route::get('list', [Controllers\Hr\DocumentController::class, 'list'])->name('list');
+                Route::get('get/{id?}', [Controllers\Hr\DocumentController::class, 'get'])->name('get');
                 Route::get('ajax_list', [Controllers\Hr\DocumentController::class, 'ajax_list'])->name('ajax_list');
                 Route::post('manage_process/{id?}', [Controllers\Hr\DocumentController::class, 'manage_process'])->name('manage_process');
                 Route::delete('delete/{id}', [Controllers\Hr\DocumentController::class, 'destroy'])->name('destroy');
@@ -284,7 +312,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Notification Type Routes
+            | Hr Notification Type Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/notification')->name('notification.')->group(function () {
@@ -296,7 +324,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Document Routes
+            | Hr Document Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/document')->name('document.')->group(function () {
@@ -306,7 +334,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Approval Routes
+            | Hr Approval Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('/approval')->name('approval.')->group(function () {
@@ -317,7 +345,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr All Emp Attendance Routes
+            | Hr All Emp Attendance Routes
             |--------------------------------------------------------------------------
             */
             Route::prefix('attendance-all')->name('attendance.')->group(function () {
@@ -333,7 +361,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr GEO Location
+            | Hr GEO Location
             |--------------------------------------------------------------------------
             */
             Route::prefix('/geo')->name('geo.')->group(function () {
@@ -348,7 +376,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Fcm Notiication
+            | Hr Fcm Notiication
             |--------------------------------------------------------------------------
             */
             Route::prefix('/fcm')->name('fcm.')->group(function () {
@@ -359,7 +387,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Fcm Notiication
+            | Hr Fcm Notiication
             |--------------------------------------------------------------------------
             */
             Route::prefix('/payroll')->name('payroll.')->group(function () {
@@ -373,7 +401,7 @@ Route::middleware('verify_token')->group(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | hr Fcm Notiication
+            | Hr Fcm Notiication
             |--------------------------------------------------------------------------
             */
             Route::prefix('/resign')->name('resign.')->group(function () {

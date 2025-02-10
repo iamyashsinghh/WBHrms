@@ -1,4 +1,4 @@
-@extends('hr.layouts.app')
+@extends('admin.layouts.app')
 @section('title', $page_heading)
 @section('header-css')
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="my-4 button-group">
-                <a href="javascript:void(0);" onclick="handleManageDocumentType(0)"
+                <a href="javascript:void(0);" onclick="handleManageHolidayType(0)"
                     class="btn btn-sm text-light buttons-print" style="background-color: var(--wb-renosand)">
                     <i class="mr-1 fa fa-plus"></i> Add New
                 </a>
@@ -25,13 +25,12 @@
     <section class="content">
         <div class="container-fluid">
             <div class="table-responsive">
-                <table id="documentTypeTable" class="table text-sm">
+                <table id="HolidayTable" class="table text-sm">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Icon</th>
-                            <th>Is Required</th>
+                            <th>Date</th>
                             <th class="text-center no-sort">Actions</th>
                         </tr>
                     </thead>
@@ -41,13 +40,13 @@
     </section>
 </div>
 
-<div class="modal fade" id="manageDocumentType" tabindex="-1" aria-labelledby="manageDocumentTypeLabel" aria-hidden="true">
+<div class="modal fade" id="manageHoliday" tabindex="-1" aria-labelledby="manageHolidayLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="manageDocumentTypeForm" method="POST">
+        <form id="manageHolidayForm" method="POST">
             @csrf
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="form_title" class="modal-title">Manage Document Type</h5>
+                    <h5 id="form_title" class="modal-title">Manage Holiday</h5>
                     <button type="button" class="btn text-secondary" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="modal-body">
@@ -56,16 +55,8 @@
                         <input type="text" id="name" name="name" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="icon" class="form-label">Icon (CSS Class)</label>
-                        <input type="text" id="icon" name="icon" class="form-control icon-picker">
-                        <small class="text-muted">Enter a valid FontAwesome or other icon class (e.g., "fa fa-star").</small>
-                    </div>
-                    <div class="mb-3">
-                        <label for="is_required" class="form-label">Is Required</label>
-                        <select id="is_required" name="is_required" class="form-control" required>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" id="date" name="date" class="form-control" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -77,18 +68,18 @@
     </div>
 </div>
 
-<div class="modal fade" id="deleteDocumentType" tabindex="-1" aria-labelledby="deleteDocumentTypeLabel" aria-hidden="true">
+<div class="modal fade" id="deleteHoliday" tabindex="-1" aria-labelledby="deleteHolidayLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="deleteDocumentTypeForm" method="POST">
+        <form id="deleteHolidayForm" method="POST">
             @csrf
             @method('DELETE')
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Delete Document Type</h5>
+                    <h5 class="modal-title">Delete Holiday</h5>
                     <button type="button" class="btn text-secondary" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete this document type?</p>
+                    <p>Are you sure you want to delete this holiday?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -104,27 +95,14 @@
     <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            const documentTypeTable = $('#documentTypeTable').DataTable({
+            const HolidayTable = $('#HolidayTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('hr.document-type.ajax_list') }}",
+                ajax: "{{ route('admin.holiday.ajax_list') }}",
                 columns: [
                     { data: 'id', name: 'id' },
                     { data: 'name', name: 'name' },
-                    {
-                        data: 'icon',
-                        name: 'icon',
-                        render: function(data) {
-                            return data ? `<i class="${data}"></i>` : '-';
-                        }
-                    },
-                    {
-                        data: 'is_required',
-                        name: 'is_required',
-                        render: function(data) {
-                            return data == '1' ? 'Yes' : 'No';
-                        }
-                    },
+                    { data: 'date', name: 'date' },
                     {
                         data: 'id',
                         name: 'actions',
@@ -133,10 +111,10 @@
                         className: 'text-center',
                         render: function(data) {
                             return `
-                                <button class="btn btn-sm btn-primary" onclick="handleManageDocumentType(${data})">
+                                <button class="btn btn-sm btn-primary" onclick="handleManageHolidayType(${data})">
                                     <i class="fa fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="handleDeleteDocumentType(${data})">
+                                <button class="btn btn-sm btn-danger" onclick="handleDeleteHoliday(${data})">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             `;
@@ -145,40 +123,39 @@
                 ]
             });
 
-            window.handleManageDocumentType = function(id) {
-                const modal = new bootstrap.Modal(document.getElementById('manageDocumentType'));
-                const form = $('#manageDocumentTypeForm');
+            window.handleManageHolidayType = function(id) {
+                const modal = new bootstrap.Modal(document.getElementById('manageHoliday'));
+                const form = $('#manageHolidayForm');
                 const title = $('#form_title');
                 const url = id
-                    ? `{{ route('hr.document-type.manage_process', ':id') }}`.replace(':id', id)
-                    : "{{ route('hr.document-type.manage_process') }}";
+                    ? `{{ route('admin.holiday.manage_process', ':id') }}`.replace(':id', id)
+                    : "{{ route('admin.holiday.manage_process') }}";
 
                 if (id) {
-                    $.get(`{{ url('hr/document-type/get') }}/${id}`, function(data) {
+                    $.get(`{{ url('admin/holiday/get') }}/${id}`, function(data) {
                         $('#name').val(data.name);
-                        $('#icon').val(data.icon);
-                        $('#is_required').val(data.is_required);
-                        title.text("Edit Document Type");
+                        $('#date').val(data.date);
+                        title.text("Edit holiday");
                     });
                 } else {
                     form.trigger('reset');
-                    title.text("Add New Document Type");
+                    title.text("Add New Holiday");
                 }
 
                 form.attr('action', url);
                 modal.show();
             };
 
-            window.handleDeleteDocumentType = function(id) {
-                const modal = new bootstrap.Modal(document.getElementById('deleteDocumentType'));
-                const form = $('#deleteDocumentTypeForm');
-                const url = `{{ route('hr.document-type.destroy', ':id') }}`.replace(':id', id);
+            window.handleDeleteHoliday = function(id) {
+                const modal = new bootstrap.Modal(document.getElementById('deleteHoliday'));
+                const form = $('#deleteHolidayForm');
+                const url = `{{ route('admin.holiday.destroy', ':id') }}`.replace(':id', id);
 
                 form.attr('action', url);
                 modal.show();
             };
 
-            $('#manageDocumentTypeForm').on('submit', function(e) {
+            $('#manageHolidayForm').on('submit', function(e) {
                 e.preventDefault();
 
                 const form = $(this);
@@ -187,8 +164,8 @@
                     method: 'POST',
                     data: form.serialize(),
                     success: function(response) {
-                        $('#manageDocumentType').modal('hide');
-                        documentTypeTable.ajax.reload();
+                        $('#manageHoliday').modal('hide');
+                        HolidayTable.ajax.reload();
                         toastr.success(response.success, 'Success');
                     },
                     error: function(error) {
@@ -200,7 +177,7 @@
                 });
             });
 
-            $('#deleteDocumentTypeForm').on('submit', function(e) {
+            $('#deleteHolidayForm').on('submit', function(e) {
                 e.preventDefault();
 
                 const form = $(this);
@@ -209,8 +186,8 @@
                     method: 'POST',
                     data: form.serialize(),
                     success: function(response) {
-                        $('#deleteDocumentType').modal('hide');
-                        documentTypeTable.ajax.reload();
+                        $('#deleteHoliday').modal('hide');
+                        HolidayTable.ajax.reload();
                         toastr.success(response.success, 'Success');
                     },
                     error: function() {

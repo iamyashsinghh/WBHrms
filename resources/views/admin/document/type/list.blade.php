@@ -154,7 +154,7 @@
                     : "{{ route('admin.document-type.manage_process') }}";
 
                 if (id) {
-                    $.get(`{{ url('admin/document-type') }}/${id}`, function(data) {
+                    $.get(`{{ url('admin/document-type/get') }}/${id}`, function(data) {
                         $('#name').val(data.name);
                         $('#icon').val(data.icon);
                         $('#is_required').val(data.is_required);

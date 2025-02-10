@@ -19,6 +19,11 @@ class DocumentController extends Controller
         return view('hr.document.type.list', compact('page_heading'));
     }
 
+    public function get($id = null){
+        $documentType = DocumentType::findOrFail($id);
+        return $documentType;
+    }
+
     /**
      * Handle DataTable AJAX requests.
      */

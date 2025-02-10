@@ -74,6 +74,11 @@ class DocumentController extends Controller
         return response()->json(['success' => 'Document type deleted successfully.']);
     }
 
+    public function get($id = null){
+        $documentType = DocumentType::findOrFail($id);
+        return $documentType;
+    }
+
     /**
      * Delete a document.
      */
